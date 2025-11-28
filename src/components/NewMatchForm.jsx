@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
-import { Swords, Map, Clock, Trophy, Skull, FileText, Plus, X, ChevronLeft } from 'lucide-react'
-import { MAPS } from '../data/maps'
+import { Swords, Clock, Trophy, Skull, FileText, Plus, X, ChevronLeft, Map } from 'lucide-react'
+import { MapSelector } from './MapSelector'
 
-export function NewMatchForm({ players, onSubmit, onCancel }) {
+export function NewMatchForm({ players, maps, onSubmit, onCancel, onAddMap }) {
   const [form, setForm] = useState({
     mapId: '',
+    mapName: '', // Store map name for display
     duration: '',
     winnerId: '',
     result: 'win',
@@ -27,8 +28,12 @@ export function NewMatchForm({ players, onSubmit, onCancel }) {
       return
     }
 
+    // Find map name to store with match
+    const selectedMap = maps.find(m => m.id === form.mapId)
+
     const matchData = {
       ...form,
+      mapName: selectedMap?.name || '',
       duration: form.duration ? parseInt(form.duration) : null,
       winnerId: form.result === 'draw' ? null : form.winnerId,
     }
@@ -53,7 +58,7 @@ export function NewMatchForm({ players, onSubmit, onCancel }) {
 
   return (
     <div className="parchment rounded-xl p-4 sm:p-6 wood-frame">
-      {/* Header - mobilvennlig */}
+      {/* Header */}
       <div className="flex items-center gap-3 mb-6">
         <button
           onClick={onCancel}
@@ -70,24 +75,17 @@ export function NewMatchForm({ players, onSubmit, onCancel }) {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-5">
-        {/* Map Selection */}
+        {/* Map Selection - Now with search! */}
         <div>
           <label className="block text-settlers-dark-brown font-bold mb-2 text-sm flex items-center gap-2">
             <Map className="w-4 h-4" /> Kart
           </label>
-          <select
-            value={form.mapId}
-            onChange={(e) => setForm(prev => ({ ...prev, mapId: e.target.value }))}
-            className="select-settlers w-full text-base"
-            required
-          >
-            <option value="">Velg kart...</option>
-            {MAPS.map(map => (
-              <option key={map.id} value={map.id}>
-                {map.name}
-              </option>
-            ))}
-          </select>
+          <MapSelector
+            maps={maps}
+            selectedMapId={form.mapId}
+            onSelect={(mapId) => setForm(prev => ({ ...prev, mapId }))}
+            onAddMap={onAddMap}
+          />
         </div>
 
         {/* Duration */}

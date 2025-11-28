@@ -18,9 +18,17 @@ const DEFAULT_PLAYERS = [
   { id: 'player2', name: 'Espen', color: '#DC143C' },
 ]
 
+// Some starter maps
+const DEFAULT_MAPS = [
+  { id: 'default-1', name: 'Tutorial Island', category: 'Standard' },
+  { id: 'default-2', name: 'Green Valley', category: 'Standard' },
+  { id: 'default-3', name: 'River Delta', category: 'Standard' },
+]
+
 export function useFirestore() {
   const [players, setPlayers] = useState(DEFAULT_PLAYERS)
   const [matches, setMatches] = useState([])
+  const [maps, setMaps] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
@@ -30,7 +38,6 @@ export function useFirestore() {
       collection(db, 'players'),
       (snapshot) => {
         if (snapshot.empty) {
-          // Initialize default players if collection is empty
           DEFAULT_PLAYERS.forEach(player => {
             setDoc(doc(db, 'players', player.id), player)
           })
@@ -40,7 +47,6 @@ export function useFirestore() {
             id: doc.id,
             ...doc.data()
           }))
-          // Sort to ensure consistent order
           playersData.sort((a, b) => a.id.localeCompare(b.id))
           setPlayers(playersData)
         }
@@ -50,7 +56,34 @@ export function useFirestore() {
         setError(err.message)
       }
     )
+    return () => unsubscribe()
+  }, [])
 
+  // Listen to maps collection
+  useEffect(() => {
+    const q = query(collection(db, 'maps'), orderBy('name', 'asc'))
+
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        if (snapshot.empty) {
+          // Initialize with default maps
+          DEFAULT_MAPS.forEach(map => {
+            setDoc(doc(db, 'maps', map.id), map)
+          })
+          setMaps(DEFAULT_MAPS)
+        } else {
+          const mapsData = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          }))
+          setMaps(mapsData)
+        }
+      },
+      (err) => {
+        console.error('Error fetching maps:', err)
+      }
+    )
     return () => unsubscribe()
   }, [])
 
@@ -74,7 +107,6 @@ export function useFirestore() {
         setLoading(false)
       }
     )
-
     return () => unsubscribe()
   }, [])
 
@@ -128,6 +160,50 @@ export function useFirestore() {
     }
   }
 
+  // Add a new map
+  const addMap = async (mapData) => {
+    try {
+      const newMap = {
+        name: mapData.name.trim(),
+        category: mapData.category || 'Custom',
+        createdAt: new Date().toISOString(),
+      }
+      const docRef = await addDoc(collection(db, 'maps'), newMap)
+      return { id: docRef.id, ...newMap }
+    } catch (err) {
+      console.error('Error adding map:', err)
+      throw err
+    }
+  }
+
+  // Add multiple maps at once
+  const addMaps = async (mapNames, category = 'Map Pack') => {
+    try {
+      const promises = mapNames.map(name =>
+        addDoc(collection(db, 'maps'), {
+          name: name.trim(),
+          category,
+          createdAt: new Date().toISOString(),
+        })
+      )
+      await Promise.all(promises)
+      return true
+    } catch (err) {
+      console.error('Error adding maps:', err)
+      throw err
+    }
+  }
+
+  // Delete a map
+  const deleteMap = async (mapId) => {
+    try {
+      await deleteDoc(doc(db, 'maps', mapId))
+    } catch (err) {
+      console.error('Error deleting map:', err)
+      throw err
+    }
+  }
+
   // Calculate stats for a player
   const getPlayerStats = (playerId) => {
     const playerMatches = matches.filter(m =>
@@ -176,6 +252,13 @@ export function useFirestore() {
     }
   }
 
+  // Get map name by ID
+  const getMapName = (mapId) => {
+    if (!mapId) return 'Ukjent kart'
+    const map = maps.find(m => m.id === mapId)
+    return map?.name || mapId
+  }
+
   // Format duration
   const formatDuration = (minutes) => {
     if (!minutes) return '-'
@@ -190,13 +273,18 @@ export function useFirestore() {
   return {
     players,
     matches,
+    maps,
     loading,
     error,
     addMatch,
     updateMatch,
     deleteMatch,
     updatePlayer,
+    addMap,
+    addMaps,
+    deleteMap,
     getPlayerStats,
+    getMapName,
     formatDuration,
   }
 }

@@ -15,13 +15,18 @@ function App() {
   const {
     players,
     matches,
+    maps,
     loading,
     error,
     addMatch,
     updateMatch,
     deleteMatch,
     updatePlayer,
+    addMap,
+    addMaps,
+    deleteMap,
     getPlayerStats,
+    getMapName,
     formatDuration,
   } = useFirestore()
 
@@ -54,6 +59,7 @@ function App() {
       exportDate: new Date().toISOString(),
       players,
       matches,
+      maps,
     }
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
@@ -113,8 +119,10 @@ function App() {
         return (
           <NewMatchForm
             players={players}
+            maps={maps}
             onSubmit={handleNewMatch}
             onCancel={() => setCurrentView('dashboard')}
+            onAddMap={addMap}
           />
         )
 
@@ -123,6 +131,8 @@ function App() {
           <MatchHistory
             matches={matches}
             players={players}
+            maps={maps}
+            getMapName={getMapName}
             formatDuration={formatDuration}
             onDeleteMatch={handleDeleteMatch}
             onViewReport={handleViewReport}
@@ -135,6 +145,10 @@ function App() {
             players={players}
             updatePlayer={updatePlayer}
             matches={matches}
+            maps={maps}
+            addMap={addMap}
+            addMaps={addMaps}
+            deleteMap={deleteMap}
             onExport={handleExport}
           />
         )
@@ -145,10 +159,10 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-settlers-dark via-[#1a0f09] to-settlers-dark-brown">
+    <div className="min-h-screen bg-gradient-to-br from-settlers-dark via-[#1a0f09] to-settlers-dark-brown pb-20">
       <Header currentView={currentView} onViewChange={setCurrentView} />
 
-      <main className="container mx-auto px-4 py-6 max-w-4xl">
+      <main className="container mx-auto px-3 py-4 max-w-lg">
         {renderContent()}
       </main>
 
@@ -157,22 +171,17 @@ function App() {
         <BattleReportModal
           match={selectedMatch}
           players={players}
+          getMapName={getMapName}
           onClose={() => setSelectedMatch(null)}
           formatDuration={formatDuration}
         />
       )}
 
-      {/* Sync indicator */}
-      <div className="fixed bottom-4 right-4 bg-green-500/20 text-green-400 text-xs px-3 py-1 rounded-full border border-green-500/30">
-        <span className="inline-block w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
-        Synkronisert
+      {/* Sync indicator - smaller and less intrusive */}
+      <div className="fixed bottom-2 right-2 bg-green-500/10 text-green-400 text-[10px] px-2 py-0.5 rounded-full">
+        <span className="inline-block w-1.5 h-1.5 bg-green-400 rounded-full mr-1 animate-pulse"></span>
+        Live
       </div>
-
-      {/* Footer */}
-      <footer className="text-center py-6 text-settlers-brown/50 text-sm">
-        <p>Settlers 10th Anniversary Battle Tracker</p>
-        <p className="mt-1">La de beste strategene vinne!</p>
-      </footer>
     </div>
   )
 }
