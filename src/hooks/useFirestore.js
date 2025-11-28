@@ -29,6 +29,7 @@ export function useFirestore() {
   const [players, setPlayers] = useState(DEFAULT_PLAYERS)
   const [matches, setMatches] = useState([])
   const [maps, setMaps] = useState([])
+  const [activeMatch, setActiveMatch] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
@@ -105,6 +106,24 @@ export function useFirestore() {
         console.error('Error fetching matches:', err)
         setError(err.message)
         setLoading(false)
+      }
+    )
+    return () => unsubscribe()
+  }, [])
+
+  // Listen to active match (live game)
+  useEffect(() => {
+    const unsubscribe = onSnapshot(
+      doc(db, 'liveMatch', 'current'),
+      (docSnapshot) => {
+        if (docSnapshot.exists()) {
+          setActiveMatch({ id: docSnapshot.id, ...docSnapshot.data() })
+        } else {
+          setActiveMatch(null)
+        }
+      },
+      (err) => {
+        console.error('Error fetching active match:', err)
       }
     )
     return () => unsubscribe()
@@ -204,6 +223,89 @@ export function useFirestore() {
     }
   }
 
+  // Start a live match
+  const startLiveMatch = async (mapId) => {
+    try {
+      const matchData = {
+        mapId,
+        startedAt: new Date().toISOString(),
+        events: [],
+        players: players.map(p => ({ playerId: p.id })),
+        status: 'active',
+        pausedDuration: 0,
+      }
+      await setDoc(doc(db, 'liveMatch', 'current'), matchData)
+      return matchData
+    } catch (err) {
+      console.error('Error starting live match:', err)
+      throw err
+    }
+  }
+
+  // Log event in live match
+  const logLiveEvent = async (event) => {
+    if (!activeMatch) return
+    try {
+      const updatedEvents = [...(activeMatch.events || []), event]
+      await updateDoc(doc(db, 'liveMatch', 'current'), {
+        events: updatedEvents
+      })
+    } catch (err) {
+      console.error('Error logging event:', err)
+      throw err
+    }
+  }
+
+  // End live match and save to matches collection
+  const endLiveMatch = async (elapsedSeconds, winnerId, result = 'win') => {
+    if (!activeMatch) return
+    try {
+      // Count AI eliminations per player
+      const playerStats = players.map(p => {
+        const aiKills = (activeMatch.events || []).filter(
+          e => e.type === 'ai_eliminated' && e.playerId === p.id
+        ).length
+        return { playerId: p.id, aiEliminations: aiKills }
+      })
+
+      // Create match record
+      const matchData = {
+        mapId: activeMatch.mapId,
+        mapName: maps.find(m => m.id === activeMatch.mapId)?.name || '',
+        duration: Math.round(elapsedSeconds / 60), // Convert to minutes
+        winnerId: result === 'draw' ? null : winnerId,
+        result,
+        players: playerStats,
+        events: activeMatch.events || [],
+        notes: '',
+        date: new Date().toISOString(),
+        createdAt: activeMatch.startedAt,
+        isLiveMatch: true,
+      }
+
+      // Save to matches collection
+      await addDoc(collection(db, 'matches'), matchData)
+
+      // Delete live match
+      await deleteDoc(doc(db, 'liveMatch', 'current'))
+
+      return matchData
+    } catch (err) {
+      console.error('Error ending live match:', err)
+      throw err
+    }
+  }
+
+  // Cancel live match without saving
+  const cancelLiveMatch = async () => {
+    try {
+      await deleteDoc(doc(db, 'liveMatch', 'current'))
+    } catch (err) {
+      console.error('Error canceling live match:', err)
+      throw err
+    }
+  }
+
   // Calculate stats for a player
   const getPlayerStats = (playerId) => {
     const playerMatches = matches.filter(m =>
@@ -274,6 +376,7 @@ export function useFirestore() {
     players,
     matches,
     maps,
+    activeMatch,
     loading,
     error,
     addMatch,
@@ -283,6 +386,10 @@ export function useFirestore() {
     addMap,
     addMaps,
     deleteMap,
+    startLiveMatch,
+    logLiveEvent,
+    endLiveMatch,
+    cancelLiveMatch,
     getPlayerStats,
     getMapName,
     formatDuration,

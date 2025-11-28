@@ -1,9 +1,9 @@
 import React from 'react'
-import { Swords, Clock, Skull, Target } from 'lucide-react'
+import { Swords, Clock, Skull, Target, Play } from 'lucide-react'
 import { Leaderboard } from './Leaderboard'
 import { MatchCard } from './MatchCard'
 
-export function Dashboard({ players, matches, getPlayerStats, formatDuration, onDeleteMatch, onViewReport, onNewMatch }) {
+export function Dashboard({ players, matches, getPlayerStats, formatDuration, onDeleteMatch, onViewReport, onNewMatch, onStartLive }) {
   const recentMatches = matches.slice(0, 3)
 
   // Calculate stats
@@ -14,14 +14,23 @@ export function Dashboard({ players, matches, getPlayerStats, formatDuration, on
 
   return (
     <div className="space-y-4">
-      {/* Quick action button */}
-      <button
-        onClick={onNewMatch}
-        className="btn-settlers w-full py-4 text-lg flex items-center justify-center gap-2 pulse-gold"
-      >
-        <Swords className="w-6 h-6" />
-        Registrer Ny Kamp
-      </button>
+      {/* Quick action buttons */}
+      <div className="grid grid-cols-2 gap-2">
+        <button
+          onClick={onStartLive}
+          className="btn-settlers py-4 text-base flex items-center justify-center gap-2 pulse-gold"
+        >
+          <Play className="w-5 h-5" />
+          Live Kamp
+        </button>
+        <button
+          onClick={onNewMatch}
+          className="py-4 text-base flex items-center justify-center gap-2 bg-settlers-brown/20 text-settlers-dark-brown rounded-lg font-bold hover:bg-settlers-brown/30 transition-colors"
+        >
+          <Swords className="w-5 h-5" />
+          Manuell
+        </button>
+      </div>
 
       {/* Quick Stats - 2x2 grid on mobile */}
       <div className="grid grid-cols-4 gap-2">

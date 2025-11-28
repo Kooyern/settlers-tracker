@@ -1,10 +1,11 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Header } from './components/Header'
 import { Dashboard } from './components/Dashboard'
 import { NewMatchForm } from './components/NewMatchForm'
 import { MatchHistory } from './components/MatchHistory'
 import { Settings } from './components/Settings'
 import { BattleReportModal } from './components/BattleReportModal'
+import { LiveMatch } from './components/LiveMatch'
 import { useFirestore } from './hooks/useFirestore'
 import { Loader2 } from 'lucide-react'
 
@@ -16,6 +17,7 @@ function App() {
     players,
     matches,
     maps,
+    activeMatch,
     loading,
     error,
     addMatch,
@@ -25,10 +27,21 @@ function App() {
     addMap,
     addMaps,
     deleteMap,
+    startLiveMatch,
+    logLiveEvent,
+    endLiveMatch,
+    cancelLiveMatch,
     getPlayerStats,
     getMapName,
     formatDuration,
   } = useFirestore()
+
+  // Auto-switch to live view when there's an active match
+  useEffect(() => {
+    if (activeMatch && currentView !== 'live-match') {
+      setCurrentView('live-match')
+    }
+  }, [activeMatch])
 
   const handleNewMatch = async (matchData) => {
     try {
@@ -68,6 +81,36 @@ function App() {
     a.download = `settlers-tracker-backup-${new Date().toISOString().split('T')[0]}.json`
     a.click()
     URL.revokeObjectURL(url)
+  }
+
+  // Live match handlers
+  const handleStartLiveMatch = async (mapId) => {
+    try {
+      await startLiveMatch(mapId)
+      setCurrentView('live-match')
+    } catch (err) {
+      alert('Kunne ikke starte kampen. Prøv igjen.')
+    }
+  }
+
+  const handleEndLiveMatch = async (elapsedSeconds, winnerId, result) => {
+    try {
+      await endLiveMatch(elapsedSeconds, winnerId, result)
+      setCurrentView('dashboard')
+    } catch (err) {
+      alert('Kunne ikke avslutte kampen. Prøv igjen.')
+    }
+  }
+
+  const handleCancelLiveMatch = async () => {
+    if (window.confirm('Avbryte kampen uten å lagre?')) {
+      try {
+        await cancelLiveMatch()
+        setCurrentView('dashboard')
+      } catch (err) {
+        alert('Kunne ikke avbryte kampen.')
+      }
+    }
   }
 
   // Loading state
@@ -112,6 +155,7 @@ function App() {
             onDeleteMatch={handleDeleteMatch}
             onViewReport={handleViewReport}
             onNewMatch={() => setCurrentView('new-match')}
+            onStartLive={() => setCurrentView('live-match')}
           />
         )
 
@@ -150,6 +194,19 @@ function App() {
             addMaps={addMaps}
             deleteMap={deleteMap}
             onExport={handleExport}
+          />
+        )
+
+      case 'live-match':
+        return (
+          <LiveMatch
+            players={players}
+            maps={maps}
+            activeMatch={activeMatch}
+            onStartMatch={handleStartLiveMatch}
+            onEndMatch={handleEndLiveMatch}
+            onLogEvent={logLiveEvent}
+            onCancel={handleCancelLiveMatch}
           />
         )
 
