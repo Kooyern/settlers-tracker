@@ -1,15 +1,14 @@
 import React, { useState } from 'react'
 import { Calendar, Clock, Map, Trophy, Skull, ChevronDown, ChevronUp, Trash2, Eye } from 'lucide-react'
-import { MAPS } from '../data/maps'
 import { format } from 'date-fns'
 import { nb } from 'date-fns/locale'
 
 export function MatchCard({ match, players, formatDuration, onDelete, onViewReport }) {
   const [expanded, setExpanded] = useState(false)
 
-  const mapInfo = MAPS.find(m => m.id === match.mapId)
   const winner = players.find(p => p.id === match.winnerId)
   const matchDate = new Date(match.date)
+  const mapName = match.mapName || 'Ukjent kart'
 
   const getResultBadge = () => {
     if (match.result === 'draw') {
@@ -94,7 +93,7 @@ export function MatchCard({ match, players, formatDuration, onDelete, onViewRepo
         <div className="flex items-center justify-center gap-6 mt-4 text-sm text-settlers-brown">
           <div className="flex items-center gap-1">
             <Map className="w-4 h-4" />
-            <span>{mapInfo?.name || 'Ukjent kart'}</span>
+            <span>{mapName}</span>
           </div>
           <div className="flex items-center gap-1">
             <Clock className="w-4 h-4" />

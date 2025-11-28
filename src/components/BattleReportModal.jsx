@@ -1,6 +1,5 @@
 import React from 'react'
 import { X, FileText, Skull, Swords, Map, Calendar, Clock, Trophy, Gem, Mountain, Shield, Trees, AlertTriangle } from 'lucide-react'
-import { MAPS } from '../data/maps'
 import { format } from 'date-fns'
 import { nb } from 'date-fns/locale'
 
@@ -17,9 +16,9 @@ const AI_COLORS = {
 export function BattleReportModal({ match, players, onClose, formatDuration }) {
   if (!match) return null
 
-  const mapInfo = MAPS.find(m => m.id === match.mapId)
   const winner = players.find(p => p.id === match.winnerId)
   const matchDate = new Date(match.date)
+  const mapName = match.mapName || 'Ukjent kart'
 
   const getEventIcon = (type) => {
     switch (type) {
@@ -88,7 +87,7 @@ export function BattleReportModal({ match, players, onClose, formatDuration }) {
               <div>
                 <Map className="w-5 h-5 mx-auto text-settlers-brown mb-1" />
                 <p className="text-sm text-settlers-brown">Kart</p>
-                <p className="font-bold text-settlers-dark-brown">{mapInfo?.name || '-'}</p>
+                <p className="font-bold text-settlers-dark-brown">{mapName}</p>
               </div>
               <div>
                 <Clock className="w-5 h-5 mx-auto text-settlers-brown mb-1" />
