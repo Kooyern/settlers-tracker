@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#D4A84B"/>
+      <stop offset="50%" style="stop-color:#FFD700"/>
+      <stop offset="100%" style="stop-color:#B8860B"/>
+    </linearGradient>
+  </defs>
+  <!-- Shield shape -->
+  <path d="M50 5 L90 20 L90 50 Q90 80 50 95 Q10 80 10 50 L10 20 Z" fill="url(#gold)" stroke="#5D3A1A" stroke-width="3"/>
+  <!-- Crossed swords -->
+  <path d="M30 30 L70 70 M70 30 L30 70" stroke="#5D3A1A" stroke-width="4" stroke-linecap="round"/>
+  <!-- Castle tower -->
+  <rect x="40" y="40" width="20" height="25" fill="#5D3A1A"/>
+  <rect x="42" y="35" width="4" height="8" fill="#5D3A1A"/>
+  <rect x="48" y="32" width="4" height="11" fill="#5D3A1A"/>
+  <rect x="54" y="35" width="4" height="8" fill="#5D3A1A"/>
+</svg>
