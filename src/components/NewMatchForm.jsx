@@ -1,22 +1,17 @@
 import React, { useState } from 'react'
-import { Swords, Map, Clock, Trophy, Skull, FileText, Plus, X } from 'lucide-react'
-import { MAPS, DIFFICULTY_COLORS } from '../data/maps'
-
-const INITIAL_FORM = {
-  mapId: '',
-  duration: '',
-  winnerId: '',
-  result: 'win', // win or draw
-  notes: '',
-  players: [
-    { playerId: 'player1', aiEliminations: 0 },
-    { playerId: 'player2', aiEliminations: 0 },
-  ],
-  battleReport: null,
-}
+import { Swords, Map, Clock, Trophy, Skull, FileText, Plus, X, ChevronLeft } from 'lucide-react'
+import { MAPS } from '../data/maps'
 
 export function NewMatchForm({ players, onSubmit, onCancel }) {
-  const [form, setForm] = useState(INITIAL_FORM)
+  const [form, setForm] = useState({
+    mapId: '',
+    duration: '',
+    winnerId: '',
+    result: 'win',
+    notes: '',
+    players: players.map(p => ({ playerId: p.id, aiEliminations: 0 })),
+    battleReport: null,
+  })
   const [showBattleReport, setShowBattleReport] = useState(false)
 
   const handleSubmit = (e) => {
@@ -39,53 +34,57 @@ export function NewMatchForm({ players, onSubmit, onCancel }) {
     }
 
     onSubmit(matchData)
-    setForm(INITIAL_FORM)
   }
 
-  const updatePlayerData = (playerIndex, field, value) => {
+  const updatePlayerAiKills = (playerId, delta) => {
     setForm(prev => ({
       ...prev,
-      players: prev.players.map((p, idx) =>
-        idx === playerIndex ? { ...p, [field]: value } : p
+      players: prev.players.map(p =>
+        p.playerId === playerId
+          ? { ...p, aiEliminations: Math.max(0, p.aiEliminations + delta) }
+          : p
       )
     }))
   }
 
+  const getPlayerAiKills = (playerId) => {
+    return form.players.find(p => p.playerId === playerId)?.aiEliminations || 0
+  }
+
   return (
-    <div className="parchment rounded-xl p-6 wood-frame">
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <Swords className="w-8 h-8 text-settlers-gold" />
-          <h2 className="text-2xl font-bold text-settlers-dark-brown font-medieval">
-            Registrer Ny Kamp
+    <div className="parchment rounded-xl p-4 sm:p-6 wood-frame">
+      {/* Header - mobilvennlig */}
+      <div className="flex items-center gap-3 mb-6">
+        <button
+          onClick={onCancel}
+          className="p-2 -ml-2 text-settlers-brown hover:text-settlers-dark-brown transition-colors"
+        >
+          <ChevronLeft className="w-6 h-6" />
+        </button>
+        <div className="flex items-center gap-2 flex-1">
+          <Swords className="w-6 h-6 text-settlers-gold" />
+          <h2 className="text-xl sm:text-2xl font-bold text-settlers-dark-brown font-medieval">
+            Ny Kamp
           </h2>
         </div>
-        {onCancel && (
-          <button
-            onClick={onCancel}
-            className="text-settlers-brown hover:text-settlers-dark-brown transition-colors"
-          >
-            <X className="w-6 h-6" />
-          </button>
-        )}
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-5">
         {/* Map Selection */}
         <div>
-          <label className="block text-settlers-dark-brown font-bold mb-2 flex items-center gap-2">
-            <Map className="w-4 h-4" /> Velg Kart
+          <label className="block text-settlers-dark-brown font-bold mb-2 text-sm flex items-center gap-2">
+            <Map className="w-4 h-4" /> Kart
           </label>
           <select
             value={form.mapId}
             onChange={(e) => setForm(prev => ({ ...prev, mapId: e.target.value }))}
-            className="select-settlers w-full"
+            className="select-settlers w-full text-base"
             required
           >
-            <option value="">-- Velg kart --</option>
+            <option value="">Velg kart...</option>
             {MAPS.map(map => (
               <option key={map.id} value={map.id}>
-                {map.name} ({map.difficulty})
+                {map.name}
               </option>
             ))}
           </select>
@@ -93,7 +92,7 @@ export function NewMatchForm({ players, onSubmit, onCancel }) {
 
         {/* Duration */}
         <div>
-          <label className="block text-settlers-dark-brown font-bold mb-2 flex items-center gap-2">
+          <label className="block text-settlers-dark-brown font-bold mb-2 text-sm flex items-center gap-2">
             <Clock className="w-4 h-4" /> Spilletid (minutter)
           </label>
           <input
@@ -101,72 +100,76 @@ export function NewMatchForm({ players, onSubmit, onCancel }) {
             value={form.duration}
             onChange={(e) => setForm(prev => ({ ...prev, duration: e.target.value }))}
             placeholder="f.eks. 45"
-            className="input-settlers w-full"
+            className="input-settlers w-full text-base"
             min="1"
+            inputMode="numeric"
           />
         </div>
 
         {/* Result Type */}
         <div>
-          <label className="block text-settlers-dark-brown font-bold mb-2 flex items-center gap-2">
+          <label className="block text-settlers-dark-brown font-bold mb-2 text-sm flex items-center gap-2">
             <Trophy className="w-4 h-4" /> Resultat
           </label>
-          <div className="flex gap-4">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="radio"
-                name="result"
-                value="win"
-                checked={form.result === 'win'}
-                onChange={(e) => setForm(prev => ({ ...prev, result: e.target.value }))}
-                className="w-4 h-4"
-              />
-              <span className="text-settlers-dark-brown">Seier/Tap</span>
-            </label>
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="radio"
-                name="result"
-                value="draw"
-                checked={form.result === 'draw'}
-                onChange={(e) => setForm(prev => ({ ...prev, result: e.target.value, winnerId: '' }))}
-                className="w-4 h-4"
-              />
-              <span className="text-settlers-dark-brown">Uavgjort</span>
-            </label>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => setForm(prev => ({ ...prev, result: 'win' }))}
+              className={`flex-1 py-3 px-4 rounded-lg font-bold transition-all ${
+                form.result === 'win'
+                  ? 'bg-settlers-gold text-settlers-dark border-2 border-settlers-dark-brown'
+                  : 'bg-white/50 text-settlers-brown border-2 border-transparent'
+              }`}
+            >
+              Seier/Tap
+            </button>
+            <button
+              type="button"
+              onClick={() => setForm(prev => ({ ...prev, result: 'draw', winnerId: '' }))}
+              className={`flex-1 py-3 px-4 rounded-lg font-bold transition-all ${
+                form.result === 'draw'
+                  ? 'bg-settlers-gold text-settlers-dark border-2 border-settlers-dark-brown'
+                  : 'bg-white/50 text-settlers-brown border-2 border-transparent'
+              }`}
+            >
+              Uavgjort
+            </button>
           </div>
         </div>
 
-        {/* Winner Selection (if not draw) */}
+        {/* Winner Selection */}
         {form.result === 'win' && (
           <div>
-            <label className="block text-settlers-dark-brown font-bold mb-2">
+            <label className="block text-settlers-dark-brown font-bold mb-3 text-sm">
               Hvem vant?
             </label>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-3">
               {players.map((player) => (
                 <button
                   key={player.id}
                   type="button"
                   onClick={() => setForm(prev => ({ ...prev, winnerId: player.id }))}
                   className={`
-                    p-4 rounded-lg border-2 transition-all duration-300 flex flex-col items-center gap-2
+                    p-4 rounded-xl border-3 transition-all duration-200 flex flex-col items-center gap-2
                     ${form.winnerId === player.id
-                      ? 'border-settlers-gold bg-yellow-50 shadow-lg scale-105'
-                      : 'border-settlers-brown/30 bg-white/50 hover:border-settlers-gold/50'
+                      ? 'border-settlers-gold bg-yellow-50 shadow-lg transform scale-[1.02]'
+                      : 'border-settlers-brown/20 bg-white/50 active:scale-95'
                     }
                   `}
                 >
                   <div
                     className={`
-                      w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-xl
-                      ${form.winnerId === player.id ? 'ring-4 ring-settlers-gold' : ''}
+                      w-14 h-14 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-md
+                      ${form.winnerId === player.id ? 'ring-4 ring-settlers-gold ring-offset-2' : ''}
                     `}
                     style={{ backgroundColor: player.color }}
                   >
-                    {form.winnerId === player.id ? <Trophy className="w-6 h-6" /> : player.name.charAt(0)}
+                    {form.winnerId === player.id ? <Trophy className="w-7 h-7" /> : player.name.charAt(0)}
                   </div>
-                  <span className="font-bold text-settlers-dark-brown">{player.name}</span>
+                  <span className="font-bold text-settlers-dark-brown text-base">{player.name}</span>
+                  {form.winnerId === player.id && (
+                    <span className="text-xs text-green-700 font-bold">VINNER</span>
+                  )}
                 </button>
               ))}
             </div>
@@ -175,32 +178,35 @@ export function NewMatchForm({ players, onSubmit, onCancel }) {
 
         {/* AI Eliminations */}
         <div>
-          <label className="block text-settlers-dark-brown font-bold mb-2 flex items-center gap-2">
+          <label className="block text-settlers-dark-brown font-bold mb-2 text-sm flex items-center gap-2">
             <Skull className="w-4 h-4" /> AI Elimineringer
-            <span className="text-xs font-normal text-settlers-brown">(+0.5 poeng per eliminering)</span>
+            <span className="text-xs font-normal text-settlers-brown">(+0.5p hver)</span>
           </label>
-          <div className="grid grid-cols-2 gap-4">
-            {players.map((player, idx) => (
-              <div key={player.id} className="bg-white/50 rounded-lg p-3">
-                <p className="text-sm text-settlers-brown mb-2 flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: player.color }} />
+          <div className="grid grid-cols-2 gap-3">
+            {players.map((player) => (
+              <div key={player.id} className="bg-white/50 rounded-xl p-3">
+                <p className="text-sm text-settlers-brown mb-2 flex items-center gap-2 font-medium">
+                  <span
+                    className="w-3 h-3 rounded-full"
+                    style={{ backgroundColor: player.color }}
+                  />
                   {player.name}
                 </p>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center justify-center gap-3">
                   <button
                     type="button"
-                    onClick={() => updatePlayerData(idx, 'aiEliminations', Math.max(0, form.players[idx].aiEliminations - 1))}
-                    className="w-8 h-8 rounded bg-settlers-brown/20 hover:bg-settlers-brown/40 text-settlers-dark-brown font-bold transition-colors"
+                    onClick={() => updatePlayerAiKills(player.id, -1)}
+                    className="w-10 h-10 rounded-lg bg-settlers-brown/20 hover:bg-settlers-brown/40 active:bg-settlers-brown/50 text-settlers-dark-brown font-bold text-xl transition-colors"
                   >
-                    -
+                    −
                   </button>
-                  <span className="text-2xl font-bold text-settlers-dark-brown w-8 text-center">
-                    {form.players[idx].aiEliminations}
+                  <span className="text-3xl font-bold text-settlers-dark-brown w-10 text-center">
+                    {getPlayerAiKills(player.id)}
                   </span>
                   <button
                     type="button"
-                    onClick={() => updatePlayerData(idx, 'aiEliminations', form.players[idx].aiEliminations + 1)}
-                    className="w-8 h-8 rounded bg-settlers-brown/20 hover:bg-settlers-brown/40 text-settlers-dark-brown font-bold transition-colors"
+                    onClick={() => updatePlayerAiKills(player.id, 1)}
+                    className="w-10 h-10 rounded-lg bg-settlers-brown/20 hover:bg-settlers-brown/40 active:bg-settlers-brown/50 text-settlers-dark-brown font-bold text-xl transition-colors"
                   >
                     +
                   </button>
@@ -212,45 +218,39 @@ export function NewMatchForm({ players, onSubmit, onCancel }) {
 
         {/* Notes */}
         <div>
-          <label className="block text-settlers-dark-brown font-bold mb-2 flex items-center gap-2">
-            <FileText className="w-4 h-4" /> Notater (valgfritt)
+          <label className="block text-settlers-dark-brown font-bold mb-2 text-sm flex items-center gap-2">
+            <FileText className="w-4 h-4" /> Notater
           </label>
           <textarea
             value={form.notes}
             onChange={(e) => setForm(prev => ({ ...prev, notes: e.target.value }))}
-            placeholder="Spesielle hendelser, strategier brukt, osv..."
-            className="input-settlers w-full h-24 resize-none"
+            placeholder="Spesielle hendelser..."
+            className="input-settlers w-full h-20 resize-none text-base"
           />
         </div>
 
         {/* Battle Report Toggle */}
-        <div className="border-t border-settlers-brown/20 pt-4">
-          <button
-            type="button"
-            onClick={() => setShowBattleReport(!showBattleReport)}
-            className="btn-settlers-secondary w-full flex items-center justify-center gap-2"
-          >
-            <Plus className={`w-4 h-4 transition-transform ${showBattleReport ? 'rotate-45' : ''}`} />
-            {showBattleReport ? 'Skjul Kamprapport' : 'Legg til Kamprapport'}
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={() => setShowBattleReport(!showBattleReport)}
+          className="w-full py-3 rounded-lg bg-settlers-brown/10 text-settlers-brown font-medium flex items-center justify-center gap-2"
+        >
+          <Plus className={`w-4 h-4 transition-transform ${showBattleReport ? 'rotate-45' : ''}`} />
+          {showBattleReport ? 'Skjul detaljer' : 'Legg til detaljer'}
+        </button>
 
-        {/* Battle Report Section */}
         {showBattleReport && (
-          <BattleReportForm
-            form={form}
-            setForm={setForm}
-            players={players}
-          />
+          <BattleReportForm form={form} setForm={setForm} players={players} />
         )}
 
         {/* Submit */}
-        <div className="flex gap-4 pt-4">
-          <button type="submit" className="btn-settlers flex-1 flex items-center justify-center gap-2">
-            <Swords className="w-5 h-5" />
-            Registrer Kamp
-          </button>
-        </div>
+        <button
+          type="submit"
+          className="btn-settlers w-full py-4 text-lg flex items-center justify-center gap-2"
+        >
+          <Swords className="w-5 h-5" />
+          Registrer Kamp
+        </button>
       </form>
     </div>
   )
@@ -258,8 +258,8 @@ export function NewMatchForm({ players, onSubmit, onCancel }) {
 
 function BattleReportForm({ form, setForm, players }) {
   const [report, setReport] = useState(form.battleReport || {
-    player1: { buildings: {}, units: {}, events: [] },
-    player2: { buildings: {}, units: {}, events: [] },
+    player1: { events: [] },
+    player2: { events: [] },
   })
 
   const updateReport = (newReport) => {
@@ -278,53 +278,46 @@ function BattleReportForm({ form, setForm, players }) {
   }
 
   return (
-    <div className="bg-settlers-wheat/50 rounded-lg p-4 space-y-4">
-      <h3 className="font-bold text-settlers-dark-brown text-lg flex items-center gap-2">
-        <FileText className="w-5 h-5" /> Kamprapport
-      </h3>
-
-      <p className="text-sm text-settlers-brown">
-        Her kan du legge til detaljert informasjon om kampen. Legg til bygninger, enheter og viktige hendelser for hver spiller.
-      </p>
-
+    <div className="bg-settlers-wheat/30 rounded-xl p-4 space-y-3">
       {players.map((player) => (
-        <div key={player.id} className="bg-white/50 rounded-lg p-4">
-          <h4 className="font-bold text-settlers-dark-brown mb-3 flex items-center gap-2">
-            <div className="w-4 h-4 rounded-full" style={{ backgroundColor: player.color }} />
-            {player.name}s Rapport
+        <div key={player.id} className="bg-white/50 rounded-lg p-3">
+          <h4 className="font-bold text-settlers-dark-brown mb-2 text-sm flex items-center gap-2">
+            <span className="w-3 h-3 rounded-full" style={{ backgroundColor: player.color }} />
+            {player.name}
           </h4>
 
-          {/* Quick Event Buttons */}
-          <div className="flex flex-wrap gap-2 mb-3">
+          <div className="flex flex-wrap gap-2 mb-2">
             <button
               type="button"
-              onClick={() => addEvent(player.id, { type: 'ai_eliminated', description: 'Eliminerte en AI-spiller' })}
-              className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded hover:bg-purple-200 transition-colors flex items-center gap-1"
+              onClick={() => addEvent(player.id, { type: 'ai_eliminated', description: 'Eliminerte AI' })}
+              className="text-xs bg-purple-100 text-purple-700 px-3 py-1.5 rounded-full active:bg-purple-200"
             >
-              <Skull className="w-3 h-3" /> AI Eliminert
+              <Skull className="w-3 h-3 inline mr-1" /> AI Drept
             </button>
             <button
               type="button"
-              onClick={() => addEvent(player.id, { type: 'major_battle', description: 'Vant et stort slag' })}
-              className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded hover:bg-red-200 transition-colors flex items-center gap-1"
+              onClick={() => addEvent(player.id, { type: 'major_battle', description: 'Vant slag' })}
+              className="text-xs bg-red-100 text-red-700 px-3 py-1.5 rounded-full active:bg-red-200"
             >
-              <Swords className="w-3 h-3" /> Stort Slag
+              <Swords className="w-3 h-3 inline mr-1" /> Slag
             </button>
             <button
               type="button"
-              onClick={() => addEvent(player.id, { type: 'expansion', description: 'Utvidet territorium' })}
-              className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded hover:bg-green-200 transition-colors flex items-center gap-1"
+              onClick={() => addEvent(player.id, { type: 'expansion', description: 'Ekspanderte' })}
+              className="text-xs bg-green-100 text-green-700 px-3 py-1.5 rounded-full active:bg-green-200"
             >
-              <Map className="w-3 h-3" /> Ekspansjon
+              <Map className="w-3 h-3 inline mr-1" /> Ekspansjon
             </button>
           </div>
 
-          {/* Events List */}
           {report[player.id]?.events?.length > 0 && (
-            <div className="space-y-1">
+            <div className="flex flex-wrap gap-1">
               {report[player.id].events.map((event, idx) => (
-                <div key={idx} className="text-xs bg-settlers-wheat/50 rounded p-2 flex items-center justify-between">
-                  <span>{event.description}</span>
+                <span
+                  key={idx}
+                  className="text-xs bg-settlers-wheat rounded px-2 py-1 flex items-center gap-1"
+                >
+                  {event.description}
                   <button
                     type="button"
                     onClick={() => {
@@ -334,11 +327,11 @@ function BattleReportForm({ form, setForm, players }) {
                         [player.id]: { ...report[player.id], events: newEvents }
                       })
                     }}
-                    className="text-red-500 hover:text-red-700"
+                    className="text-red-500 ml-1"
                   >
                     <X className="w-3 h-3" />
                   </button>
-                </div>
+                </span>
               ))}
             </div>
           )}

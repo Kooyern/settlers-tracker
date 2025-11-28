@@ -1,5 +1,5 @@
 import React from 'react'
-import { Crown, Swords, Target, Skull, Clock, TrendingUp } from 'lucide-react'
+import { Crown, Swords, Trophy, Skull } from 'lucide-react'
 
 export function Leaderboard({ players, getPlayerStats, formatDuration }) {
   const stats = players.map(player => ({
@@ -8,152 +8,116 @@ export function Leaderboard({ players, getPlayerStats, formatDuration }) {
   })).sort((a, b) => b.stats.points - a.stats.points)
 
   const leader = stats[0]
-  const challenger = stats[1]
+  const isLeading = leader?.stats.points > (stats[1]?.stats.points || 0)
 
   return (
-    <div className="parchment rounded-xl p-6 wood-frame">
-      <div className="flex items-center gap-3 mb-6">
-        <Crown className="w-8 h-8 text-settlers-gold" />
-        <h2 className="text-2xl font-bold text-settlers-dark-brown font-medieval">
-          Leaderboard
+    <div className="parchment rounded-xl p-4 wood-frame">
+      <div className="flex items-center gap-2 mb-4">
+        <Trophy className="w-6 h-6 text-settlers-gold" />
+        <h2 className="text-lg font-bold text-settlers-dark-brown font-medieval">
+          Stillingen
         </h2>
       </div>
 
-      {/* Head to Head Display */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      {/* Head to Head - Mobile optimized */}
+      <div className="flex items-center justify-around gap-2 mb-4">
         {/* Player 1 */}
-        <div className={`
-          rounded-lg p-4 text-center relative overflow-hidden
-          ${stats[0]?.id === 'player1' ? 'bg-gradient-to-br from-yellow-100 to-yellow-200 ring-2 ring-settlers-gold' : 'bg-white/50'}
-        `}>
-          {stats[0]?.id === 'player1' && (
-            <Crown className="absolute top-2 right-2 w-5 h-5 text-settlers-gold" />
-          )}
-          <div
-            className="w-16 h-16 rounded-full mx-auto mb-3 flex items-center justify-center text-2xl font-bold text-white shadow-lg"
-            style={{ backgroundColor: players[0]?.color }}
-          >
-            {players[0]?.name?.charAt(0) || 'S'}
-          </div>
-          <h3 className="font-bold text-settlers-dark-brown text-lg">
-            {players[0]?.name || 'Spiller 1'}
-          </h3>
-          <p className="text-3xl font-bold text-settlers-gold mt-2">
-            {stats.find(s => s.id === 'player1')?.stats.points || 0}
-          </p>
-          <p className="text-sm text-settlers-brown">poeng</p>
-        </div>
+        <PlayerCard
+          player={stats.find(s => s.id === 'player1')}
+          isLeader={leader?.id === 'player1' && isLeading}
+        />
 
-        {/* VS Badge */}
-        <div className="flex items-center justify-center">
-          <div className="bg-settlers-dark-brown rounded-full p-4 shadow-lg">
-            <Swords className="w-10 h-10 text-settlers-gold" />
-          </div>
+        {/* VS */}
+        <div className="flex flex-col items-center">
+          <Swords className="w-8 h-8 text-settlers-gold" />
+          <span className="text-xs text-settlers-brown font-bold mt-1">VS</span>
         </div>
 
         {/* Player 2 */}
-        <div className={`
-          rounded-lg p-4 text-center relative overflow-hidden
-          ${stats[0]?.id === 'player2' ? 'bg-gradient-to-br from-yellow-100 to-yellow-200 ring-2 ring-settlers-gold' : 'bg-white/50'}
-        `}>
-          {stats[0]?.id === 'player2' && (
-            <Crown className="absolute top-2 right-2 w-5 h-5 text-settlers-gold" />
-          )}
-          <div
-            className="w-16 h-16 rounded-full mx-auto mb-3 flex items-center justify-center text-2xl font-bold text-white shadow-lg"
-            style={{ backgroundColor: players[1]?.color }}
-          >
-            {players[1]?.name?.charAt(0) || 'S'}
-          </div>
-          <h3 className="font-bold text-settlers-dark-brown text-lg">
-            {players[1]?.name || 'Spiller 2'}
-          </h3>
-          <p className="text-3xl font-bold text-settlers-gold mt-2">
-            {stats.find(s => s.id === 'player2')?.stats.points || 0}
-          </p>
-          <p className="text-sm text-settlers-brown">poeng</p>
-        </div>
+        <PlayerCard
+          player={stats.find(s => s.id === 'player2')}
+          isLeader={leader?.id === 'player2' && isLeading}
+        />
       </div>
 
-      {/* Detailed Stats */}
-      <div className="grid grid-cols-2 gap-4">
+      {/* Detailed Stats - Compact for mobile */}
+      <div className="grid grid-cols-2 gap-2">
         {stats.map((player) => (
-          <div key={player.id} className="bg-white/30 rounded-lg p-4">
-            <h4 className="font-bold text-settlers-dark-brown mb-3 flex items-center gap-2">
+          <div key={player.id} className="bg-white/40 rounded-lg p-3">
+            <div className="flex items-center gap-2 mb-2">
               <div
-                className="w-4 h-4 rounded-full"
+                className="w-3 h-3 rounded-full"
                 style={{ backgroundColor: player.color }}
               />
-              {player.name}
-            </h4>
+              <span className="font-bold text-settlers-dark-brown text-sm truncate">
+                {player.name}
+              </span>
+            </div>
 
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between items-center">
-                <span className="flex items-center gap-2 text-settlers-brown">
-                  <Target className="w-4 h-4" /> Kamper
-                </span>
-                <span className="font-bold text-settlers-dark-brown">
-                  {player.stats.matches}
-                </span>
-              </div>
+            <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs">
+              <StatRow label="Seiere" value={player.stats.wins} color="text-green-700" />
+              <StatRow label="Tap" value={player.stats.losses} color="text-red-700" />
+              <StatRow label="Uavgjort" value={player.stats.draws} color="text-gray-600" />
+              <StatRow
+                label="AI drept"
+                value={player.stats.aiKills}
+                color="text-purple-700"
+                icon={<Skull className="w-3 h-3" />}
+              />
+            </div>
 
-              <div className="flex justify-between items-center">
-                <span className="flex items-center gap-2 text-green-700">
-                  <TrendingUp className="w-4 h-4" /> Seiere
-                </span>
-                <span className="font-bold text-green-700">
-                  {player.stats.wins}
-                </span>
-              </div>
-
-              <div className="flex justify-between items-center">
-                <span className="flex items-center gap-2 text-red-700">
-                  <TrendingUp className="w-4 h-4 rotate-180" /> Tap
-                </span>
-                <span className="font-bold text-red-700">
-                  {player.stats.losses}
-                </span>
-              </div>
-
-              <div className="flex justify-between items-center">
-                <span className="flex items-center gap-2 text-gray-600">
-                  <Swords className="w-4 h-4" /> Uavgjort
-                </span>
-                <span className="font-bold text-gray-600">
-                  {player.stats.draws}
-                </span>
-              </div>
-
-              <div className="flex justify-between items-center">
-                <span className="flex items-center gap-2 text-purple-700">
-                  <Skull className="w-4 h-4" /> AI Drept
-                </span>
-                <span className="font-bold text-purple-700">
-                  {player.stats.aiKills} (+{(player.stats.aiKills * 0.5).toFixed(1)}p)
-                </span>
-              </div>
-
-              <div className="flex justify-between items-center">
-                <span className="flex items-center gap-2 text-settlers-brown">
-                  <Clock className="w-4 h-4" /> Spilletid
-                </span>
-                <span className="font-bold text-settlers-dark-brown">
-                  {formatDuration(player.stats.totalPlayTime)}
-                </span>
-              </div>
-
-              <div className="pt-2 border-t border-settlers-brown/20">
-                <div className="flex justify-between items-center">
-                  <span className="text-settlers-brown">Seiersrate</span>
-                  <span className="font-bold text-settlers-dark-brown">
-                    {player.stats.winRate}%
-                  </span>
-                </div>
-              </div>
+            <div className="mt-2 pt-2 border-t border-settlers-brown/20 flex justify-between items-center">
+              <span className="text-xs text-settlers-brown">Seiersrate</span>
+              <span className="font-bold text-settlers-dark-brown text-sm">
+                {player.stats.winRate}%
+              </span>
             </div>
           </div>
         ))}
       </div>
+    </div>
+  )
+}
+
+function PlayerCard({ player, isLeader }) {
+  if (!player) return null
+
+  return (
+    <div className={`
+      flex flex-col items-center p-3 rounded-xl flex-1 max-w-[140px]
+      ${isLeader ? 'bg-yellow-50 ring-2 ring-settlers-gold' : 'bg-white/30'}
+    `}>
+      {isLeader && (
+        <Crown className="w-5 h-5 text-settlers-gold mb-1" />
+      )}
+      <div
+        className={`
+          w-14 h-14 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-md
+          ${isLeader ? 'ring-4 ring-settlers-gold ring-offset-2' : ''}
+        `}
+        style={{ backgroundColor: player.color }}
+      >
+        {player.name?.charAt(0) || '?'}
+      </div>
+      <h3 className="font-bold text-settlers-dark-brown text-sm mt-2 truncate max-w-full">
+        {player.name}
+      </h3>
+      <p className="text-2xl font-bold text-settlers-gold">
+        {player.stats.points.toFixed(1)}
+      </p>
+      <p className="text-[10px] text-settlers-brown -mt-1">poeng</p>
+    </div>
+  )
+}
+
+function StatRow({ label, value, color, icon }) {
+  return (
+    <div className="flex justify-between items-center">
+      <span className={`${color} flex items-center gap-1`}>
+        {icon}
+        {label}
+      </span>
+      <span className={`font-bold ${color}`}>{value}</span>
     </div>
   )
 }
