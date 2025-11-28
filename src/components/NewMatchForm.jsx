@@ -1,6 +1,14 @@
 import React, { useState } from 'react'
-import { Swords, Clock, Trophy, Skull, FileText, Plus, X, ChevronLeft, Map } from 'lucide-react'
+import { Swords, Clock, Trophy, Skull, FileText, Plus, X, ChevronLeft, Map, Calendar } from 'lucide-react'
 import { MapSelector } from './MapSelector'
+
+// Helper to get current date/time in local format for input
+const getLocalDateTime = () => {
+  const now = new Date()
+  const offset = now.getTimezoneOffset()
+  const local = new Date(now.getTime() - offset * 60 * 1000)
+  return local.toISOString().slice(0, 16)
+}
 
 export function NewMatchForm({ players, maps, onSubmit, onCancel, onAddMap }) {
   const [form, setForm] = useState({
@@ -12,6 +20,7 @@ export function NewMatchForm({ players, maps, onSubmit, onCancel, onAddMap }) {
     notes: '',
     players: players.map(p => ({ playerId: p.id, aiEliminations: 0 })),
     battleReport: null,
+    matchDateTime: getLocalDateTime(), // Default to now
   })
   const [showBattleReport, setShowBattleReport] = useState(false)
 
@@ -31,11 +40,17 @@ export function NewMatchForm({ players, maps, onSubmit, onCancel, onAddMap }) {
     // Find map name to store with match
     const selectedMap = maps.find(m => m.id === form.mapId)
 
+    // Convert local datetime to ISO string
+    const matchDate = form.matchDateTime
+      ? new Date(form.matchDateTime).toISOString()
+      : new Date().toISOString()
+
     const matchData = {
       ...form,
       mapName: selectedMap?.name || '',
       duration: form.duration ? parseInt(form.duration) : null,
       winnerId: form.result === 'draw' ? null : form.winnerId,
+      date: matchDate,
     }
 
     onSubmit(matchData)
@@ -85,6 +100,19 @@ export function NewMatchForm({ players, maps, onSubmit, onCancel, onAddMap }) {
             selectedMapId={form.mapId}
             onSelect={(mapId) => setForm(prev => ({ ...prev, mapId }))}
             onAddMap={onAddMap}
+          />
+        </div>
+
+        {/* Date and Time */}
+        <div>
+          <label className="block text-settlers-dark-brown font-bold mb-2 text-sm flex items-center gap-2">
+            <Calendar className="w-4 h-4" /> Dato og tid
+          </label>
+          <input
+            type="datetime-local"
+            value={form.matchDateTime}
+            onChange={(e) => setForm(prev => ({ ...prev, matchDateTime: e.target.value }))}
+            className="input-settlers w-full text-base"
           />
         </div>
 

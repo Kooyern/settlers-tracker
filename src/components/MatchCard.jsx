@@ -25,7 +25,7 @@ export function MatchCard({ match, players, formatDuration, onDelete, onViewRepo
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2 text-settlers-brown text-sm">
             <Calendar className="w-4 h-4" />
-            <span>{format(matchDate, 'dd. MMMM yyyy', { locale: nb })}</span>
+            <span>{format(matchDate, 'dd. MMM yyyy, HH:mm', { locale: nb })}</span>
           </div>
           {getResultBadge()}
         </div>

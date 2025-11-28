@@ -81,6 +81,9 @@ export function BattleReportModal({ match, players, onClose, formatDuration }) {
                 <p className="font-bold text-settlers-dark-brown">
                   {format(matchDate, 'dd. MMM yyyy', { locale: nb })}
                 </p>
+                <p className="text-xs text-settlers-brown">
+                  kl. {format(matchDate, 'HH:mm', { locale: nb })}
+                </p>
               </div>
               <div>
                 <Map className="w-5 h-5 mx-auto text-settlers-brown mb-1" />
