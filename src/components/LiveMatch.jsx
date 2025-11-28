@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Play, Pause, Square, Skull, Trophy, Mountain, Trees, Gem, Shield, Clock, ChevronLeft, Users, Swords, X, Handshake } from 'lucide-react'
+import { Play, Pause, Square, Skull, Trophy, Mountain, Trees, Gem, Shield, Clock, ChevronLeft, Users, Swords, X, Handshake, Minus, Plus, AlertTriangle } from 'lucide-react'
 
 // AI colors matching Settlers game
 const AI_COLORS = [
@@ -13,11 +13,11 @@ const AI_COLORS = [
 
 // Event types players can log
 const EVENT_TYPES = [
-  { id: 'gold_found', icon: Gem, label: 'Fant gull', color: 'bg-yellow-100 text-yellow-700' },
-  { id: 'coal_found', icon: Mountain, label: 'Fant kull', color: 'bg-gray-100 text-gray-700' },
-  { id: 'iron_found', icon: Shield, label: 'Fant jern', color: 'bg-blue-100 text-blue-700' },
-  { id: 'expansion', icon: Trees, label: 'Ekspanderte', color: 'bg-green-100 text-green-700' },
-  { id: 'battle_won', icon: Swords, label: 'Vant slag', color: 'bg-red-100 text-red-700' },
+  { id: 'gold_found', icon: Gem, label: 'Fant gull', color: 'bg-yellow-100 text-yellow-700 border-yellow-300' },
+  { id: 'coal_found', icon: Mountain, label: 'Fant kull', color: 'bg-gray-200 text-gray-700 border-gray-400' },
+  { id: 'iron_found', icon: Shield, label: 'Fant jern', color: 'bg-blue-100 text-blue-700 border-blue-300' },
+  { id: 'expansion', icon: Trees, label: 'Ekspanderte', color: 'bg-green-100 text-green-700 border-green-300' },
+  { id: 'ai_attack', icon: AlertTriangle, label: 'AI angrep', color: 'bg-red-100 text-red-700 border-red-300' },
 ]
 
 export function LiveMatch({
@@ -33,6 +33,8 @@ export function LiveMatch({
   const [elapsedTime, setElapsedTime] = useState(0)
   const [isPaused, setIsPaused] = useState(false)
   const [showEndModal, setShowEndModal] = useState(false)
+  const [aiCount, setAiCount] = useState(6)
+  const [selectedAiColors, setSelectedAiColors] = useState(AI_COLORS.map(ai => ai.id))
 
   // Calculate elapsed time from match start
   useEffect(() => {
@@ -102,6 +104,37 @@ export function LiveMatch({
     })
   }
 
+  // Handle AI count change
+  const handleAiCountChange = (delta) => {
+    const newCount = Math.min(6, Math.max(1, aiCount + delta))
+    setAiCount(newCount)
+    // Keep the first N colors selected
+    setSelectedAiColors(AI_COLORS.slice(0, newCount).map(ai => ai.id))
+  }
+
+  // Toggle AI color selection
+  const toggleAiColor = (aiId) => {
+    if (selectedAiColors.includes(aiId)) {
+      if (selectedAiColors.length > 1) {
+        setSelectedAiColors(selectedAiColors.filter(id => id !== aiId))
+        setAiCount(selectedAiColors.length - 1)
+      }
+    } else {
+      if (selectedAiColors.length < 6) {
+        setSelectedAiColors([...selectedAiColors, aiId])
+        setAiCount(selectedAiColors.length + 1)
+      }
+    }
+  }
+
+  // Get active AIs for current match (either from config or activeMatch)
+  const getActiveAIs = () => {
+    if (activeMatch?.aiColors) {
+      return AI_COLORS.filter(ai => activeMatch.aiColors.includes(ai.id))
+    }
+    return AI_COLORS.filter(ai => selectedAiColors.includes(ai.id))
+  }
+
   // Start match screen
   if (!activeMatch) {
     return (
@@ -138,6 +171,66 @@ export function LiveMatch({
             </select>
           </div>
 
+          {/* AI Configuration */}
+          <div className="bg-white/50 rounded-lg p-4">
+            <h3 className="font-bold text-settlers-dark-brown mb-3 flex items-center gap-2">
+              <Skull className="w-4 h-4" /> AI-motstandere ({selectedAiColors.length})
+            </h3>
+
+            {/* AI Count Selector */}
+            <div className="flex items-center justify-center gap-4 mb-4">
+              <button
+                onClick={() => handleAiCountChange(-1)}
+                disabled={aiCount <= 1}
+                className="w-12 h-12 rounded-full bg-settlers-brown/10 hover:bg-settlers-brown/20 flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              >
+                <Minus className="w-5 h-5 text-settlers-dark-brown" />
+              </button>
+              <span className="text-3xl font-bold text-settlers-dark-brown w-12 text-center">
+                {selectedAiColors.length}
+              </span>
+              <button
+                onClick={() => handleAiCountChange(1)}
+                disabled={aiCount >= 6}
+                className="w-12 h-12 rounded-full bg-settlers-brown/10 hover:bg-settlers-brown/20 flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              >
+                <Plus className="w-5 h-5 text-settlers-dark-brown" />
+              </button>
+            </div>
+
+            {/* AI Color Grid */}
+            <div className="grid grid-cols-3 gap-2">
+              {AI_COLORS.map(ai => {
+                const isSelected = selectedAiColors.includes(ai.id)
+                return (
+                  <button
+                    key={ai.id}
+                    onClick={() => toggleAiColor(ai.id)}
+                    className={`
+                      p-3 rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-2
+                      ${isSelected
+                        ? 'ring-2 ring-offset-1 ring-settlers-dark-brown shadow-md'
+                        : 'opacity-40 hover:opacity-60'
+                      }
+                    `}
+                    style={{
+                      backgroundColor: ai.color + (isSelected ? '30' : '15'),
+                      color: ai.color,
+                      borderWidth: 2,
+                      borderColor: ai.color
+                    }}
+                  >
+                    <div
+                      className="w-4 h-4 rounded-full"
+                      style={{ backgroundColor: ai.color }}
+                    />
+                    {ai.name.replace(' AI', '')}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+
           <div className="bg-white/50 rounded-lg p-4">
             <h3 className="font-bold text-settlers-dark-brown mb-3 flex items-center gap-2">
               <Users className="w-4 h-4" /> Spillere
@@ -156,8 +249,8 @@ export function LiveMatch({
           </div>
 
           <button
-            onClick={() => onStartMatch(selectedMap)}
-            disabled={!selectedMap}
+            onClick={() => onStartMatch(selectedMap, selectedAiColors)}
+            disabled={!selectedMap || selectedAiColors.length === 0}
             className="btn-settlers w-full py-4 text-lg flex items-center justify-center gap-2 disabled:opacity-50"
           >
             <Play className="w-5 h-5" />
@@ -184,23 +277,23 @@ export function LiveMatch({
         </div>
 
         {/* Pause/End buttons */}
-        <div className="flex gap-2">
+        <div className="flex gap-3">
           <button
             onClick={() => setIsPaused(!isPaused)}
-            className={`flex-1 py-2 rounded-lg font-medium flex items-center justify-center gap-2 ${
+            className={`flex-1 py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all active:scale-95 ${
               isPaused
-                ? 'bg-green-100 text-green-700'
-                : 'bg-yellow-100 text-yellow-700'
+                ? 'bg-green-100 text-green-700 border-2 border-green-300'
+                : 'bg-yellow-100 text-yellow-700 border-2 border-yellow-300'
             }`}
           >
-            {isPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
+            {isPaused ? <Play className="w-5 h-5" /> : <Pause className="w-5 h-5" />}
             {isPaused ? 'Fortsett' : 'Pause'}
           </button>
           <button
             onClick={() => setShowEndModal(true)}
-            className="flex-1 py-2 rounded-lg bg-red-100 text-red-700 font-medium flex items-center justify-center gap-2"
+            className="flex-1 py-4 rounded-xl bg-red-100 text-red-700 border-2 border-red-300 font-bold text-lg flex items-center justify-center gap-2 transition-all active:scale-95"
           >
-            <Square className="w-4 h-4" />
+            <Square className="w-5 h-5" />
             Avslutt
           </button>
         </div>
@@ -291,8 +384,8 @@ export function LiveMatch({
             {/* AI Elimination buttons */}
             <div className="mb-4">
               <p className="text-xs text-settlers-brown mb-2 font-medium">Eliminer AI:</p>
-              <div className="grid grid-cols-3 gap-2">
-                {AI_COLORS.map(ai => {
+              <div className={`grid gap-2 ${getActiveAIs().length <= 3 ? 'grid-cols-3' : 'grid-cols-3'}`}>
+                {getActiveAIs().map(ai => {
                   const isEliminated = activeMatch?.events?.some(
                     e => e.type === 'ai_eliminated' && e.aiId === ai.id
                   )
@@ -306,7 +399,7 @@ export function LiveMatch({
                       onClick={() => handleAiElimination(player.id, ai.id)}
                       disabled={isEliminated}
                       className={`
-                        p-2 rounded-lg text-xs font-medium transition-all flex items-center justify-center gap-1
+                        p-3 rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-2
                         ${isEliminated
                           ? 'opacity-40 cursor-not-allowed bg-gray-200'
                           : 'active:scale-95 hover:opacity-80'
@@ -319,7 +412,7 @@ export function LiveMatch({
                         borderColor: ai.color
                       }}
                     >
-                      <Skull className="w-3 h-3" />
+                      <Skull className="w-4 h-4" />
                       {ai.name.replace(' AI', '')}
                       {isEliminated && eliminatedBy === player.id && ' ✓'}
                     </button>
@@ -328,21 +421,29 @@ export function LiveMatch({
               </div>
             </div>
 
-            {/* Quick event buttons */}
+            {/* Quick event buttons - larger for touch */}
             <div>
               <p className="text-xs text-settlers-brown mb-2 font-medium">Hendelser:</p>
-              <div className="flex flex-wrap gap-2">
-                {EVENT_TYPES.map(event => (
+              <div className="grid grid-cols-2 gap-2">
+                {EVENT_TYPES.slice(0, 4).map(event => (
                   <button
                     key={event.id}
                     onClick={() => handleEvent(player.id, event.id)}
-                    className={`${event.color} px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1 active:scale-95 transition-transform`}
+                    className={`${event.color} px-4 py-3 rounded-lg text-sm font-medium flex items-center justify-center gap-2 active:scale-95 transition-transform border`}
                   >
-                    <event.icon className="w-3 h-3" />
+                    <event.icon className="w-4 h-4" />
                     {event.label}
                   </button>
                 ))}
               </div>
+              {/* AI Attack button - full width for emphasis */}
+              <button
+                onClick={() => handleEvent(player.id, 'ai_attack')}
+                className="w-full mt-2 px-4 py-3 rounded-lg text-sm font-bold flex items-center justify-center gap-2 active:scale-95 transition-transform border bg-red-100 text-red-700 border-red-300"
+              >
+                <AlertTriangle className="w-5 h-5" />
+                AI angrep meg!
+              </button>
             </div>
           </div>
         )

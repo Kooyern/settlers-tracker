@@ -224,7 +224,7 @@ export function useFirestore() {
   }
 
   // Start a live match
-  const startLiveMatch = async (mapId) => {
+  const startLiveMatch = async (mapId, aiColors = ['green', 'yellow', 'red', 'purple', 'cyan', 'orange']) => {
     try {
       const matchData = {
         mapId,
@@ -233,6 +233,8 @@ export function useFirestore() {
         players: players.map(p => ({ playerId: p.id })),
         status: 'active',
         pausedDuration: 0,
+        aiColors, // Store which AI colors are active
+        aiCount: aiColors.length,
       }
       await setDoc(doc(db, 'liveMatch', 'current'), matchData)
       return matchData
@@ -281,6 +283,8 @@ export function useFirestore() {
         date: new Date().toISOString(),
         createdAt: activeMatch.startedAt,
         isLiveMatch: true,
+        aiColors: activeMatch.aiColors || [],
+        aiCount: activeMatch.aiCount || 6,
       }
 
       // Save to matches collection

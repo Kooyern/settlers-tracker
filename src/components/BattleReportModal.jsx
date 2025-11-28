@@ -1,8 +1,18 @@
 import React from 'react'
-import { X, FileText, Skull, Swords, Map, Calendar, Clock, Trophy } from 'lucide-react'
+import { X, FileText, Skull, Swords, Map, Calendar, Clock, Trophy, Gem, Mountain, Shield, Trees, AlertTriangle } from 'lucide-react'
 import { MAPS } from '../data/maps'
 import { format } from 'date-fns'
 import { nb } from 'date-fns/locale'
+
+// AI colors for reference
+const AI_COLORS = {
+  green: { name: 'Grønn AI', color: '#22c55e' },
+  yellow: { name: 'Gul AI', color: '#eab308' },
+  red: { name: 'Rød AI', color: '#ef4444' },
+  purple: { name: 'Lilla AI', color: '#a855f7' },
+  cyan: { name: 'Cyan AI', color: '#06b6d4' },
+  orange: { name: 'Oransje AI', color: '#f97316' },
+}
 
 export function BattleReportModal({ match, players, onClose, formatDuration }) {
   if (!match) return null
@@ -14,10 +24,32 @@ export function BattleReportModal({ match, players, onClose, formatDuration }) {
   const getEventIcon = (type) => {
     switch (type) {
       case 'ai_eliminated': return <Skull className="w-4 h-4 text-purple-500" />
+      case 'gold_found': return <Gem className="w-4 h-4 text-yellow-500" />
+      case 'coal_found': return <Mountain className="w-4 h-4 text-gray-500" />
+      case 'iron_found': return <Shield className="w-4 h-4 text-blue-500" />
+      case 'expansion': return <Trees className="w-4 h-4 text-green-500" />
+      case 'ai_attack': return <AlertTriangle className="w-4 h-4 text-red-500" />
       case 'major_battle': return <Swords className="w-4 h-4 text-red-500" />
-      case 'expansion': return <Map className="w-4 h-4 text-green-500" />
       default: return <FileText className="w-4 h-4 text-blue-500" />
     }
+  }
+
+  const getEventLabel = (type) => {
+    switch (type) {
+      case 'ai_eliminated': return 'Eliminerte AI'
+      case 'gold_found': return 'Fant gull'
+      case 'coal_found': return 'Fant kull'
+      case 'iron_found': return 'Fant jern'
+      case 'expansion': return 'Ekspanderte'
+      case 'ai_attack': return 'AI angrep'
+      default: return type
+    }
+  }
+
+  const formatMatchTime = (seconds) => {
+    const mins = Math.floor(seconds / 60)
+    const secs = seconds % 60
+    return `${mins}:${secs.toString().padStart(2, '0')}`
   }
 
   return (
@@ -117,26 +149,43 @@ export function BattleReportModal({ match, players, onClose, formatDuration }) {
                     </div>
                   )}
 
-                  {/* Events */}
-                  {report?.events?.length > 0 && (
+                  {/* Live Match Events */}
+                  {match.events?.filter(e => e.playerId === player.id).length > 0 && (
                     <div>
                       <h4 className="text-sm font-bold text-settlers-brown mb-2">Hendelser</h4>
-                      <div className="space-y-2">
-                        {report.events.map((event, eventIdx) => (
-                          <div
-                            key={eventIdx}
-                            className="flex items-center gap-2 text-sm bg-settlers-wheat/50 rounded p-2"
-                          >
-                            {getEventIcon(event.type)}
-                            <span className="text-settlers-dark-brown">{event.description}</span>
-                          </div>
-                        ))}
+                      <div className="space-y-2 max-h-32 overflow-y-auto">
+                        {match.events
+                          .filter(e => e.playerId === player.id)
+                          .sort((a, b) => a.matchTime - b.matchTime)
+                          .map((event, eventIdx) => (
+                            <div
+                              key={eventIdx}
+                              className="flex items-center gap-2 text-sm bg-settlers-wheat/50 rounded p-2"
+                            >
+                              <span className="text-xs text-settlers-brown/60 font-mono w-10">
+                                {formatMatchTime(event.matchTime)}
+                              </span>
+                              {getEventIcon(event.type)}
+                              <span className="text-settlers-dark-brown">
+                                {event.type === 'ai_eliminated' && AI_COLORS[event.aiId]
+                                  ? `Eliminerte ${AI_COLORS[event.aiId].name}`
+                                  : getEventLabel(event.type)
+                                }
+                              </span>
+                              {event.aiId && AI_COLORS[event.aiId] && (
+                                <div
+                                  className="w-3 h-3 rounded-full ml-auto"
+                                  style={{ backgroundColor: AI_COLORS[event.aiId].color }}
+                                />
+                              )}
+                            </div>
+                          ))}
                       </div>
                     </div>
                   )}
 
                   {/* No report data */}
-                  {!playerData?.aiEliminations && !report?.events?.length && (
+                  {!playerData?.aiEliminations && !match.events?.filter(e => e.playerId === player.id).length && (
                     <p className="text-sm text-settlers-brown/60 italic">
                       Ingen detaljert rapport for denne spilleren.
                     </p>

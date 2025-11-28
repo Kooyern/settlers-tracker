@@ -157,7 +157,7 @@ export function MatchCard({ match, players, formatDuration, onDelete, onViewRepo
 
           {/* Actions */}
           <div className="flex gap-2 justify-end">
-            {match.battleReport && (
+            {(match.battleReport || match.isLiveMatch || match.events?.length > 0) && (
               <button
                 onClick={() => onViewReport(match)}
                 className="btn-settlers-secondary text-xs flex items-center gap-1"

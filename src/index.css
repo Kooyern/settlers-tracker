@@ -230,3 +230,52 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: 50%;
   font-size: 1.2rem;
 }
+
+/* Touch-friendly improvements */
+@media (hover: none) and (pointer: coarse) {
+  /* Larger touch targets on mobile */
+  button {
+    min-height: 44px;
+  }
+
+  /* Remove hover effects on touch devices */
+  .btn-settlers:hover {
+    transform: none;
+  }
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Better tap highlighting */
+button, a {
+  -webkit-tap-highlight-color: rgba(212, 168, 75, 0.3);
+}
+
+/* Prevent text selection on buttons */
+button {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Safe area insets for notched phones */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .pb-safe {
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+  }
+}
+
+/* Loading skeleton animation */
+@keyframes skeleton {
+  0% { opacity: 0.6; }
+  50% { opacity: 0.8; }
+  100% { opacity: 0.6; }
+}
+
+.skeleton {
+  animation: skeleton 1.5s ease-in-out infinite;
+  background: linear-gradient(90deg, #E8D4B0 25%, #F5E6C8 50%, #E8D4B0 75%);
+  background-size: 200% 100%;
+}

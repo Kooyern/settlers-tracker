@@ -84,9 +84,9 @@ function App() {
   }
 
   // Live match handlers
-  const handleStartLiveMatch = async (mapId) => {
+  const handleStartLiveMatch = async (mapId, aiColors) => {
     try {
-      await startLiveMatch(mapId)
+      await startLiveMatch(mapId, aiColors)
       setCurrentView('live-match')
     } catch (err) {
       alert('Kunne ikke starte kampen. Prøv igjen.')
@@ -216,7 +216,7 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-settlers-dark via-[#1a0f09] to-settlers-dark-brown pb-20">
+    <div className="min-h-screen bg-gradient-to-br from-settlers-dark via-[#1a0f09] to-settlers-dark-brown pb-20 pb-safe">
       <Header currentView={currentView} onViewChange={setCurrentView} />
 
       <main className="container mx-auto px-3 py-4 max-w-lg">
