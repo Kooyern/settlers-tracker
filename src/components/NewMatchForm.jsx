@@ -2,6 +2,16 @@ import React, { useState } from 'react'
 import { Swords, Clock, Trophy, Skull, FileText, Plus, X, ChevronLeft, Map, Calendar } from 'lucide-react'
 import { MapSelector } from './MapSelector'
 
+// AI colors matching Settlers game
+const AI_COLORS = [
+  { id: 'green', name: 'Grønn', color: '#22c55e' },
+  { id: 'yellow', name: 'Gul', color: '#eab308' },
+  { id: 'red', name: 'Rød', color: '#ef4444' },
+  { id: 'purple', name: 'Lilla', color: '#a855f7' },
+  { id: 'cyan', name: 'Cyan', color: '#06b6d4' },
+  { id: 'orange', name: 'Oransje', color: '#f97316' },
+]
+
 // Helper to get current date/time in local format for input
 const getLocalDateTime = () => {
   const now = new Date()
@@ -21,6 +31,7 @@ export function NewMatchForm({ players, maps, onSubmit, onCancel, onAddMap }) {
     players: players.map(p => ({ playerId: p.id, aiEliminations: 0 })),
     battleReport: null,
     matchDateTime: getLocalDateTime(), // Default to now
+    aiColors: AI_COLORS.map(ai => ai.id), // All AIs selected by default
   })
   const [showBattleReport, setShowBattleReport] = useState(false)
 
@@ -51,6 +62,8 @@ export function NewMatchForm({ players, maps, onSubmit, onCancel, onAddMap }) {
       duration: form.duration ? parseInt(form.duration) : null,
       winnerId: form.result === 'draw' ? null : form.winnerId,
       date: matchDate,
+      aiColors: form.aiColors,
+      aiCount: form.aiColors.length,
     }
 
     onSubmit(matchData)
@@ -69,6 +82,23 @@ export function NewMatchForm({ players, maps, onSubmit, onCancel, onAddMap }) {
 
   const getPlayerAiKills = (playerId) => {
     return form.players.find(p => p.playerId === playerId)?.aiEliminations || 0
+  }
+
+  // Toggle AI color selection
+  const toggleAiColor = (aiId) => {
+    setForm(prev => {
+      const isSelected = prev.aiColors.includes(aiId)
+      if (isSelected) {
+        // Remove - but keep at least 1
+        if (prev.aiColors.length > 1) {
+          return { ...prev, aiColors: prev.aiColors.filter(id => id !== aiId) }
+        }
+        return prev
+      } else {
+        // Add
+        return { ...prev, aiColors: [...prev.aiColors, aiId] }
+      }
+    })
   }
 
   return (
@@ -114,6 +144,44 @@ export function NewMatchForm({ players, maps, onSubmit, onCancel, onAddMap }) {
             onChange={(e) => setForm(prev => ({ ...prev, matchDateTime: e.target.value }))}
             className="input-settlers w-full text-base"
           />
+        </div>
+
+        {/* AI Selection */}
+        <div>
+          <label className="block text-settlers-dark-brown font-bold mb-2 text-sm flex items-center gap-2">
+            <Skull className="w-4 h-4" /> AI-motstandere ({form.aiColors.length})
+          </label>
+          <div className="grid grid-cols-3 gap-2">
+            {AI_COLORS.map(ai => {
+              const isSelected = form.aiColors.includes(ai.id)
+              return (
+                <button
+                  key={ai.id}
+                  type="button"
+                  onClick={() => toggleAiColor(ai.id)}
+                  className={`
+                    p-3 rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-2
+                    ${isSelected
+                      ? 'ring-2 ring-offset-1 ring-settlers-dark-brown shadow-md'
+                      : 'opacity-40'
+                    }
+                  `}
+                  style={{
+                    backgroundColor: ai.color + (isSelected ? '30' : '15'),
+                    color: ai.color,
+                    borderWidth: 2,
+                    borderColor: ai.color
+                  }}
+                >
+                  <div
+                    className="w-4 h-4 rounded-full"
+                    style={{ backgroundColor: ai.color }}
+                  />
+                  {ai.name}
+                </button>
+              )
+            })}
+          </div>
         </div>
 
         {/* Duration */}
