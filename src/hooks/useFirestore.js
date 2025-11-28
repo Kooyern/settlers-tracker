@@ -134,7 +134,7 @@ export function useFirestore() {
     try {
       const newMatch = {
         ...matchData,
-        date: new Date().toISOString(),
+        date: matchData.date || new Date().toISOString(), // Use provided date or default to now
         createdAt: new Date().toISOString(),
       }
       const docRef = await addDoc(collection(db, 'matches'), newMatch)
