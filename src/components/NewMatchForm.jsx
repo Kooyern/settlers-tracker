@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Swords, Clock, Trophy, Skull, FileText, Plus, X, ChevronLeft, Map, Calendar } from 'lucide-react'
+import { Swords, Clock, Trophy, Skull, FileText, Plus, X, ChevronLeft, Map, Calendar, AlertTriangle } from 'lucide-react'
 import { MapSelector } from './MapSelector'
 
 // AI colors matching Settlers game
@@ -28,7 +28,7 @@ export function NewMatchForm({ players, maps, onSubmit, onCancel, onAddMap }) {
     winnerId: '',
     result: 'win',
     notes: '',
-    players: players.map(p => ({ playerId: p.id, aiEliminations: 0 })),
+    players: players.map(p => ({ playerId: p.id, aiEliminations: 0, aiDeaths: 0 })),
     battleReport: null,
     matchDateTime: getLocalDateTime(), // Default to now
     aiColors: AI_COLORS.map(ai => ai.id), // All AIs selected by default
@@ -82,6 +82,21 @@ export function NewMatchForm({ players, maps, onSubmit, onCancel, onAddMap }) {
 
   const getPlayerAiKills = (playerId) => {
     return form.players.find(p => p.playerId === playerId)?.aiEliminations || 0
+  }
+
+  const updatePlayerAiDeaths = (playerId, delta) => {
+    setForm(prev => ({
+      ...prev,
+      players: prev.players.map(p =>
+        p.playerId === playerId
+          ? { ...p, aiDeaths: Math.max(0, Math.min(1, (p.aiDeaths || 0) + delta)) }
+          : p
+      )
+    }))
+  }
+
+  const getPlayerAiDeaths = (playerId) => {
+    return form.players.find(p => p.playerId === playerId)?.aiDeaths || 0
   }
 
   // Toggle AI color selection
@@ -307,6 +322,40 @@ export function NewMatchForm({ players, maps, onSubmit, onCancel, onAddMap }) {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+
+        {/* AI Deaths (eliminated by AI) */}
+        <div>
+          <label className="block text-settlers-dark-brown font-bold mb-2 text-sm flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4 text-red-600" /> Slått av AI
+            <span className="text-xs font-normal text-settlers-brown">(-1p)</span>
+          </label>
+          <div className="grid grid-cols-2 gap-3">
+            {players.map((player) => {
+              const hasDied = getPlayerAiDeaths(player.id) > 0
+              return (
+                <button
+                  key={player.id}
+                  type="button"
+                  onClick={() => updatePlayerAiDeaths(player.id, hasDied ? -1 : 1)}
+                  className={`
+                    p-3 rounded-xl border-2 transition-all flex items-center justify-center gap-2
+                    ${hasDied
+                      ? 'bg-red-100 border-red-400 text-red-700'
+                      : 'bg-white/50 border-settlers-brown/20 text-settlers-brown'
+                    }
+                  `}
+                >
+                  <span
+                    className="w-3 h-3 rounded-full"
+                    style={{ backgroundColor: player.color }}
+                  />
+                  <span className="font-medium">{player.name}</span>
+                  {hasDied && <Skull className="w-4 h-4" />}
+                </button>
+              )
+            })}
           </div>
         </div>
 

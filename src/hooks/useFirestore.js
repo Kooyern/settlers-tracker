@@ -262,12 +262,15 @@ export function useFirestore() {
   const endLiveMatch = async (elapsedSeconds, winnerId, result = 'win') => {
     if (!activeMatch) return
     try {
-      // Count AI eliminations per player
+      // Count AI eliminations and AI deaths per player
       const playerStats = players.map(p => {
         const aiKills = (activeMatch.events || []).filter(
           e => e.type === 'ai_eliminated' && e.playerId === p.id
         ).length
-        return { playerId: p.id, aiEliminations: aiKills }
+        const aiDeaths = (activeMatch.events || []).filter(
+          e => e.type === 'ai_attack' && e.playerId === p.id
+        ).length > 0 ? 1 : 0 // Max 1 AI death per match
+        return { playerId: p.id, aiEliminations: aiKills, aiDeaths }
       })
 
       // Create match record
@@ -312,6 +315,7 @@ export function useFirestore() {
 
   // Calculate stats for a player
   const getPlayerStats = (playerId) => {
+    const opponentId = playerId === 'player1' ? 'player2' : 'player1'
     const playerMatches = matches.filter(m =>
       m.players?.some(p => p.playerId === playerId)
     )
@@ -320,10 +324,13 @@ export function useFirestore() {
     let losses = 0
     let draws = 0
     let aiKills = 0
+    let aiDeaths = 0
+    let validAiKills = 0 // AI kills that count for points
     let totalPlayTime = 0
 
     playerMatches.forEach(match => {
       const playerData = match.players?.find(p => p.playerId === playerId)
+      const opponentData = match.players?.find(p => p.playerId === opponentId)
 
       if (match.result === 'draw') {
         draws++
@@ -333,8 +340,33 @@ export function useFirestore() {
         losses++
       }
 
-      if (playerData?.aiEliminations) {
-        aiKills += playerData.aiEliminations
+      // Count AI deaths
+      const playerAiDeaths = playerData?.aiDeaths || 0
+      aiDeaths += playerAiDeaths
+
+      // Count total AI kills
+      const playerAiKills = playerData?.aiEliminations || 0
+      aiKills += playerAiKills
+
+      // For live matches with events, calculate valid AI kills
+      if (match.events?.length > 0) {
+        const opponentEliminatedByAi = match.events.find(
+          e => e.type === 'ai_attack' && e.playerId === opponentId
+        )
+
+        const playerAiEliminations = match.events.filter(
+          e => e.type === 'ai_eliminated' && e.playerId === playerId
+        )
+
+        playerAiEliminations.forEach(elimination => {
+          // AI kill counts only if opponent wasn't eliminated by AI before this kill
+          if (!opponentEliminatedByAi || elimination.timestamp < opponentEliminatedByAi.timestamp) {
+            validAiKills++
+          }
+        })
+      } else {
+        // For manual matches, all AI kills count
+        validAiKills += playerAiKills
       }
 
       if (match.duration) {
@@ -342,7 +374,8 @@ export function useFirestore() {
       }
     })
 
-    const points = wins + (draws * 0.5) + (aiKills * 0.5)
+    // Points: Win=1, Draw=0.5, Valid AI Kill=0.5, AI Death=-1
+    const points = wins + (draws * 0.5) + (validAiKills * 0.5) - aiDeaths
 
     return {
       matches: playerMatches.length,
@@ -350,6 +383,8 @@ export function useFirestore() {
       losses,
       draws,
       aiKills,
+      aiDeaths,
+      validAiKills,
       points,
       totalPlayTime,
       winRate: playerMatches.length > 0

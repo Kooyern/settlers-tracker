@@ -42,6 +42,7 @@ export function useGameData() {
 
   // Calculate stats for a player
   const getPlayerStats = (playerId) => {
+    const opponentId = playerId === 'player1' ? 'player2' : 'player1'
     const playerMatches = matches.filter(m =>
       m.players?.some(p => p.playerId === playerId)
     )
@@ -50,10 +51,13 @@ export function useGameData() {
     let losses = 0
     let draws = 0
     let aiKills = 0
+    let aiDeaths = 0
+    let validAiKills = 0 // AI kills that count for points (before opponent was eliminated by AI)
     let totalPlayTime = 0
 
     playerMatches.forEach(match => {
       const playerData = match.players?.find(p => p.playerId === playerId)
+      const opponentData = match.players?.find(p => p.playerId === opponentId)
 
       if (match.result === 'draw') {
         draws++
@@ -63,9 +67,39 @@ export function useGameData() {
         losses++
       }
 
-      // Count AI kills from battle report
-      if (playerData?.aiEliminations) {
-        aiKills += playerData.aiEliminations
+      // Check for AI deaths (being eliminated by AI)
+      const playerAiDeaths = playerData?.aiDeaths || 0
+      aiDeaths += playerAiDeaths
+
+      // Count AI kills from manual match registration
+      const playerAiKills = playerData?.aiEliminations || 0
+      aiKills += playerAiKills
+
+      // For live matches with events, calculate valid AI kills
+      if (match.events?.length > 0) {
+        // Find when each player got eliminated by AI (if at all)
+        const playerEliminatedByAi = match.events.find(
+          e => e.type === 'ai_attack' && e.playerId === playerId
+        )
+        const opponentEliminatedByAi = match.events.find(
+          e => e.type === 'ai_attack' && e.playerId === opponentId
+        )
+
+        // Count AI eliminations by this player
+        const playerAiEliminations = match.events.filter(
+          e => e.type === 'ai_eliminated' && e.playerId === playerId
+        )
+
+        playerAiEliminations.forEach(elimination => {
+          // AI kill counts only if opponent wasn't eliminated by AI before this kill
+          if (!opponentEliminatedByAi || elimination.timestamp < opponentEliminatedByAi.timestamp) {
+            validAiKills++
+          }
+        })
+      } else {
+        // For manual matches without events, all AI kills count
+        // unless the player has AI deaths (then opponent's AI kills might not count)
+        validAiKills += playerAiKills
       }
 
       // Add play time
@@ -74,8 +108,9 @@ export function useGameData() {
       }
     })
 
-    // Calculate points: Win = 1, Draw = 0.5, AI Kill = 0.5
-    const points = wins + (draws * 0.5) + (aiKills * 0.5)
+    // Calculate points:
+    // Win = 1, Draw = 0.5, Valid AI Kill = 0.5, AI Death = -1
+    const points = wins + (draws * 0.5) + (validAiKills * 0.5) - aiDeaths
 
     return {
       matches: playerMatches.length,
@@ -83,6 +118,8 @@ export function useGameData() {
       losses,
       draws,
       aiKills,
+      aiDeaths,
+      validAiKills,
       points,
       totalPlayTime,
       winRate: playerMatches.length > 0

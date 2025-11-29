@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Calendar, Clock, Map, Trophy, Skull, ChevronDown, ChevronUp, Trash2, Eye } from 'lucide-react'
+import { Calendar, Clock, Map, Trophy, Skull, ChevronDown, ChevronUp, Trash2, Eye, AlertTriangle } from 'lucide-react'
 import { format } from 'date-fns'
 import { nb } from 'date-fns/locale'
 
@@ -138,6 +138,32 @@ export function MatchCard({ match, players, formatDuration, onDelete, onViewRepo
                     <p className="text-xs text-settlers-brown">
                       (+{((playerData.aiEliminations || 0) * 0.5).toFixed(1)} poeng)
                     </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* AI Deaths */}
+          {(match.players?.[0]?.aiDeaths > 0 || match.players?.[1]?.aiDeaths > 0) && (
+            <div className="mb-4">
+              <h4 className="font-bold text-settlers-dark-brown mb-2 flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 text-red-600" /> Slått av AI
+              </h4>
+              <div className="grid grid-cols-2 gap-2">
+                {match.players?.map((playerData, idx) => (
+                  <div key={idx} className={`rounded p-2 text-center ${playerData.aiDeaths > 0 ? 'bg-red-100' : 'bg-white/50'}`}>
+                    <p className="text-sm text-settlers-brown">
+                      {players[idx]?.name || `Spiller ${idx + 1}`}
+                    </p>
+                    <p className={`text-xl font-bold ${playerData.aiDeaths > 0 ? 'text-red-600' : 'text-gray-400'}`}>
+                      {playerData.aiDeaths > 0 ? 'Ja' : 'Nei'}
+                    </p>
+                    {playerData.aiDeaths > 0 && (
+                      <p className="text-xs text-red-600">
+                        (-1 poeng)
+                      </p>
+                    )}
                   </div>
                 ))}
               </div>

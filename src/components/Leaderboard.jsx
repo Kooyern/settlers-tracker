@@ -1,5 +1,5 @@
 import React from 'react'
-import { Crown, Swords, Trophy, Skull } from 'lucide-react'
+import { Crown, Swords, Trophy, Skull, AlertTriangle } from 'lucide-react'
 
 export function Leaderboard({ players, getPlayerStats, formatDuration }) {
   const stats = players.map(player => ({
@@ -42,7 +42,9 @@ export function Leaderboard({ players, getPlayerStats, formatDuration }) {
 
       {/* Detailed Stats - Compact for mobile */}
       <div className="grid grid-cols-2 gap-2">
-        {stats.map((player) => (
+        {players.map((p) => {
+          const player = stats.find(s => s.id === p.id)
+          return (
           <div key={player.id} className="bg-white/40 rounded-lg p-3">
             <div className="flex items-center gap-2 mb-2">
               <div
@@ -64,6 +66,14 @@ export function Leaderboard({ players, getPlayerStats, formatDuration }) {
                 color="text-purple-700"
                 icon={<Skull className="w-3 h-3" />}
               />
+              {player.stats.aiDeaths > 0 && (
+                <StatRow
+                  label="Slått av AI"
+                  value={player.stats.aiDeaths}
+                  color="text-red-600"
+                  icon={<AlertTriangle className="w-3 h-3" />}
+                />
+              )}
             </div>
 
             <div className="mt-2 pt-2 border-t border-settlers-brown/20 flex justify-between items-center">
@@ -73,7 +83,8 @@ export function Leaderboard({ players, getPlayerStats, formatDuration }) {
               </span>
             </div>
           </div>
-        ))}
+          )
+        })}
       </div>
     </div>
   )
