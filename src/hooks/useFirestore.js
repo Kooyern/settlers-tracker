@@ -231,7 +231,7 @@ export function useFirestore() {
   }
 
   // Start a live match
-  const startLiveMatch = async (mapId, aiColors = ['green', 'yellow', 'red', 'purple', 'cyan', 'orange']) => {
+  const startLiveMatch = async (mapId, aiColors = ['white', 'black', 'yellow', 'red']) => {
     try {
       const matchData = {
         mapId,

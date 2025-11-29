@@ -3,14 +3,12 @@ import { X, FileText, Skull, Swords, Map, Calendar, Clock, Trophy, Gem, Mountain
 import { format } from 'date-fns'
 import { nb } from 'date-fns/locale'
 
-// AI colors for reference
+// Settlers AI colors (max 4 AIs when 2 human players)
 const AI_COLORS = {
-  green: { name: 'Grønn AI', color: '#22c55e' },
+  white: { name: 'Hvit AI', color: '#e5e5e5' },
+  black: { name: 'Svart AI', color: '#374151' },
   yellow: { name: 'Gul AI', color: '#eab308' },
   red: { name: 'Rød AI', color: '#ef4444' },
-  purple: { name: 'Lilla AI', color: '#a855f7' },
-  cyan: { name: 'Cyan AI', color: '#06b6d4' },
-  orange: { name: 'Oransje AI', color: '#f97316' },
 }
 
 export function BattleReportModal({ match, players, onClose, formatDuration }) {

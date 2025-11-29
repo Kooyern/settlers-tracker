@@ -2,14 +2,12 @@ import React, { useState } from 'react'
 import { Swords, Clock, Trophy, Skull, FileText, Plus, X, ChevronLeft, Map, Calendar, AlertTriangle } from 'lucide-react'
 import { MapSelector } from './MapSelector'
 
-// AI colors matching Settlers game
+// Settlers AI colors (max 4 AIs when 2 human players)
 const AI_COLORS = [
-  { id: 'green', name: 'Grønn', color: '#22c55e' },
+  { id: 'white', name: 'Hvit', color: '#e5e5e5' },
+  { id: 'black', name: 'Svart', color: '#374151' },
   { id: 'yellow', name: 'Gul', color: '#eab308' },
   { id: 'red', name: 'Rød', color: '#ef4444' },
-  { id: 'purple', name: 'Lilla', color: '#a855f7' },
-  { id: 'cyan', name: 'Cyan', color: '#06b6d4' },
-  { id: 'orange', name: 'Oransje', color: '#f97316' },
 ]
 
 // Helper to get current date/time in local format for input

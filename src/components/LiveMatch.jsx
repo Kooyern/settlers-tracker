@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import { Play, Pause, Square, Skull, Trophy, Mountain, Trees, Gem, Shield, Clock, ChevronLeft, Users, Swords, X, Handshake, Minus, Plus, AlertTriangle } from 'lucide-react'
 
-// AI colors matching Settlers game
+// Settlers AI colors (max 4 AIs when 2 human players)
 const AI_COLORS = [
-  { id: 'green', name: 'Grønn AI', color: '#22c55e' },
+  { id: 'white', name: 'Hvit AI', color: '#e5e5e5' },
+  { id: 'black', name: 'Svart AI', color: '#374151' },
   { id: 'yellow', name: 'Gul AI', color: '#eab308' },
   { id: 'red', name: 'Rød AI', color: '#ef4444' },
-  { id: 'purple', name: 'Lilla AI', color: '#a855f7' },
-  { id: 'cyan', name: 'Cyan AI', color: '#06b6d4' },
-  { id: 'orange', name: 'Oransje AI', color: '#f97316' },
 ]
 
 // Event types players can log
@@ -33,7 +31,7 @@ export function LiveMatch({
   const [elapsedTime, setElapsedTime] = useState(0)
   const [isPaused, setIsPaused] = useState(false)
   const [showEndModal, setShowEndModal] = useState(false)
-  const [aiCount, setAiCount] = useState(6)
+  const [aiCount, setAiCount] = useState(4)
   const [selectedAiColors, setSelectedAiColors] = useState(AI_COLORS.map(ai => ai.id))
 
   // Calculate elapsed time from match start
@@ -106,7 +104,7 @@ export function LiveMatch({
 
   // Handle AI count change
   const handleAiCountChange = (delta) => {
-    const newCount = Math.min(6, Math.max(1, aiCount + delta))
+    const newCount = Math.min(4, Math.max(1, aiCount + delta))
     setAiCount(newCount)
     // Keep the first N colors selected
     setSelectedAiColors(AI_COLORS.slice(0, newCount).map(ai => ai.id))
@@ -120,7 +118,7 @@ export function LiveMatch({
         setAiCount(selectedAiColors.length - 1)
       }
     } else {
-      if (selectedAiColors.length < 6) {
+      if (selectedAiColors.length < 4) {
         setSelectedAiColors([...selectedAiColors, aiId])
         setAiCount(selectedAiColors.length + 1)
       }
@@ -191,7 +189,7 @@ export function LiveMatch({
               </span>
               <button
                 onClick={() => handleAiCountChange(1)}
-                disabled={aiCount >= 6}
+                disabled={aiCount >= 4}
                 className="w-12 h-12 rounded-full bg-settlers-brown/10 hover:bg-settlers-brown/20 flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
               >
                 <Plus className="w-5 h-5 text-settlers-dark-brown" />
