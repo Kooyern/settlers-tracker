@@ -18,6 +18,12 @@ const DEFAULT_PLAYERS = [
   { id: 'player2', name: 'Espen', color: '#DC143C' },
 ]
 
+// Historical points from before the app (played with notepad)
+const HISTORICAL_POINTS = {
+  player1: 37.5, // Stian
+  player2: 37,   // Espen
+}
+
 // Some starter maps
 const DEFAULT_MAPS = [
   { id: 'default-1', name: 'Tutorial Island', category: 'Standard' },
@@ -375,7 +381,9 @@ export function useFirestore() {
     })
 
     // Points: Win=1, Draw=0.5, Valid AI Kill=0.5, AI Death=-1
-    const points = wins + (draws * 0.5) + (validAiKills * 0.5) - aiDeaths
+    // Add historical points from before the app
+    const historicalPoints = HISTORICAL_POINTS[playerId] || 0
+    const points = historicalPoints + wins + (draws * 0.5) + (validAiKills * 0.5) - aiDeaths
 
     return {
       matches: playerMatches.length,
