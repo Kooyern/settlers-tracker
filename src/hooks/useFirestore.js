@@ -19,9 +19,10 @@ const DEFAULT_PLAYERS = [
 ]
 
 // Historical points from before the app (played with notepad)
+// Adjusted so that total with app matches = 37.5 for Stian, 37 for Espen
 const HISTORICAL_POINTS = {
-  player1: 37.5, // Stian
-  player2: 37,   // Espen
+  player1: 36,   // Stian
+  player2: 35,   // Espen
 }
 
 // Some starter maps
