@@ -11,12 +11,10 @@ export function MapSelector({ maps, selectedMapId, onSelect, onAddMap }) {
 
   const selectedMap = maps.find(m => m.id === selectedMapId)
 
-  // Filter maps by search
   const filteredMaps = maps.filter(map =>
     map.name.toLowerCase().includes(search.toLowerCase())
   )
 
-  // Group by category
   const groupedMaps = filteredMaps.reduce((acc, map) => {
     const cat = map.category || 'Annet'
     if (!acc[cat]) acc[cat] = []
@@ -24,7 +22,6 @@ export function MapSelector({ maps, selectedMapId, onSelect, onAddMap }) {
     return acc
   }, {})
 
-  // Close on outside click
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (containerRef.current && !containerRef.current.contains(e.target)) {
@@ -36,7 +33,6 @@ export function MapSelector({ maps, selectedMapId, onSelect, onAddMap }) {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  // Focus search when opening
   useEffect(() => {
     if (isOpen && inputRef.current) {
       inputRef.current.focus()
@@ -67,24 +63,22 @@ export function MapSelector({ maps, selectedMapId, onSelect, onAddMap }) {
 
   return (
     <div ref={containerRef} className="relative">
-      {/* Selected value / trigger button */}
+      {/* Trigger button */}
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className={`
-          w-full p-3 rounded-lg border-2 text-left flex items-center gap-2 transition-all
+        className={`w-full p-3 rounded-xl text-left flex items-center gap-2 transition-all border
           ${isOpen
-            ? 'border-settlers-gold bg-yellow-50'
-            : 'border-settlers-brown/30 bg-white/80'
-          }
-        `}
+            ? 'border-settlers-gold bg-settlers-gold/10'
+            : 'border-settlers-border bg-settlers-dark'
+          }`}
       >
-        <Map className="w-5 h-5 text-settlers-brown" />
-        <span className={`flex-1 ${selectedMap ? 'text-settlers-dark-brown font-medium' : 'text-settlers-brown/60'}`}>
+        <Map className="w-5 h-5 text-settlers-muted" />
+        <span className={`flex-1 ${selectedMap ? 'text-settlers-text font-medium' : 'text-settlers-muted'}`}>
           {selectedMap?.name || 'Velg kart...'}
         </span>
-        {selectedMap && (
-          <span className="text-xs text-settlers-brown bg-settlers-wheat px-2 py-0.5 rounded">
+        {selectedMap?.category && (
+          <span className="text-xs text-settlers-muted bg-settlers-border px-2 py-0.5 rounded">
             {selectedMap.category}
           </span>
         )}
@@ -92,24 +86,24 @@ export function MapSelector({ maps, selectedMapId, onSelect, onAddMap }) {
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-white rounded-xl shadow-xl border-2 border-settlers-brown/20 max-h-[60vh] overflow-hidden flex flex-col">
-          {/* Search input */}
-          <div className="p-2 border-b border-settlers-brown/10">
+        <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-settlers-card rounded-xl border border-settlers-border shadow-xl max-h-[60vh] overflow-hidden flex flex-col">
+          {/* Search */}
+          <div className="p-2 border-b border-settlers-border">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-settlers-brown/50" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-settlers-muted" />
               <input
                 ref={inputRef}
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Søk etter kart..."
-                className="w-full pl-9 pr-8 py-2 rounded-lg border border-settlers-brown/20 text-base focus:outline-none focus:border-settlers-gold"
+                className="input w-full pl-9 pr-8 py-2 text-sm"
               />
               {search && (
                 <button
                   type="button"
                   onClick={() => setSearch('')}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-settlers-brown/50"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-settlers-muted"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -120,7 +114,7 @@ export function MapSelector({ maps, selectedMapId, onSelect, onAddMap }) {
           {/* Maps list */}
           <div className="overflow-y-auto flex-1 p-2">
             {Object.keys(groupedMaps).length === 0 ? (
-              <div className="text-center py-4 text-settlers-brown/60">
+              <div className="text-center py-4 text-settlers-muted">
                 <p>Ingen kart funnet</p>
                 {search && (
                   <button
@@ -129,7 +123,7 @@ export function MapSelector({ maps, selectedMapId, onSelect, onAddMap }) {
                       setNewMapName(search)
                       setShowAddNew(true)
                     }}
-                    className="mt-2 text-settlers-gold underline text-sm"
+                    className="mt-2 text-settlers-gold text-sm"
                   >
                     Legg til "{search}" som nytt kart?
                   </button>
@@ -138,7 +132,7 @@ export function MapSelector({ maps, selectedMapId, onSelect, onAddMap }) {
             ) : (
               Object.entries(groupedMaps).map(([category, categoryMaps]) => (
                 <div key={category} className="mb-3">
-                  <h4 className="text-xs font-bold text-settlers-brown/60 uppercase px-2 mb-1">
+                  <h4 className="text-xs font-medium text-settlers-muted uppercase px-2 mb-1">
                     {category} ({categoryMaps.length})
                   </h4>
                   <div className="space-y-1">
@@ -147,13 +141,11 @@ export function MapSelector({ maps, selectedMapId, onSelect, onAddMap }) {
                         key={map.id}
                         type="button"
                         onClick={() => handleSelect(map.id)}
-                        className={`
-                          w-full p-2 rounded-lg text-left flex items-center gap-2 transition-all
+                        className={`w-full p-2 rounded-lg text-left flex items-center gap-2 transition-all
                           ${selectedMapId === map.id
-                            ? 'bg-settlers-gold/20 text-settlers-dark-brown'
-                            : 'hover:bg-settlers-wheat/50 text-settlers-brown'
-                          }
-                        `}
+                            ? 'bg-settlers-gold/20 text-settlers-text'
+                            : 'hover:bg-settlers-dark text-settlers-muted'
+                          }`}
                       >
                         {selectedMapId === map.id && <Check className="w-4 h-4 text-settlers-gold" />}
                         <span className="flex-1 truncate">{map.name}</span>
@@ -166,7 +158,7 @@ export function MapSelector({ maps, selectedMapId, onSelect, onAddMap }) {
           </div>
 
           {/* Add new map */}
-          <div className="border-t border-settlers-brown/10 p-2">
+          <div className="border-t border-settlers-border p-2">
             {showAddNew ? (
               <div className="flex gap-2">
                 <input
@@ -174,21 +166,21 @@ export function MapSelector({ maps, selectedMapId, onSelect, onAddMap }) {
                   value={newMapName}
                   onChange={(e) => setNewMapName(e.target.value)}
                   placeholder="Kartnavn..."
-                  className="flex-1 px-3 py-2 rounded-lg border border-settlers-brown/20 text-base"
+                  className="input flex-1 px-3 py-2 text-sm"
                   autoFocus
                   onKeyDown={(e) => e.key === 'Enter' && handleAddNew()}
                 />
                 <button
                   type="button"
                   onClick={handleAddNew}
-                  className="px-3 py-2 bg-settlers-gold text-settlers-dark rounded-lg font-medium"
+                  className="px-3 py-2 bg-settlers-gold text-settlers-dark rounded-lg font-medium text-sm"
                 >
                   Legg til
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowAddNew(false)}
-                  className="px-3 py-2 text-settlers-brown"
+                  className="px-3 py-2 text-settlers-muted"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -197,10 +189,9 @@ export function MapSelector({ maps, selectedMapId, onSelect, onAddMap }) {
               <button
                 type="button"
                 onClick={() => setShowAddNew(true)}
-                className="w-full p-2 text-settlers-brown/70 hover:text-settlers-brown flex items-center justify-center gap-2 text-sm"
+                className="w-full p-2 text-settlers-muted hover:text-settlers-text flex items-center justify-center gap-2 text-sm"
               >
-                <Plus className="w-4 h-4" />
-                Legg til nytt kart
+                <Plus className="w-4 h-4" /> Legg til nytt kart
               </button>
             )}
           </div>

@@ -116,10 +116,10 @@ function App() {
   // Loading state
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-settlers-dark via-[#1a0f09] to-settlers-dark-brown flex items-center justify-center">
+      <div className="min-h-screen bg-settlers-dark flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 text-settlers-gold animate-spin mx-auto mb-4" />
-          <p className="text-settlers-wheat text-lg">Laster inn slagmarken...</p>
+          <Loader2 className="w-10 h-10 text-settlers-gold animate-spin mx-auto mb-4" />
+          <p className="text-settlers-muted">Laster inn...</p>
         </div>
       </div>
     )
@@ -128,13 +128,13 @@ function App() {
   // Error state
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-settlers-dark via-[#1a0f09] to-settlers-dark-brown flex items-center justify-center p-4">
-        <div className="parchment rounded-xl p-6 max-w-md text-center">
-          <h2 className="text-xl font-bold text-red-700 mb-2">Tilkoblingsfeil</h2>
-          <p className="text-settlers-brown mb-4">{error}</p>
+      <div className="min-h-screen bg-settlers-dark flex items-center justify-center p-4">
+        <div className="card p-6 max-w-md text-center">
+          <h2 className="text-lg font-semibold text-red-400 mb-2">Tilkoblingsfeil</h2>
+          <p className="text-settlers-muted mb-4">{error}</p>
           <button
             onClick={() => window.location.reload()}
-            className="btn-settlers"
+            className="btn-primary"
           >
             Prøv igjen
           </button>
@@ -216,10 +216,10 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-settlers-dark via-[#1a0f09] to-settlers-dark-brown pb-24 pb-safe">
+    <div className="min-h-screen bg-settlers-dark pb-24 pb-safe">
       <Header currentView={currentView} onViewChange={setCurrentView} hasActiveMatch={!!activeMatch} />
 
-      <main className="container mx-auto px-3 py-4 max-w-lg">
+      <main className="container mx-auto px-4 py-4 max-w-lg">
         {renderContent()}
       </main>
 
@@ -233,7 +233,6 @@ function App() {
           formatDuration={formatDuration}
         />
       )}
-
     </div>
   )
 }

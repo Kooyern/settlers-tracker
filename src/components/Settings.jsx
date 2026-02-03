@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Settings as SettingsIcon, User, Palette, Download, Save, Cloud, Map, Plus, Trash2, Upload, Check, ChevronDown, ChevronUp } from 'lucide-react'
+import { Settings as SettingsIcon, User, Download, Cloud, Map, Plus, Trash2, Upload, Check, ChevronDown, ChevronUp } from 'lucide-react'
 
 const PLAYER_COLORS = [
   '#1E90FF', '#DC143C', '#228B22', '#FFD700',
@@ -93,7 +93,7 @@ export function Settings({ players, updatePlayer, matches, maps, addMap, addMaps
     return acc
   }, {})
 
-  // Calculate total play time formatted
+  // Total play time
   const totalMinutes = matches.reduce((acc, m) => acc + (m.duration || 0), 0)
   const hours = Math.floor(totalMinutes / 60)
   const mins = totalMinutes % 60
@@ -101,15 +101,13 @@ export function Settings({ players, updatePlayer, matches, maps, addMap, addMaps
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div className="rounded-2xl bg-gradient-to-br from-[#2a1a10] to-[#1f1209] border border-settlers-gold/20 p-4">
+      <div className="card p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <SettingsIcon className="w-5 h-5 text-settlers-gold" />
-            <h2 className="text-lg font-bold text-settlers-wheat font-medieval">
-              Innstillinger
-            </h2>
+            <h2 className="font-semibold text-settlers-text">Innstillinger</h2>
           </div>
-          <div className="flex items-center gap-1.5 text-xs text-green-400 bg-green-500/10 px-2.5 py-1 rounded-full border border-green-500/20">
+          <div className="flex items-center gap-1.5 text-xs text-green-400 bg-green-500/10 px-2.5 py-1 rounded-full">
             <Cloud className="w-3 h-3" />
             <span>Synkronisert</span>
           </div>
@@ -117,39 +115,39 @@ export function Settings({ players, updatePlayer, matches, maps, addMap, addMaps
       </div>
 
       {/* Quick Stats */}
-      <div className="rounded-2xl bg-gradient-to-br from-[#2a1a10] to-[#1f1209] border border-settlers-gold/20 p-4">
+      <div className="card p-4">
         <div className="grid grid-cols-3 gap-3">
-          <div className="bg-black/20 rounded-xl p-3 text-center">
+          <div className="bg-settlers-dark rounded-xl p-3 text-center">
             <p className="text-2xl font-bold text-settlers-gold">{matches.length}</p>
-            <p className="text-[10px] text-settlers-wheat/50 uppercase tracking-wider">Kamper</p>
+            <p className="text-xs text-settlers-muted">Kamper</p>
           </div>
-          <div className="bg-black/20 rounded-xl p-3 text-center">
+          <div className="bg-settlers-dark rounded-xl p-3 text-center">
             <p className="text-2xl font-bold text-settlers-gold">{maps.length}</p>
-            <p className="text-[10px] text-settlers-wheat/50 uppercase tracking-wider">Kart</p>
+            <p className="text-xs text-settlers-muted">Kart</p>
           </div>
-          <div className="bg-black/20 rounded-xl p-3 text-center">
+          <div className="bg-settlers-dark rounded-xl p-3 text-center">
             <p className="text-2xl font-bold text-settlers-gold">
               {hours > 0 ? `${hours}t` : ''}{mins}m
             </p>
-            <p className="text-[10px] text-settlers-wheat/50 uppercase tracking-wider">Spilletid</p>
+            <p className="text-xs text-settlers-muted">Spilletid</p>
           </div>
         </div>
       </div>
 
       {/* Player Settings */}
-      <div className="rounded-2xl bg-gradient-to-br from-[#2a1a10] to-[#1f1209] border border-settlers-gold/20 overflow-hidden">
-        <div className="px-4 py-3 border-b border-settlers-gold/10 bg-settlers-gold/5">
-          <h3 className="font-bold text-settlers-wheat text-sm flex items-center gap-2">
+      <div className="card overflow-hidden">
+        <div className="px-4 py-3 border-b border-settlers-border">
+          <h3 className="font-medium text-settlers-text flex items-center gap-2">
             <User className="w-4 h-4 text-settlers-gold" /> Spillere
           </h3>
         </div>
 
         <div className="p-4 space-y-3">
           {players.map((player) => (
-            <div key={player.id} className="bg-black/20 rounded-xl p-3">
+            <div key={player.id} className="bg-settlers-dark rounded-xl p-3">
               <div className="flex items-center gap-3">
                 <div
-                  className="w-12 h-12 rounded-full shadow-lg flex items-center justify-center text-white font-bold text-lg"
+                  className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg"
                   style={{ backgroundColor: player.color }}
                 >
                   {player.name?.charAt(0) || '?'}
@@ -161,7 +159,7 @@ export function Settings({ players, updatePlayer, matches, maps, addMap, addMaps
                         type="text"
                         value={tempName}
                         onChange={(e) => setTempName(e.target.value)}
-                        className="input-settlers flex-1 py-2 text-sm"
+                        className="input flex-1 py-2 text-sm"
                         autoFocus
                         onKeyDown={(e) => e.key === 'Enter' && savePlayerName()}
                       />
@@ -174,10 +172,10 @@ export function Settings({ players, updatePlayer, matches, maps, addMap, addMaps
                     </div>
                   ) : (
                     <div className="flex items-center justify-between">
-                      <span className="font-bold text-settlers-wheat">{player.name}</span>
+                      <span className="font-medium text-settlers-text">{player.name}</span>
                       <button
                         onClick={() => startEditing(player)}
-                        className="text-settlers-gold/70 text-xs hover:text-settlers-gold"
+                        className="text-settlers-gold text-xs hover:underline"
                       >
                         Endre navn
                       </button>
@@ -194,8 +192,8 @@ export function Settings({ players, updatePlayer, matches, maps, addMap, addMaps
                     className={`
                       w-7 h-7 rounded-full transition-all
                       ${player.color === color
-                        ? 'ring-2 ring-settlers-gold ring-offset-2 ring-offset-[#1f1209] scale-110'
-                        : 'hover:scale-105 opacity-70 hover:opacity-100'
+                        ? 'ring-2 ring-settlers-gold ring-offset-2 ring-offset-settlers-dark scale-110'
+                        : 'opacity-60 hover:opacity-100'
                       }
                     `}
                     style={{ backgroundColor: color }}
@@ -208,11 +206,11 @@ export function Settings({ players, updatePlayer, matches, maps, addMap, addMaps
       </div>
 
       {/* Map Management */}
-      <div className="rounded-2xl bg-gradient-to-br from-[#2a1a10] to-[#1f1209] border border-settlers-gold/20 overflow-hidden">
-        <div className="px-4 py-3 border-b border-settlers-gold/10 bg-settlers-gold/5">
-          <h3 className="font-bold text-settlers-wheat text-sm flex items-center gap-2">
+      <div className="card overflow-hidden">
+        <div className="px-4 py-3 border-b border-settlers-border">
+          <h3 className="font-medium text-settlers-text flex items-center gap-2">
             <Map className="w-4 h-4 text-settlers-gold" /> Kart
-            <span className="text-settlers-wheat/40 font-normal">({maps.length})</span>
+            <span className="text-settlers-muted font-normal">({maps.length})</span>
           </h3>
         </div>
 
@@ -224,7 +222,7 @@ export function Settings({ players, updatePlayer, matches, maps, addMap, addMaps
               value={newMapName}
               onChange={(e) => setNewMapName(e.target.value)}
               placeholder="Legg til nytt kart..."
-              className="input-settlers flex-1 py-2.5 text-sm"
+              className="input flex-1 py-2.5 text-sm"
               onKeyDown={(e) => e.key === 'Enter' && handleAddMap()}
             />
             <button
@@ -239,23 +237,23 @@ export function Settings({ players, updatePlayer, matches, maps, addMap, addMaps
           {/* Bulk add toggle */}
           <button
             onClick={() => setShowBulkAdd(!showBulkAdd)}
-            className="w-full py-2.5 text-sm text-settlers-wheat/60 bg-black/20 hover:bg-black/30 rounded-xl flex items-center justify-center gap-2 transition-colors"
+            className="w-full py-2.5 text-sm text-settlers-muted bg-settlers-dark hover:bg-settlers-border/50 rounded-xl flex items-center justify-center gap-2 transition-colors"
           >
             <Upload className="w-4 h-4" />
-            {showBulkAdd ? 'Skjul bulk-import' : 'Importer mange kart'}
+            {showBulkAdd ? 'Skjul import' : 'Importer mange kart'}
           </button>
 
           {/* Bulk add form */}
           {showBulkAdd && (
-            <div className="bg-black/30 rounded-xl p-3 space-y-3">
-              <p className="text-xs text-settlers-wheat/50">
+            <div className="bg-settlers-dark rounded-xl p-3 space-y-3">
+              <p className="text-xs text-settlers-muted">
                 Lim inn kartnavn (ett per linje):
               </p>
               <textarea
                 value={bulkMaps}
                 onChange={(e) => setBulkMaps(e.target.value)}
-                placeholder="Mountain Pass&#10;River Delta&#10;Forest Grove&#10;..."
-                className="input-settlers w-full h-28 text-sm resize-none"
+                placeholder="Mountain Pass&#10;River Delta&#10;Forest Grove"
+                className="input w-full h-28 text-sm resize-none"
               />
               <div className="flex gap-2 items-center">
                 <input
@@ -263,11 +261,11 @@ export function Settings({ players, updatePlayer, matches, maps, addMap, addMaps
                   value={mapCategory}
                   onChange={(e) => setMapCategory(e.target.value)}
                   placeholder="Kategori"
-                  className="input-settlers flex-1 py-2 text-sm"
+                  className="input flex-1 py-2 text-sm"
                 />
                 <button
                   onClick={handleBulkAdd}
-                  className="bg-settlers-gold text-settlers-dark px-4 py-2 rounded-lg font-bold text-sm"
+                  className="btn-primary py-2 text-sm"
                 >
                   Legg til
                 </button>
@@ -275,20 +273,20 @@ export function Settings({ players, updatePlayer, matches, maps, addMap, addMaps
             </div>
           )}
 
-          {/* Map list by category */}
+          {/* Map list */}
           <div className={`space-y-3 ${showAllMaps ? '' : 'max-h-48'} overflow-y-auto scrollbar-hide`}>
             {Object.entries(groupedMaps).map(([category, categoryMaps]) => (
               <div key={category}>
-                <h4 className="text-[10px] font-bold text-settlers-wheat/40 uppercase tracking-wider mb-1.5 sticky top-0 bg-[#1f1209] py-1">
+                <h4 className="text-xs font-medium text-settlers-muted uppercase tracking-wide mb-1.5 sticky top-0 bg-settlers-card py-1">
                   {category} ({categoryMaps.length})
                 </h4>
                 <div className="space-y-1">
                   {(showAllMaps ? categoryMaps : categoryMaps.slice(0, 5)).map(map => (
                     <div
                       key={map.id}
-                      className="flex items-center justify-between bg-black/20 hover:bg-black/30 rounded-lg px-3 py-2 text-sm group transition-colors"
+                      className="flex items-center justify-between bg-settlers-dark hover:bg-settlers-border/50 rounded-lg px-3 py-2 text-sm group transition-colors"
                     >
-                      <span className="text-settlers-wheat/70 truncate">{map.name}</span>
+                      <span className="text-settlers-text truncate">{map.name}</span>
                       <button
                         onClick={() => handleDeleteMap(map.id, map.name)}
                         className="text-red-400/50 hover:text-red-400 p-1 opacity-0 group-hover:opacity-100 transition-opacity"
@@ -298,7 +296,7 @@ export function Settings({ players, updatePlayer, matches, maps, addMap, addMaps
                     </div>
                   ))}
                   {!showAllMaps && categoryMaps.length > 5 && (
-                    <p className="text-xs text-settlers-wheat/30 text-center py-1">
+                    <p className="text-xs text-settlers-muted text-center py-1">
                       +{categoryMaps.length - 5} flere
                     </p>
                   )}
@@ -310,7 +308,7 @@ export function Settings({ players, updatePlayer, matches, maps, addMap, addMaps
           {maps.length > 10 && (
             <button
               onClick={() => setShowAllMaps(!showAllMaps)}
-              className="w-full py-2 text-xs text-settlers-gold/70 hover:text-settlers-gold flex items-center justify-center gap-1"
+              className="w-full py-2 text-xs text-settlers-gold hover:underline flex items-center justify-center gap-1"
             >
               {showAllMaps ? (
                 <>
@@ -327,19 +325,19 @@ export function Settings({ players, updatePlayer, matches, maps, addMap, addMaps
       </div>
 
       {/* Export */}
-      <div className="rounded-2xl bg-gradient-to-br from-[#2a1a10] to-[#1f1209] border border-settlers-gold/20 overflow-hidden">
-        <div className="px-4 py-3 border-b border-settlers-gold/10 bg-settlers-gold/5">
-          <h3 className="font-bold text-settlers-wheat text-sm flex items-center gap-2">
+      <div className="card overflow-hidden">
+        <div className="px-4 py-3 border-b border-settlers-border">
+          <h3 className="font-medium text-settlers-text flex items-center gap-2">
             <Download className="w-4 h-4 text-settlers-gold" /> Eksporter data
           </h3>
         </div>
         <div className="p-4">
-          <p className="text-sm text-settlers-wheat/50 mb-3">
+          <p className="text-sm text-settlers-muted mb-3">
             Last ned en backup av alle dine data som JSON-fil.
           </p>
           <button
             onClick={onExport}
-            className="btn-settlers w-full py-3 flex items-center justify-center gap-2"
+            className="btn-primary w-full py-3 flex items-center justify-center gap-2"
           >
             <Download className="w-4 h-4" /> Last ned backup
           </button>

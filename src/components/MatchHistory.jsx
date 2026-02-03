@@ -1,8 +1,8 @@
 import React, { useState, useMemo } from 'react'
-import { ScrollText, Filter, Calendar, Map, Search, X, ChevronDown, Trophy, SlidersHorizontal } from 'lucide-react'
+import { ScrollText, Search, X, SlidersHorizontal } from 'lucide-react'
 import { MatchCard } from './MatchCard'
 
-export function MatchHistory({ matches, players, maps, formatDuration, onDeleteMatch, onViewReport }) {
+export function MatchHistory({ matches, players, formatDuration, onDeleteMatch, onViewReport }) {
   const [filters, setFilters] = useState({
     mapId: '',
     winnerId: '',
@@ -37,11 +37,9 @@ export function MatchHistory({ matches, players, maps, formatDuration, onDeleteM
 
   const activeFilterCount = [filters.mapId, filters.winnerId, filters.searchTerm].filter(Boolean).length
 
-  const clearFilters = () => {
-    setFilters({ mapId: '', winnerId: '', searchTerm: '' })
-  }
+  const clearFilters = () => setFilters({ mapId: '', winnerId: '', searchTerm: '' })
 
-  // Stats for header
+  // Stats
   const player1Wins = matches.filter(m => m.winnerId === 'player1').length
   const player2Wins = matches.filter(m => m.winnerId === 'player2').length
   const draws = matches.filter(m => m.result === 'draw').length
@@ -49,57 +47,55 @@ export function MatchHistory({ matches, players, maps, formatDuration, onDeleteM
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div className="rounded-2xl bg-gradient-to-br from-[#2a1a10] to-[#1f1209] border border-settlers-gold/20 overflow-hidden">
+      <div className="card overflow-hidden">
         <div className="p-4">
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <ScrollText className="w-5 h-5 text-settlers-gold" />
-              <h2 className="text-lg font-bold text-settlers-wheat font-medieval">
-                Kampkrønike
-              </h2>
+              <h2 className="font-semibold text-settlers-text">Kamphistorikk</h2>
             </div>
-            <span className="text-xs text-settlers-wheat/40 bg-black/20 px-2 py-1 rounded-full">
+            <span className="text-xs text-settlers-muted bg-settlers-dark px-2 py-1 rounded-full">
               {matches.length} kamper
             </span>
           </div>
 
           {/* Quick stats */}
           <div className="grid grid-cols-3 gap-2 mb-4">
-            <div className="bg-black/20 rounded-lg p-2 text-center">
-              <div className="flex items-center justify-center gap-1 mb-0.5">
+            <div className="bg-settlers-dark rounded-lg p-2 text-center">
+              <div className="flex items-center justify-center gap-1.5 mb-0.5">
                 <div className="w-2 h-2 rounded-full" style={{ backgroundColor: players[0]?.color }} />
-                <span className="text-xs text-settlers-wheat/50">{players[0]?.name}</span>
+                <span className="text-xs text-settlers-muted">{players[0]?.name}</span>
               </div>
               <span className="text-lg font-bold text-green-400">{player1Wins}</span>
             </div>
-            <div className="bg-black/20 rounded-lg p-2 text-center">
-              <span className="text-xs text-settlers-wheat/50 block mb-0.5">Uavgjort</span>
-              <span className="text-lg font-bold text-gray-400">{draws}</span>
+            <div className="bg-settlers-dark rounded-lg p-2 text-center">
+              <span className="text-xs text-settlers-muted block mb-0.5">Uavgjort</span>
+              <span className="text-lg font-bold text-settlers-muted">{draws}</span>
             </div>
-            <div className="bg-black/20 rounded-lg p-2 text-center">
-              <div className="flex items-center justify-center gap-1 mb-0.5">
+            <div className="bg-settlers-dark rounded-lg p-2 text-center">
+              <div className="flex items-center justify-center gap-1.5 mb-0.5">
                 <div className="w-2 h-2 rounded-full" style={{ backgroundColor: players[1]?.color }} />
-                <span className="text-xs text-settlers-wheat/50">{players[1]?.name}</span>
+                <span className="text-xs text-settlers-muted">{players[1]?.name}</span>
               </div>
               <span className="text-lg font-bold text-green-400">{player2Wins}</span>
             </div>
           </div>
 
-          {/* Search bar */}
+          {/* Search */}
           <div className="flex gap-2">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-settlers-wheat/30" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-settlers-muted" />
               <input
                 type="text"
                 placeholder="Søk i notater eller kart..."
                 value={filters.searchTerm}
                 onChange={(e) => setFilters(prev => ({ ...prev, searchTerm: e.target.value }))}
-                className="input-settlers w-full pl-10 py-2.5 text-sm"
+                className="input pl-10 py-2.5 text-sm"
               />
               {filters.searchTerm && (
                 <button
                   onClick={() => setFilters(prev => ({ ...prev, searchTerm: '' }))}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-settlers-wheat/40 hover:text-settlers-wheat"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-settlers-muted hover:text-settlers-text"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -108,10 +104,10 @@ export function MatchHistory({ matches, players, maps, formatDuration, onDeleteM
             <button
               onClick={() => setShowFilters(!showFilters)}
               className={`
-                px-3 py-2 rounded-xl flex items-center gap-2 transition-all
+                px-3 py-2 rounded-xl flex items-center gap-2 transition-colors border
                 ${showFilters || activeFilterCount > 0
-                  ? 'bg-settlers-gold/20 text-settlers-gold border border-settlers-gold/30'
-                  : 'bg-black/20 text-settlers-wheat/50 border border-transparent hover:bg-black/30'
+                  ? 'bg-settlers-gold/10 text-settlers-gold border-settlers-gold/30'
+                  : 'bg-settlers-dark text-settlers-muted border-settlers-border hover:bg-settlers-border/50'
                 }
               `}
             >
@@ -125,16 +121,15 @@ export function MatchHistory({ matches, players, maps, formatDuration, onDeleteM
           </div>
         </div>
 
-        {/* Expanded filters */}
+        {/* Filters */}
         {showFilters && (
-          <div className="px-4 pb-4 pt-2 border-t border-settlers-gold/10 space-y-3">
-            {/* Map filter */}
+          <div className="px-4 pb-4 pt-2 border-t border-settlers-border space-y-3">
             <div>
-              <label className="text-xs text-settlers-wheat/50 block mb-1.5">Kart</label>
+              <label className="text-xs text-settlers-muted block mb-1.5">Kart</label>
               <select
                 value={filters.mapId}
                 onChange={(e) => setFilters(prev => ({ ...prev, mapId: e.target.value }))}
-                className="select-settlers w-full py-2.5 text-sm"
+                className="select w-full py-2.5 text-sm"
               >
                 <option value="">Alle kart</option>
                 {usedMaps.map(map => (
@@ -143,13 +138,12 @@ export function MatchHistory({ matches, players, maps, formatDuration, onDeleteM
               </select>
             </div>
 
-            {/* Winner filter */}
             <div>
-              <label className="text-xs text-settlers-wheat/50 block mb-1.5">Vinner</label>
+              <label className="text-xs text-settlers-muted block mb-1.5">Vinner</label>
               <select
                 value={filters.winnerId}
                 onChange={(e) => setFilters(prev => ({ ...prev, winnerId: e.target.value }))}
-                className="select-settlers w-full py-2.5 text-sm"
+                className="select w-full py-2.5 text-sm"
               >
                 <option value="">Alle resultater</option>
                 {players.map(player => (
@@ -158,40 +152,34 @@ export function MatchHistory({ matches, players, maps, formatDuration, onDeleteM
               </select>
             </div>
 
-            {/* Clear filters button */}
             {activeFilterCount > 0 && (
               <button
                 onClick={clearFilters}
                 className="text-sm text-settlers-gold hover:text-settlers-gold/80 flex items-center gap-1"
               >
-                <X className="w-3.5 h-3.5" />
-                Fjern alle filtre
+                <X className="w-4 h-4" /> Fjern alle filtre
               </button>
             )}
           </div>
         )}
       </div>
 
-      {/* Results count when filtered */}
+      {/* Results count */}
       {activeFilterCount > 0 && (
-        <div className="flex items-center justify-between px-1">
-          <span className="text-xs text-settlers-wheat/40">
-            Viser {filteredMatches.length} av {matches.length} kamper
-          </span>
-        </div>
+        <p className="text-xs text-settlers-muted px-1">
+          Viser {filteredMatches.length} av {matches.length} kamper
+        </p>
       )}
 
       {/* Match list */}
       <div className="space-y-3">
         {filteredMatches.length === 0 ? (
-          <div className="rounded-2xl bg-gradient-to-br from-[#2a1a10] to-[#1f1209] border border-settlers-gold/10 p-8 text-center">
-            <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-settlers-gold/10 flex items-center justify-center">
-              <Search className="w-6 h-6 text-settlers-gold/30" />
+          <div className="card p-8 text-center">
+            <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-settlers-border flex items-center justify-center">
+              <Search className="w-6 h-6 text-settlers-muted" />
             </div>
-            <p className="text-settlers-wheat/50">
-              {matches.length === 0
-                ? 'Ingen kamper registrert ennå.'
-                : 'Ingen kamper matcher søket ditt.'}
+            <p className="text-settlers-muted">
+              {matches.length === 0 ? 'Ingen kamper ennå.' : 'Ingen kamper matcher søket.'}
             </p>
             {activeFilterCount > 0 && (
               <button
