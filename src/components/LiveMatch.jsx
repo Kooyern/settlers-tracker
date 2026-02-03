@@ -1,32 +1,22 @@
 import React, { useState, useEffect } from 'react'
 import { Play, Pause, Square, Skull, Trophy, Mountain, Trees, Gem, Shield, Clock, ChevronLeft, Users, X, Handshake, Minus, Plus, AlertTriangle } from 'lucide-react'
 
-// Settlers AI colors
 const AI_COLORS = [
   { id: 'white', name: 'Hvit AI', color: '#e5e5e5' },
-  { id: 'black', name: 'Svart AI', color: '#374151' },
+  { id: 'black', name: 'Svart AI', color: '#525252' },
   { id: 'yellow', name: 'Gul AI', color: '#eab308' },
   { id: 'red', name: 'Rød AI', color: '#ef4444' },
 ]
 
-// Event types
 const EVENT_TYPES = [
-  { id: 'gold_found', icon: Gem, label: 'Fant gull', color: 'bg-yellow-500/20 text-yellow-400' },
-  { id: 'coal_found', icon: Mountain, label: 'Fant kull', color: 'bg-gray-500/20 text-gray-400' },
-  { id: 'iron_found', icon: Shield, label: 'Fant jern', color: 'bg-blue-500/20 text-blue-400' },
-  { id: 'expansion', icon: Trees, label: 'Ekspanderte', color: 'bg-green-500/20 text-green-400' },
-  { id: 'ai_attack', icon: AlertTriangle, label: 'AI angrep', color: 'bg-red-500/20 text-red-400' },
+  { id: 'gold_found', icon: Gem, label: 'Fant gull', color: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' },
+  { id: 'coal_found', icon: Mountain, label: 'Fant kull', color: 'bg-zinc-500/20 text-zinc-400 border-zinc-500/30' },
+  { id: 'iron_found', icon: Shield, label: 'Fant jern', color: 'bg-blue-500/20 text-blue-400 border-blue-500/30' },
+  { id: 'expansion', icon: Trees, label: 'Ekspanderte', color: 'bg-green-500/20 text-green-400 border-green-500/30' },
+  { id: 'ai_attack', icon: AlertTriangle, label: 'AI angrep', color: 'bg-red-500/20 text-red-400 border-red-500/30' },
 ]
 
-export function LiveMatch({
-  players,
-  maps,
-  activeMatch,
-  onStartMatch,
-  onEndMatch,
-  onLogEvent,
-  onCancel
-}) {
+export function LiveMatch({ players, maps, activeMatch, onStartMatch, onEndMatch, onLogEvent, onCancel }) {
   const [selectedMap, setSelectedMap] = useState('')
   const [elapsedTime, setElapsedTime] = useState(0)
   const [isPaused, setIsPaused] = useState(false)
@@ -122,26 +112,22 @@ export function LiveMatch({
     return AI_COLORS.filter(ai => selectedAiColors.includes(ai.id))
   }
 
-  // Start match screen
   if (!activeMatch) {
     return (
       <div className="card p-4">
         <div className="flex items-center gap-3 mb-6">
-          <button
-            onClick={onCancel}
-            className="p-2 -ml-2 text-settlers-muted hover:text-settlers-text"
-          >
+          <button onClick={onCancel} className="p-2 -ml-2 text-text-muted hover:text-text-primary">
             <ChevronLeft className="w-6 h-6" />
           </button>
           <div className="flex items-center gap-2 flex-1">
-            <Play className="w-5 h-5 text-settlers-gold" />
-            <h2 className="text-lg font-semibold text-settlers-text">Start Live Kamp</h2>
+            <Play className="w-5 h-5 text-accent" />
+            <h2 className="text-lg font-semibold text-text-primary">Start Live Kamp</h2>
           </div>
         </div>
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-settlers-muted mb-2">Velg kart</label>
+            <label className="block text-sm font-medium text-text-muted mb-2">Velg kart</label>
             <select
               value={selectedMap}
               onChange={(e) => setSelectedMap(e.target.value)}
@@ -154,29 +140,28 @@ export function LiveMatch({
             </select>
           </div>
 
-          {/* AI Configuration */}
-          <div className="bg-settlers-dark rounded-xl p-4">
-            <h3 className="font-medium text-settlers-text mb-3 flex items-center gap-2">
-              <Skull className="w-4 h-4 text-settlers-gold" /> AI-motstandere ({selectedAiColors.length})
+          <div className="bg-bg-elevated rounded-xl p-4 border border-border">
+            <h3 className="font-medium text-text-primary mb-3 flex items-center gap-2">
+              <Skull className="w-4 h-4 text-accent" /> AI-motstandere ({selectedAiColors.length})
             </h3>
 
             <div className="flex items-center justify-center gap-4 mb-4">
               <button
                 onClick={() => handleAiCountChange(-1)}
                 disabled={aiCount <= 1}
-                className="w-10 h-10 rounded-full bg-settlers-border hover:bg-settlers-border/80 flex items-center justify-center disabled:opacity-30"
+                className="w-10 h-10 rounded-full bg-bg-card hover:bg-bg-card/80 border border-border flex items-center justify-center disabled:opacity-30"
               >
-                <Minus className="w-5 h-5 text-settlers-text" />
+                <Minus className="w-5 h-5 text-text-primary" />
               </button>
-              <span className="text-3xl font-bold text-settlers-text w-10 text-center">
+              <span className="text-3xl font-bold text-text-primary w-10 text-center number-display">
                 {selectedAiColors.length}
               </span>
               <button
                 onClick={() => handleAiCountChange(1)}
                 disabled={aiCount >= 4}
-                className="w-10 h-10 rounded-full bg-settlers-border hover:bg-settlers-border/80 flex items-center justify-center disabled:opacity-30"
+                className="w-10 h-10 rounded-full bg-bg-card hover:bg-bg-card/80 border border-border flex items-center justify-center disabled:opacity-30"
               >
-                <Plus className="w-5 h-5 text-settlers-text" />
+                <Plus className="w-5 h-5 text-text-primary" />
               </button>
             </div>
 
@@ -187,15 +172,15 @@ export function LiveMatch({
                   <button
                     key={ai.id}
                     onClick={() => toggleAiColor(ai.id)}
-                    className={`p-3 rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-2 border-2
-                      ${isSelected ? 'opacity-100' : 'opacity-40'}`}
+                    className={`p-3 rounded-xl text-sm font-medium transition-all flex items-center justify-center gap-2 border-2
+                      ${isSelected ? 'opacity-100 shadow-lg' : 'opacity-40'}`}
                     style={{
                       backgroundColor: ai.color + '20',
                       borderColor: ai.color,
-                      color: ai.color
+                      color: ai.id === 'white' ? '#a3a3a3' : ai.color
                     }}
                   >
-                    <div className="w-4 h-4 rounded-full" style={{ backgroundColor: ai.color }} />
+                    <div className="w-4 h-4 rounded-full shadow-inner" style={{ backgroundColor: ai.color }} />
                     {ai.name.replace(' AI', '')}
                   </button>
                 )
@@ -203,15 +188,15 @@ export function LiveMatch({
             </div>
           </div>
 
-          <div className="bg-settlers-dark rounded-xl p-4">
-            <h3 className="font-medium text-settlers-text mb-3 flex items-center gap-2">
-              <Users className="w-4 h-4 text-settlers-gold" /> Spillere
+          <div className="bg-bg-elevated rounded-xl p-4 border border-border">
+            <h3 className="font-medium text-text-primary mb-3 flex items-center gap-2">
+              <Users className="w-4 h-4 text-accent" /> Spillere
             </h3>
             <div className="flex gap-3">
               {players.map(player => (
                 <div key={player.id} className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full" style={{ backgroundColor: player.color }} />
-                  <span className="font-medium text-settlers-text">{player.name}</span>
+                  <div className="w-8 h-8 rounded-full shadow-lg" style={{ backgroundColor: player.color }} />
+                  <span className="font-medium text-text-primary">{player.name}</span>
                 </div>
               ))}
             </div>
@@ -229,17 +214,16 @@ export function LiveMatch({
     )
   }
 
-  // Active match screen
   return (
     <div className="space-y-4">
       {/* Timer */}
-      <div className="card p-4">
-        <div className="text-center mb-4">
-          <p className="text-xs text-settlers-muted uppercase tracking-wide mb-1">Spilletid</p>
-          <div className="text-5xl font-bold text-settlers-text font-mono">
+      <div className="card p-5">
+        <div className="text-center mb-5">
+          <p className="text-xs text-text-muted uppercase tracking-wider mb-1">Spilletid</p>
+          <div className="text-5xl font-bold text-text-primary font-mono number-display tracking-tight">
             {formatTime(elapsedTime)}
           </div>
-          <p className="text-sm text-settlers-muted mt-2">
+          <p className="text-sm text-text-secondary mt-2">
             {maps.find(m => m.id === activeMatch.mapId)?.name || 'Ukjent kart'}
           </p>
         </div>
@@ -247,10 +231,10 @@ export function LiveMatch({
         <div className="flex gap-3">
           <button
             onClick={() => setIsPaused(!isPaused)}
-            className={`flex-1 py-4 rounded-xl font-semibold text-lg flex items-center justify-center gap-2 ${
+            className={`flex-1 py-4 rounded-xl font-semibold text-lg flex items-center justify-center gap-2 border transition-all ${
               isPaused
-                ? 'bg-green-500/20 text-green-400'
-                : 'bg-yellow-500/20 text-yellow-400'
+                ? 'bg-success/20 text-success border-success/30'
+                : 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'
             }`}
           >
             {isPaused ? <Play className="w-5 h-5" /> : <Pause className="w-5 h-5" />}
@@ -258,7 +242,7 @@ export function LiveMatch({
           </button>
           <button
             onClick={() => setShowEndModal(true)}
-            className="flex-1 py-4 rounded-xl bg-red-500/20 text-red-400 font-semibold text-lg flex items-center justify-center gap-2"
+            className="flex-1 py-4 rounded-xl bg-danger/20 text-danger border border-danger/30 font-semibold text-lg flex items-center justify-center gap-2"
           >
             <Square className="w-5 h-5" /> Avslutt
           </button>
@@ -267,16 +251,16 @@ export function LiveMatch({
 
       {/* End Match Modal */}
       {showEndModal && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
           <div className="card p-6 max-w-sm w-full">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-settlers-text">Avslutt kamp</h3>
-              <button onClick={() => setShowEndModal(false)} className="text-settlers-muted">
+              <h3 className="text-lg font-semibold text-text-primary">Avslutt kamp</h3>
+              <button onClick={() => setShowEndModal(false)} className="text-text-muted">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <p className="text-settlers-muted mb-4">Hvem vant kampen?</p>
+            <p className="text-text-secondary mb-4">Hvem vant kampen?</p>
 
             <div className="space-y-2 mb-4">
               {players.map(player => {
@@ -291,17 +275,17 @@ export function LiveMatch({
                       onEndMatch(elapsedTime, player.id, 'win')
                       setShowEndModal(false)
                     }}
-                    className="w-full p-3 rounded-lg bg-settlers-dark hover:bg-settlers-border/50 flex items-center gap-3"
+                    className="w-full p-3 rounded-xl bg-bg-elevated hover:bg-bg-elevated/80 border border-border flex items-center gap-3 transition-colors"
                   >
                     <div
-                      className="w-10 h-10 rounded-full flex items-center justify-center"
+                      className="w-10 h-10 rounded-full flex items-center justify-center shadow-lg"
                       style={{ backgroundColor: player.color }}
                     >
                       <Trophy className="w-5 h-5 text-white" />
                     </div>
                     <div className="text-left flex-1">
-                      <p className="font-medium text-settlers-text">{player.name}</p>
-                      <p className="text-xs text-settlers-muted">{aiKills} AI eliminert</p>
+                      <p className="font-medium text-text-primary">{player.name}</p>
+                      <p className="text-xs text-text-muted">{aiKills} AI eliminert</p>
                     </div>
                   </button>
                 )
@@ -313,14 +297,14 @@ export function LiveMatch({
                 onEndMatch(elapsedTime, null, 'draw')
                 setShowEndModal(false)
               }}
-              className="w-full p-3 rounded-lg bg-settlers-dark text-settlers-muted font-medium flex items-center justify-center gap-2 mb-2"
+              className="w-full p-3 rounded-xl bg-bg-elevated text-text-secondary font-medium flex items-center justify-center gap-2 mb-2 border border-border"
             >
               <Handshake className="w-5 h-5" /> Uavgjort
             </button>
 
             <button
               onClick={() => setShowEndModal(false)}
-              className="w-full p-2 text-settlers-muted text-sm"
+              className="w-full p-2 text-text-muted text-sm"
             >
               Avbryt
             </button>
@@ -335,17 +319,16 @@ export function LiveMatch({
         return (
           <div key={player.id} className="card p-4">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-full" style={{ backgroundColor: player.color }} />
-              <h3 className="font-semibold text-settlers-text text-lg">{player.name}</h3>
-              <div className="ml-auto flex items-center gap-1 text-sm text-settlers-muted">
+              <div className="w-10 h-10 rounded-full shadow-lg" style={{ backgroundColor: player.color }} />
+              <h3 className="font-semibold text-text-primary text-lg">{player.name}</h3>
+              <div className="ml-auto flex items-center gap-1 text-sm text-purple-400">
                 <Skull className="w-4 h-4" />
-                {eliminations.length} AI
+                <span className="number-display">{eliminations.length}</span> AI
               </div>
             </div>
 
-            {/* AI Elimination buttons */}
             <div className="mb-4">
-              <p className="text-xs text-settlers-muted mb-2 font-medium">Eliminer AI:</p>
+              <p className="text-xs text-text-muted mb-2 font-medium">Eliminer AI:</p>
               <div className="grid grid-cols-2 gap-2">
                 {getActiveAIs().map(ai => {
                   const isEliminated = activeMatch?.events?.some(
@@ -360,12 +343,12 @@ export function LiveMatch({
                       key={ai.id}
                       onClick={() => handleAiElimination(player.id, ai.id)}
                       disabled={isEliminated}
-                      className={`p-3 rounded-lg text-sm font-medium flex items-center justify-center gap-2 border-2
+                      className={`p-3 rounded-xl text-sm font-medium flex items-center justify-center gap-2 border-2 transition-all
                         ${isEliminated ? 'opacity-30 cursor-not-allowed' : 'active:scale-95'}`}
                       style={{
-                        backgroundColor: isEliminated ? '#333' : ai.color + '20',
+                        backgroundColor: isEliminated ? '#1c1c1c' : ai.color + '20',
                         borderColor: ai.color,
-                        color: isEliminated ? '#666' : ai.color
+                        color: isEliminated ? '#525252' : (ai.id === 'white' ? '#a3a3a3' : ai.color)
                       }}
                     >
                       <Skull className="w-4 h-4" />
@@ -377,15 +360,14 @@ export function LiveMatch({
               </div>
             </div>
 
-            {/* Quick event buttons */}
             <div>
-              <p className="text-xs text-settlers-muted mb-2 font-medium">Hendelser:</p>
+              <p className="text-xs text-text-muted mb-2 font-medium">Hendelser:</p>
               <div className="grid grid-cols-2 gap-2">
                 {EVENT_TYPES.slice(0, 4).map(event => (
                   <button
                     key={event.id}
                     onClick={() => handleEvent(player.id, event.id)}
-                    className={`${event.color} px-4 py-3 rounded-lg text-sm font-medium flex items-center justify-center gap-2 active:scale-95`}
+                    className={`${event.color} px-4 py-3 rounded-xl text-sm font-medium flex items-center justify-center gap-2 active:scale-95 border`}
                   >
                     <event.icon className="w-4 h-4" />
                     {event.label}
@@ -394,7 +376,7 @@ export function LiveMatch({
               </div>
               <button
                 onClick={() => handleEvent(player.id, 'ai_attack')}
-                className="w-full mt-2 px-4 py-3 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 active:scale-95 bg-red-500/20 text-red-400"
+                className="w-full mt-2 px-4 py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 active:scale-95 bg-danger/20 text-danger border border-danger/30"
               >
                 <AlertTriangle className="w-5 h-5" />
                 AI angrep meg!
@@ -406,13 +388,13 @@ export function LiveMatch({
 
       {/* Timeline */}
       <div className="card p-4">
-        <h3 className="font-medium text-settlers-text mb-3 flex items-center gap-2">
-          <Clock className="w-4 h-4 text-settlers-gold" /> Tidslinje
+        <h3 className="font-medium text-text-primary mb-3 flex items-center gap-2">
+          <Clock className="w-4 h-4 text-accent" /> Tidslinje
         </h3>
 
         <div className="max-h-48 overflow-y-auto space-y-2">
           {getTimeline().length === 0 ? (
-            <p className="text-sm text-settlers-muted text-center py-4">
+            <p className="text-sm text-text-muted text-center py-4">
               Ingen hendelser ennå...
             </p>
           ) : (
@@ -422,13 +404,13 @@ export function LiveMatch({
               const eventType = EVENT_TYPES.find(e => e.id === event.type)
 
               return (
-                <div key={idx} className="flex items-center gap-2 bg-settlers-dark rounded-lg px-3 py-2 text-sm">
-                  <span className="text-settlers-muted font-mono text-xs w-12">
+                <div key={idx} className="flex items-center gap-2 bg-bg-elevated rounded-xl px-3 py-2.5 text-sm border border-border">
+                  <span className="text-text-muted font-mono text-xs w-12 number-display">
                     {formatTime(event.matchTime)}
                   </span>
                   <div className="w-3 h-3 rounded-full" style={{ backgroundColor: player?.color }} />
-                  <span className="text-settlers-text">{player?.name}</span>
-                  <span className="text-settlers-muted">
+                  <span className="text-text-primary">{player?.name}</span>
+                  <span className="text-text-secondary">
                     {event.type === 'ai_eliminated'
                       ? `eliminerte ${ai?.name}`
                       : eventType?.label.toLowerCase()}

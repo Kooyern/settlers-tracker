@@ -2,9 +2,9 @@ import React, { useState } from 'react'
 import { Settings as SettingsIcon, User, Download, Cloud, Map, Plus, Trash2, Upload, Check, ChevronDown, ChevronUp } from 'lucide-react'
 
 const PLAYER_COLORS = [
-  '#1E90FF', '#DC143C', '#228B22', '#FFD700',
-  '#9400D3', '#FF8C00', '#00CED1', '#FF69B4',
-  '#20B2AA', '#FF6347', '#4169E1', '#32CD32',
+  '#3b82f6', '#ef4444', '#22c55e', '#f59e0b',
+  '#8b5cf6', '#f97316', '#06b6d4', '#ec4899',
+  '#14b8a6', '#f43f5e', '#6366f1', '#84cc16',
 ]
 
 export function Settings({ players, updatePlayer, matches, maps, addMap, addMaps, deleteMap, onExport }) {
@@ -85,7 +85,6 @@ export function Settings({ players, updatePlayer, matches, maps, addMap, addMaps
     }
   }
 
-  // Group maps by category
   const groupedMaps = maps.reduce((acc, map) => {
     const cat = map.category || 'Annet'
     if (!acc[cat]) acc[cat] = []
@@ -93,7 +92,6 @@ export function Settings({ players, updatePlayer, matches, maps, addMap, addMaps
     return acc
   }, {})
 
-  // Total play time
   const totalMinutes = matches.reduce((acc, m) => acc + (m.duration || 0), 0)
   const hours = Math.floor(totalMinutes / 60)
   const mins = totalMinutes % 60
@@ -104,12 +102,12 @@ export function Settings({ players, updatePlayer, matches, maps, addMap, addMaps
       <div className="card p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <SettingsIcon className="w-5 h-5 text-settlers-gold" />
-            <h2 className="font-semibold text-settlers-text">Innstillinger</h2>
+            <SettingsIcon className="w-5 h-5 text-accent" />
+            <h2 className="font-semibold text-text-primary">Innstillinger</h2>
           </div>
-          <div className="flex items-center gap-1.5 text-xs text-green-400 bg-green-500/10 px-2.5 py-1 rounded-full">
-            <Cloud className="w-3 h-3" />
-            <span>Synkronisert</span>
+          <div className="flex items-center gap-1.5 text-xs text-success bg-success/10 px-3 py-1.5 rounded-full border border-success/20">
+            <Cloud className="w-3.5 h-3.5" />
+            <span className="font-medium">Synkronisert</span>
           </div>
         </div>
       </div>
@@ -117,37 +115,37 @@ export function Settings({ players, updatePlayer, matches, maps, addMap, addMaps
       {/* Quick Stats */}
       <div className="card p-4">
         <div className="grid grid-cols-3 gap-3">
-          <div className="bg-settlers-dark rounded-xl p-3 text-center">
-            <p className="text-2xl font-bold text-settlers-gold">{matches.length}</p>
-            <p className="text-xs text-settlers-muted">Kamper</p>
+          <div className="bg-bg-elevated rounded-xl p-3 text-center border border-border">
+            <p className="text-2xl font-bold text-accent number-display">{matches.length}</p>
+            <p className="text-[10px] text-text-muted uppercase tracking-wider">Kamper</p>
           </div>
-          <div className="bg-settlers-dark rounded-xl p-3 text-center">
-            <p className="text-2xl font-bold text-settlers-gold">{maps.length}</p>
-            <p className="text-xs text-settlers-muted">Kart</p>
+          <div className="bg-bg-elevated rounded-xl p-3 text-center border border-border">
+            <p className="text-2xl font-bold text-accent number-display">{maps.length}</p>
+            <p className="text-[10px] text-text-muted uppercase tracking-wider">Kart</p>
           </div>
-          <div className="bg-settlers-dark rounded-xl p-3 text-center">
-            <p className="text-2xl font-bold text-settlers-gold">
+          <div className="bg-bg-elevated rounded-xl p-3 text-center border border-border">
+            <p className="text-2xl font-bold text-accent number-display">
               {hours > 0 ? `${hours}t` : ''}{mins}m
             </p>
-            <p className="text-xs text-settlers-muted">Spilletid</p>
+            <p className="text-[10px] text-text-muted uppercase tracking-wider">Spilletid</p>
           </div>
         </div>
       </div>
 
       {/* Player Settings */}
       <div className="card overflow-hidden">
-        <div className="px-4 py-3 border-b border-settlers-border">
-          <h3 className="font-medium text-settlers-text flex items-center gap-2">
-            <User className="w-4 h-4 text-settlers-gold" /> Spillere
+        <div className="px-4 py-3 border-b border-border bg-bg-elevated/50">
+          <h3 className="font-medium text-text-primary flex items-center gap-2">
+            <User className="w-4 h-4 text-accent" /> Spillere
           </h3>
         </div>
 
         <div className="p-4 space-y-3">
           {players.map((player) => (
-            <div key={player.id} className="bg-settlers-dark rounded-xl p-3">
+            <div key={player.id} className="bg-bg-elevated rounded-xl p-4 border border-border">
               <div className="flex items-center gap-3">
                 <div
-                  className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg"
+                  className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg"
                   style={{ backgroundColor: player.color }}
                 >
                   {player.name?.charAt(0) || '?'}
@@ -165,17 +163,17 @@ export function Settings({ players, updatePlayer, matches, maps, addMap, addMaps
                       />
                       <button
                         onClick={savePlayerName}
-                        className="bg-settlers-gold text-settlers-dark px-3 rounded-lg font-bold text-sm"
+                        className="bg-accent text-bg-primary px-4 rounded-xl font-semibold text-sm"
                       >
                         {saving ? '...' : <Check className="w-4 h-4" />}
                       </button>
                     </div>
                   ) : (
                     <div className="flex items-center justify-between">
-                      <span className="font-medium text-settlers-text">{player.name}</span>
+                      <span className="font-semibold text-text-primary">{player.name}</span>
                       <button
                         onClick={() => startEditing(player)}
-                        className="text-settlers-gold text-xs hover:underline"
+                        className="text-accent text-xs hover:text-accent-light font-medium"
                       >
                         Endre navn
                       </button>
@@ -184,18 +182,16 @@ export function Settings({ players, updatePlayer, matches, maps, addMap, addMaps
                 </div>
               </div>
 
-              <div className="flex gap-2 mt-3 flex-wrap">
+              <div className="flex gap-2 mt-4 flex-wrap">
                 {PLAYER_COLORS.map((color) => (
                   <button
                     key={color}
                     onClick={() => handleColorChange(player.id, color)}
-                    className={`
-                      w-7 h-7 rounded-full transition-all
+                    className={`w-8 h-8 rounded-full transition-all shadow-md
                       ${player.color === color
-                        ? 'ring-2 ring-settlers-gold ring-offset-2 ring-offset-settlers-dark scale-110'
-                        : 'opacity-60 hover:opacity-100'
-                      }
-                    `}
+                        ? 'ring-2 ring-accent ring-offset-2 ring-offset-bg-elevated scale-110'
+                        : 'opacity-50 hover:opacity-80'
+                      }`}
                     style={{ backgroundColor: color }}
                   />
                 ))}
@@ -207,46 +203,43 @@ export function Settings({ players, updatePlayer, matches, maps, addMap, addMaps
 
       {/* Map Management */}
       <div className="card overflow-hidden">
-        <div className="px-4 py-3 border-b border-settlers-border">
-          <h3 className="font-medium text-settlers-text flex items-center gap-2">
-            <Map className="w-4 h-4 text-settlers-gold" /> Kart
-            <span className="text-settlers-muted font-normal">({maps.length})</span>
+        <div className="px-4 py-3 border-b border-border bg-bg-elevated/50">
+          <h3 className="font-medium text-text-primary flex items-center gap-2">
+            <Map className="w-4 h-4 text-accent" /> Kart
+            <span className="text-text-muted font-normal number-display">({maps.length})</span>
           </h3>
         </div>
 
         <div className="p-4 space-y-3">
-          {/* Add single map */}
           <div className="flex gap-2">
             <input
               type="text"
               value={newMapName}
               onChange={(e) => setNewMapName(e.target.value)}
               placeholder="Legg til nytt kart..."
-              className="input flex-1 py-2.5 text-sm"
+              className="input flex-1 py-3 text-sm"
               onKeyDown={(e) => e.key === 'Enter' && handleAddMap()}
             />
             <button
               onClick={handleAddMap}
-              className="bg-settlers-gold text-settlers-dark px-4 rounded-xl font-bold"
+              className="bg-accent text-bg-primary px-5 rounded-xl font-bold"
               disabled={!newMapName.trim()}
             >
               <Plus className="w-5 h-5" />
             </button>
           </div>
 
-          {/* Bulk add toggle */}
           <button
             onClick={() => setShowBulkAdd(!showBulkAdd)}
-            className="w-full py-2.5 text-sm text-settlers-muted bg-settlers-dark hover:bg-settlers-border/50 rounded-xl flex items-center justify-center gap-2 transition-colors"
+            className="w-full py-3 text-sm text-text-muted bg-bg-elevated hover:bg-bg-elevated/80 rounded-xl flex items-center justify-center gap-2 transition-colors border border-border"
           >
             <Upload className="w-4 h-4" />
             {showBulkAdd ? 'Skjul import' : 'Importer mange kart'}
           </button>
 
-          {/* Bulk add form */}
           {showBulkAdd && (
-            <div className="bg-settlers-dark rounded-xl p-3 space-y-3">
-              <p className="text-xs text-settlers-muted">
+            <div className="bg-bg-elevated rounded-xl p-4 space-y-3 border border-border">
+              <p className="text-xs text-text-muted">
                 Lim inn kartnavn (ett per linje):
               </p>
               <textarea
@@ -261,11 +254,11 @@ export function Settings({ players, updatePlayer, matches, maps, addMap, addMaps
                   value={mapCategory}
                   onChange={(e) => setMapCategory(e.target.value)}
                   placeholder="Kategori"
-                  className="input flex-1 py-2 text-sm"
+                  className="input flex-1 py-2.5 text-sm"
                 />
                 <button
                   onClick={handleBulkAdd}
-                  className="btn-primary py-2 text-sm"
+                  className="btn-primary py-2.5 text-sm"
                 >
                   Legg til
                 </button>
@@ -273,30 +266,29 @@ export function Settings({ players, updatePlayer, matches, maps, addMap, addMaps
             </div>
           )}
 
-          {/* Map list */}
           <div className={`space-y-3 ${showAllMaps ? '' : 'max-h-48'} overflow-y-auto scrollbar-hide`}>
             {Object.entries(groupedMaps).map(([category, categoryMaps]) => (
               <div key={category}>
-                <h4 className="text-xs font-medium text-settlers-muted uppercase tracking-wide mb-1.5 sticky top-0 bg-settlers-card py-1">
+                <h4 className="text-xs font-medium text-text-muted uppercase tracking-wide mb-1.5 sticky top-0 bg-bg-card py-1">
                   {category} ({categoryMaps.length})
                 </h4>
                 <div className="space-y-1">
                   {(showAllMaps ? categoryMaps : categoryMaps.slice(0, 5)).map(map => (
                     <div
                       key={map.id}
-                      className="flex items-center justify-between bg-settlers-dark hover:bg-settlers-border/50 rounded-lg px-3 py-2 text-sm group transition-colors"
+                      className="flex items-center justify-between bg-bg-elevated hover:bg-bg-elevated/80 rounded-lg px-3 py-2.5 text-sm group transition-colors border border-border"
                     >
-                      <span className="text-settlers-text truncate">{map.name}</span>
+                      <span className="text-text-secondary truncate">{map.name}</span>
                       <button
                         onClick={() => handleDeleteMap(map.id, map.name)}
-                        className="text-red-400/50 hover:text-red-400 p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="text-danger/50 hover:text-danger p-1 opacity-0 group-hover:opacity-100 transition-opacity"
                       >
-                        <Trash2 className="w-3.5 h-3.5" />
+                        <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
                   ))}
                   {!showAllMaps && categoryMaps.length > 5 && (
-                    <p className="text-xs text-settlers-muted text-center py-1">
+                    <p className="text-xs text-text-muted text-center py-1">
                       +{categoryMaps.length - 5} flere
                     </p>
                   )}
@@ -308,16 +300,12 @@ export function Settings({ players, updatePlayer, matches, maps, addMap, addMaps
           {maps.length > 10 && (
             <button
               onClick={() => setShowAllMaps(!showAllMaps)}
-              className="w-full py-2 text-xs text-settlers-gold hover:underline flex items-center justify-center gap-1"
+              className="w-full py-2 text-xs text-accent hover:text-accent-light flex items-center justify-center gap-1"
             >
               {showAllMaps ? (
-                <>
-                  <ChevronUp className="w-4 h-4" /> Vis mindre
-                </>
+                <><ChevronUp className="w-4 h-4" /> Vis mindre</>
               ) : (
-                <>
-                  <ChevronDown className="w-4 h-4" /> Vis alle kart
-                </>
+                <><ChevronDown className="w-4 h-4" /> Vis alle kart</>
               )}
             </button>
           )}
@@ -326,18 +314,18 @@ export function Settings({ players, updatePlayer, matches, maps, addMap, addMaps
 
       {/* Export */}
       <div className="card overflow-hidden">
-        <div className="px-4 py-3 border-b border-settlers-border">
-          <h3 className="font-medium text-settlers-text flex items-center gap-2">
-            <Download className="w-4 h-4 text-settlers-gold" /> Eksporter data
+        <div className="px-4 py-3 border-b border-border bg-bg-elevated/50">
+          <h3 className="font-medium text-text-primary flex items-center gap-2">
+            <Download className="w-4 h-4 text-accent" /> Eksporter data
           </h3>
         </div>
         <div className="p-4">
-          <p className="text-sm text-settlers-muted mb-3">
+          <p className="text-sm text-text-muted mb-4">
             Last ned en backup av alle dine data som JSON-fil.
           </p>
           <button
             onClick={onExport}
-            className="btn-primary w-full py-3 flex items-center justify-center gap-2"
+            className="btn-primary w-full py-3.5 flex items-center justify-center gap-2"
           >
             <Download className="w-4 h-4" /> Last ned backup
           </button>

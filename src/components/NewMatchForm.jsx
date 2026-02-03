@@ -4,7 +4,7 @@ import { MapSelector } from './MapSelector'
 
 const AI_COLORS = [
   { id: 'white', name: 'Hvit', color: '#e5e5e5' },
-  { id: 'black', name: 'Svart', color: '#374151' },
+  { id: 'black', name: 'Svart', color: '#525252' },
   { id: 'yellow', name: 'Gul', color: '#eab308' },
   { id: 'red', name: 'Rød', color: '#ef4444' },
 ]
@@ -108,24 +108,19 @@ export function NewMatchForm({ players, maps, onSubmit, onCancel, onAddMap }) {
 
   return (
     <div className="card p-4">
-      {/* Header */}
       <div className="flex items-center gap-3 mb-6">
-        <button
-          onClick={onCancel}
-          className="p-2 -ml-2 text-settlers-muted hover:text-settlers-text"
-        >
+        <button onClick={onCancel} className="p-2 -ml-2 text-text-muted hover:text-text-primary">
           <ChevronLeft className="w-6 h-6" />
         </button>
         <div className="flex items-center gap-2 flex-1">
-          <Swords className="w-5 h-5 text-settlers-gold" />
-          <h2 className="text-lg font-semibold text-settlers-text">Ny Kamp</h2>
+          <Swords className="w-5 h-5 text-accent" />
+          <h2 className="text-lg font-semibold text-text-primary">Ny Kamp</h2>
         </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-5">
-        {/* Map Selection */}
         <div>
-          <label className="block text-sm font-medium text-settlers-muted mb-2 flex items-center gap-2">
+          <label className="block text-sm font-medium text-text-muted mb-2 flex items-center gap-2">
             <Map className="w-4 h-4" /> Kart
           </label>
           <MapSelector
@@ -136,9 +131,8 @@ export function NewMatchForm({ players, maps, onSubmit, onCancel, onAddMap }) {
           />
         </div>
 
-        {/* Date and Time */}
         <div>
-          <label className="block text-sm font-medium text-settlers-muted mb-2 flex items-center gap-2">
+          <label className="block text-sm font-medium text-text-muted mb-2 flex items-center gap-2">
             <Calendar className="w-4 h-4" /> Dato og tid
           </label>
           <input
@@ -149,9 +143,8 @@ export function NewMatchForm({ players, maps, onSubmit, onCancel, onAddMap }) {
           />
         </div>
 
-        {/* AI Selection */}
         <div>
-          <label className="block text-sm font-medium text-settlers-muted mb-2 flex items-center gap-2">
+          <label className="block text-sm font-medium text-text-muted mb-2 flex items-center gap-2">
             <Skull className="w-4 h-4" /> AI-motstandere ({form.aiColors.length})
           </label>
           <div className="grid grid-cols-2 gap-2">
@@ -162,12 +155,12 @@ export function NewMatchForm({ players, maps, onSubmit, onCancel, onAddMap }) {
                   key={ai.id}
                   type="button"
                   onClick={() => toggleAiColor(ai.id)}
-                  className={`p-3 rounded-lg text-sm font-medium flex items-center justify-center gap-2 border-2
-                    ${isSelected ? 'opacity-100' : 'opacity-40'}`}
+                  className={`p-3 rounded-xl text-sm font-medium flex items-center justify-center gap-2 border-2 transition-all
+                    ${isSelected ? 'opacity-100 shadow-lg' : 'opacity-40'}`}
                   style={{
                     backgroundColor: ai.color + '20',
                     borderColor: ai.color,
-                    color: ai.color
+                    color: ai.id === 'white' ? '#a3a3a3' : ai.color
                   }}
                 >
                   <div className="w-4 h-4 rounded-full" style={{ backgroundColor: ai.color }} />
@@ -178,9 +171,8 @@ export function NewMatchForm({ players, maps, onSubmit, onCancel, onAddMap }) {
           </div>
         </div>
 
-        {/* Duration */}
         <div>
-          <label className="block text-sm font-medium text-settlers-muted mb-2 flex items-center gap-2">
+          <label className="block text-sm font-medium text-text-muted mb-2 flex items-center gap-2">
             <Clock className="w-4 h-4" /> Spilletid (minutter)
           </label>
           <input
@@ -194,19 +186,18 @@ export function NewMatchForm({ players, maps, onSubmit, onCancel, onAddMap }) {
           />
         </div>
 
-        {/* Result Type */}
         <div>
-          <label className="block text-sm font-medium text-settlers-muted mb-2 flex items-center gap-2">
+          <label className="block text-sm font-medium text-text-muted mb-2 flex items-center gap-2">
             <Trophy className="w-4 h-4" /> Resultat
           </label>
           <div className="flex gap-2">
             <button
               type="button"
               onClick={() => setForm(prev => ({ ...prev, result: 'win' }))}
-              className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all ${
+              className={`flex-1 py-3 px-4 rounded-xl font-semibold transition-all border ${
                 form.result === 'win'
-                  ? 'bg-settlers-gold text-settlers-dark'
-                  : 'bg-settlers-dark text-settlers-muted'
+                  ? 'bg-accent text-bg-primary border-accent'
+                  : 'bg-bg-elevated text-text-muted border-border'
               }`}
             >
               Seier/Tap
@@ -214,10 +205,10 @@ export function NewMatchForm({ players, maps, onSubmit, onCancel, onAddMap }) {
             <button
               type="button"
               onClick={() => setForm(prev => ({ ...prev, result: 'draw', winnerId: '' }))}
-              className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all ${
+              className={`flex-1 py-3 px-4 rounded-xl font-semibold transition-all border ${
                 form.result === 'draw'
-                  ? 'bg-settlers-gold text-settlers-dark'
-                  : 'bg-settlers-dark text-settlers-muted'
+                  ? 'bg-accent text-bg-primary border-accent'
+                  : 'bg-bg-elevated text-text-muted border-border'
               }`}
             >
               Uavgjort
@@ -225,10 +216,9 @@ export function NewMatchForm({ players, maps, onSubmit, onCancel, onAddMap }) {
           </div>
         </div>
 
-        {/* Winner Selection */}
         {form.result === 'win' && (
           <div>
-            <label className="block text-sm font-medium text-settlers-muted mb-3">
+            <label className="block text-sm font-medium text-text-muted mb-3">
               Hvem vant?
             </label>
             <div className="grid grid-cols-2 gap-3">
@@ -239,20 +229,20 @@ export function NewMatchForm({ players, maps, onSubmit, onCancel, onAddMap }) {
                   onClick={() => setForm(prev => ({ ...prev, winnerId: player.id }))}
                   className={`p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-2
                     ${form.winnerId === player.id
-                      ? 'border-settlers-gold bg-settlers-gold/10'
-                      : 'border-settlers-border bg-settlers-dark'
+                      ? 'border-accent bg-accent/10'
+                      : 'border-border bg-bg-elevated'
                     }`}
                 >
                   <div
-                    className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg
-                      ${form.winnerId === player.id ? 'ring-2 ring-settlers-gold ring-offset-2 ring-offset-settlers-card' : ''}`}
+                    className={`w-14 h-14 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg
+                      ${form.winnerId === player.id ? 'ring-2 ring-accent ring-offset-2 ring-offset-bg-card' : ''}`}
                     style={{ backgroundColor: player.color }}
                   >
                     {form.winnerId === player.id ? <Trophy className="w-6 h-6" /> : player.name.charAt(0)}
                   </div>
-                  <span className="font-medium text-settlers-text">{player.name}</span>
+                  <span className="font-semibold text-text-primary">{player.name}</span>
                   {form.winnerId === player.id && (
-                    <span className="text-xs text-green-400 font-semibold">VINNER</span>
+                    <span className="text-xs text-success font-semibold">VINNER</span>
                   )}
                 </button>
               ))}
@@ -260,16 +250,15 @@ export function NewMatchForm({ players, maps, onSubmit, onCancel, onAddMap }) {
           </div>
         )}
 
-        {/* AI Eliminations */}
         <div>
-          <label className="block text-sm font-medium text-settlers-muted mb-2 flex items-center gap-2">
+          <label className="block text-sm font-medium text-text-muted mb-2 flex items-center gap-2">
             <Skull className="w-4 h-4" /> AI Elimineringer
             <span className="text-xs font-normal">(+0.5p hver)</span>
           </label>
           <div className="grid grid-cols-2 gap-3">
             {players.map((player) => (
-              <div key={player.id} className="bg-settlers-dark rounded-xl p-3">
-                <p className="text-sm text-settlers-muted mb-2 flex items-center gap-2">
+              <div key={player.id} className="bg-bg-elevated rounded-xl p-3 border border-border">
+                <p className="text-sm text-text-secondary mb-2 flex items-center gap-2 font-medium">
                   <span className="w-3 h-3 rounded-full" style={{ backgroundColor: player.color }} />
                   {player.name}
                 </p>
@@ -277,17 +266,17 @@ export function NewMatchForm({ players, maps, onSubmit, onCancel, onAddMap }) {
                   <button
                     type="button"
                     onClick={() => updatePlayerAiKills(player.id, -1)}
-                    className="w-10 h-10 rounded-lg bg-settlers-border hover:bg-settlers-border/80 text-settlers-text font-bold text-xl"
+                    className="w-10 h-10 rounded-xl bg-bg-card hover:bg-bg-card/80 text-text-primary font-bold text-xl border border-border"
                   >
                     −
                   </button>
-                  <span className="text-3xl font-bold text-settlers-text w-10 text-center">
+                  <span className="text-3xl font-bold text-text-primary w-10 text-center number-display">
                     {getPlayerAiKills(player.id)}
                   </span>
                   <button
                     type="button"
                     onClick={() => updatePlayerAiKills(player.id, 1)}
-                    className="w-10 h-10 rounded-lg bg-settlers-border hover:bg-settlers-border/80 text-settlers-text font-bold text-xl"
+                    className="w-10 h-10 rounded-xl bg-bg-card hover:bg-bg-card/80 text-text-primary font-bold text-xl border border-border"
                   >
                     +
                   </button>
@@ -297,10 +286,9 @@ export function NewMatchForm({ players, maps, onSubmit, onCancel, onAddMap }) {
           </div>
         </div>
 
-        {/* AI Deaths */}
         <div>
-          <label className="block text-sm font-medium text-settlers-muted mb-2 flex items-center gap-2">
-            <AlertTriangle className="w-4 h-4 text-red-400" /> Slått av AI
+          <label className="block text-sm font-medium text-text-muted mb-2 flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4 text-danger" /> Slått av AI
             <span className="text-xs font-normal">(-1p)</span>
           </label>
           <div className="grid grid-cols-2 gap-3">
@@ -313,8 +301,8 @@ export function NewMatchForm({ players, maps, onSubmit, onCancel, onAddMap }) {
                   onClick={() => updatePlayerAiDeaths(player.id, hasDied ? -1 : 1)}
                   className={`p-3 rounded-xl border-2 transition-all flex items-center justify-center gap-2
                     ${hasDied
-                      ? 'bg-red-500/20 border-red-500/50 text-red-400'
-                      : 'bg-settlers-dark border-settlers-border text-settlers-muted'
+                      ? 'bg-danger/20 border-danger/50 text-danger'
+                      : 'bg-bg-elevated border-border text-text-muted'
                     }`}
                 >
                   <span className="w-3 h-3 rounded-full" style={{ backgroundColor: player.color }} />
@@ -326,9 +314,8 @@ export function NewMatchForm({ players, maps, onSubmit, onCancel, onAddMap }) {
           </div>
         </div>
 
-        {/* Notes */}
         <div>
-          <label className="block text-sm font-medium text-settlers-muted mb-2 flex items-center gap-2">
+          <label className="block text-sm font-medium text-text-muted mb-2 flex items-center gap-2">
             <FileText className="w-4 h-4" /> Notater
           </label>
           <textarea
@@ -339,11 +326,10 @@ export function NewMatchForm({ players, maps, onSubmit, onCancel, onAddMap }) {
           />
         </div>
 
-        {/* Battle Report Toggle */}
         <button
           type="button"
           onClick={() => setShowBattleReport(!showBattleReport)}
-          className="w-full py-3 rounded-lg bg-settlers-dark text-settlers-muted font-medium flex items-center justify-center gap-2"
+          className="w-full py-3 rounded-xl bg-bg-elevated text-text-muted font-medium flex items-center justify-center gap-2 border border-border"
         >
           <Plus className={`w-4 h-4 transition-transform ${showBattleReport ? 'rotate-45' : ''}`} />
           {showBattleReport ? 'Skjul detaljer' : 'Legg til detaljer'}
@@ -353,7 +339,6 @@ export function NewMatchForm({ players, maps, onSubmit, onCancel, onAddMap }) {
           <BattleReportForm form={form} setForm={setForm} players={players} />
         )}
 
-        {/* Submit */}
         <button
           type="submit"
           className="btn-primary w-full py-4 text-lg flex items-center justify-center gap-2"
@@ -387,10 +372,10 @@ function BattleReportForm({ form, setForm, players }) {
   }
 
   return (
-    <div className="bg-settlers-dark rounded-xl p-4 space-y-3">
+    <div className="bg-bg-elevated rounded-xl p-4 space-y-3 border border-border">
       {players.map((player) => (
-        <div key={player.id} className="bg-settlers-card rounded-lg p-3">
-          <h4 className="font-medium text-settlers-text mb-2 text-sm flex items-center gap-2">
+        <div key={player.id} className="bg-bg-card rounded-xl p-3 border border-border">
+          <h4 className="font-medium text-text-primary mb-2 text-sm flex items-center gap-2">
             <span className="w-3 h-3 rounded-full" style={{ backgroundColor: player.color }} />
             {player.name}
           </h4>
@@ -399,21 +384,21 @@ function BattleReportForm({ form, setForm, players }) {
             <button
               type="button"
               onClick={() => addEvent(player.id, { type: 'ai_eliminated', description: 'Eliminerte AI' })}
-              className="text-xs bg-purple-500/20 text-purple-400 px-3 py-1.5 rounded-full"
+              className="text-xs bg-purple-500/20 text-purple-400 px-3 py-1.5 rounded-full border border-purple-500/30"
             >
               <Skull className="w-3 h-3 inline mr-1" /> AI Drept
             </button>
             <button
               type="button"
               onClick={() => addEvent(player.id, { type: 'major_battle', description: 'Vant slag' })}
-              className="text-xs bg-red-500/20 text-red-400 px-3 py-1.5 rounded-full"
+              className="text-xs bg-danger/20 text-danger px-3 py-1.5 rounded-full border border-danger/30"
             >
               <Swords className="w-3 h-3 inline mr-1" /> Slag
             </button>
             <button
               type="button"
               onClick={() => addEvent(player.id, { type: 'expansion', description: 'Ekspanderte' })}
-              className="text-xs bg-green-500/20 text-green-400 px-3 py-1.5 rounded-full"
+              className="text-xs bg-success/20 text-success px-3 py-1.5 rounded-full border border-success/30"
             >
               <Map className="w-3 h-3 inline mr-1" /> Ekspansjon
             </button>
@@ -424,7 +409,7 @@ function BattleReportForm({ form, setForm, players }) {
               {report[player.id].events.map((event, idx) => (
                 <span
                   key={idx}
-                  className="text-xs bg-settlers-border rounded px-2 py-1 flex items-center gap-1 text-settlers-text"
+                  className="text-xs bg-bg-elevated rounded-lg px-2 py-1 flex items-center gap-1 text-text-secondary border border-border"
                 >
                   {event.description}
                   <button
@@ -436,7 +421,7 @@ function BattleReportForm({ form, setForm, players }) {
                         [player.id]: { ...report[player.id], events: newEvents }
                       })
                     }}
-                    className="text-red-400 ml-1"
+                    className="text-danger ml-1"
                   >
                     <X className="w-3 h-3" />
                   </button>

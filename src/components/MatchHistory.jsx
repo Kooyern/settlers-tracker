@@ -10,7 +10,6 @@ export function MatchHistory({ matches, players, formatDuration, onDeleteMatch, 
   })
   const [showFilters, setShowFilters] = useState(false)
 
-  // Get unique maps from matches
   const usedMaps = useMemo(() => {
     const mapSet = new Map()
     matches.forEach(match => {
@@ -39,7 +38,6 @@ export function MatchHistory({ matches, players, formatDuration, onDeleteMatch, 
 
   const clearFilters = () => setFilters({ mapId: '', winnerId: '', searchTerm: '' })
 
-  // Stats
   const player1Wins = matches.filter(m => m.winnerId === 'player1').length
   const player2Wins = matches.filter(m => m.winnerId === 'player2').length
   const draws = matches.filter(m => m.result === 'draw').length
@@ -51,51 +49,51 @@ export function MatchHistory({ matches, players, formatDuration, onDeleteMatch, 
         <div className="p-4">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <ScrollText className="w-5 h-5 text-settlers-gold" />
-              <h2 className="font-semibold text-settlers-text">Kamphistorikk</h2>
+              <ScrollText className="w-5 h-5 text-accent" />
+              <h2 className="font-semibold text-text-primary">Kamphistorikk</h2>
             </div>
-            <span className="text-xs text-settlers-muted bg-settlers-dark px-2 py-1 rounded-full">
+            <span className="text-xs text-text-muted bg-bg-elevated px-3 py-1 rounded-full border border-border number-display">
               {matches.length} kamper
             </span>
           </div>
 
           {/* Quick stats */}
           <div className="grid grid-cols-3 gap-2 mb-4">
-            <div className="bg-settlers-dark rounded-lg p-2 text-center">
-              <div className="flex items-center justify-center gap-1.5 mb-0.5">
-                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: players[0]?.color }} />
-                <span className="text-xs text-settlers-muted">{players[0]?.name}</span>
+            <div className="bg-bg-elevated rounded-xl p-3 text-center border border-border">
+              <div className="flex items-center justify-center gap-1.5 mb-1">
+                <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: players[0]?.color }} />
+                <span className="text-xs text-text-muted truncate">{players[0]?.name}</span>
               </div>
-              <span className="text-lg font-bold text-green-400">{player1Wins}</span>
+              <span className="text-xl font-bold text-success number-display">{player1Wins}</span>
             </div>
-            <div className="bg-settlers-dark rounded-lg p-2 text-center">
-              <span className="text-xs text-settlers-muted block mb-0.5">Uavgjort</span>
-              <span className="text-lg font-bold text-settlers-muted">{draws}</span>
+            <div className="bg-bg-elevated rounded-xl p-3 text-center border border-border">
+              <span className="text-xs text-text-muted block mb-1">Uavgjort</span>
+              <span className="text-xl font-bold text-text-muted number-display">{draws}</span>
             </div>
-            <div className="bg-settlers-dark rounded-lg p-2 text-center">
-              <div className="flex items-center justify-center gap-1.5 mb-0.5">
-                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: players[1]?.color }} />
-                <span className="text-xs text-settlers-muted">{players[1]?.name}</span>
+            <div className="bg-bg-elevated rounded-xl p-3 text-center border border-border">
+              <div className="flex items-center justify-center gap-1.5 mb-1">
+                <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: players[1]?.color }} />
+                <span className="text-xs text-text-muted truncate">{players[1]?.name}</span>
               </div>
-              <span className="text-lg font-bold text-green-400">{player2Wins}</span>
+              <span className="text-xl font-bold text-success number-display">{player2Wins}</span>
             </div>
           </div>
 
           {/* Search */}
           <div className="flex gap-2">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-settlers-muted" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
               <input
                 type="text"
                 placeholder="Søk i notater eller kart..."
                 value={filters.searchTerm}
                 onChange={(e) => setFilters(prev => ({ ...prev, searchTerm: e.target.value }))}
-                className="input pl-10 py-2.5 text-sm"
+                className="input pl-10 py-3 text-sm"
               />
               {filters.searchTerm && (
                 <button
                   onClick={() => setFilters(prev => ({ ...prev, searchTerm: '' }))}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-settlers-muted hover:text-settlers-text"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -103,17 +101,15 @@ export function MatchHistory({ matches, players, formatDuration, onDeleteMatch, 
             </div>
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className={`
-                px-3 py-2 rounded-xl flex items-center gap-2 transition-colors border
+              className={`px-4 py-3 rounded-xl flex items-center gap-2 transition-all border
                 ${showFilters || activeFilterCount > 0
-                  ? 'bg-settlers-gold/10 text-settlers-gold border-settlers-gold/30'
-                  : 'bg-settlers-dark text-settlers-muted border-settlers-border hover:bg-settlers-border/50'
-                }
-              `}
+                  ? 'bg-accent/10 text-accent border-accent/30'
+                  : 'bg-bg-elevated text-text-muted border-border hover:border-border-light'
+                }`}
             >
               <SlidersHorizontal className="w-4 h-4" />
               {activeFilterCount > 0 && (
-                <span className="w-5 h-5 rounded-full bg-settlers-gold text-settlers-dark text-xs flex items-center justify-center font-bold">
+                <span className="w-5 h-5 rounded-full bg-accent text-bg-primary text-xs flex items-center justify-center font-bold">
                   {activeFilterCount}
                 </span>
               )}
@@ -123,13 +119,13 @@ export function MatchHistory({ matches, players, formatDuration, onDeleteMatch, 
 
         {/* Filters */}
         {showFilters && (
-          <div className="px-4 pb-4 pt-2 border-t border-settlers-border space-y-3">
+          <div className="px-4 pb-4 pt-2 border-t border-border space-y-3">
             <div>
-              <label className="text-xs text-settlers-muted block mb-1.5">Kart</label>
+              <label className="text-xs text-text-muted block mb-1.5 font-medium">Kart</label>
               <select
                 value={filters.mapId}
                 onChange={(e) => setFilters(prev => ({ ...prev, mapId: e.target.value }))}
-                className="select w-full py-2.5 text-sm"
+                className="select w-full py-3 text-sm"
               >
                 <option value="">Alle kart</option>
                 {usedMaps.map(map => (
@@ -139,11 +135,11 @@ export function MatchHistory({ matches, players, formatDuration, onDeleteMatch, 
             </div>
 
             <div>
-              <label className="text-xs text-settlers-muted block mb-1.5">Vinner</label>
+              <label className="text-xs text-text-muted block mb-1.5 font-medium">Vinner</label>
               <select
                 value={filters.winnerId}
                 onChange={(e) => setFilters(prev => ({ ...prev, winnerId: e.target.value }))}
-                className="select w-full py-2.5 text-sm"
+                className="select w-full py-3 text-sm"
               >
                 <option value="">Alle resultater</option>
                 {players.map(player => (
@@ -155,7 +151,7 @@ export function MatchHistory({ matches, players, formatDuration, onDeleteMatch, 
             {activeFilterCount > 0 && (
               <button
                 onClick={clearFilters}
-                className="text-sm text-settlers-gold hover:text-settlers-gold/80 flex items-center gap-1"
+                className="text-sm text-accent hover:text-accent-light flex items-center gap-1"
               >
                 <X className="w-4 h-4" /> Fjern alle filtre
               </button>
@@ -166,7 +162,7 @@ export function MatchHistory({ matches, players, formatDuration, onDeleteMatch, 
 
       {/* Results count */}
       {activeFilterCount > 0 && (
-        <p className="text-xs text-settlers-muted px-1">
+        <p className="text-xs text-text-muted px-1">
           Viser {filteredMatches.length} av {matches.length} kamper
         </p>
       )}
@@ -174,17 +170,17 @@ export function MatchHistory({ matches, players, formatDuration, onDeleteMatch, 
       {/* Match list */}
       <div className="space-y-3">
         {filteredMatches.length === 0 ? (
-          <div className="card p-8 text-center">
-            <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-settlers-border flex items-center justify-center">
-              <Search className="w-6 h-6 text-settlers-muted" />
+          <div className="card p-10 text-center">
+            <div className="w-14 h-14 mx-auto mb-3 rounded-full bg-bg-elevated flex items-center justify-center border border-border">
+              <Search className="w-6 h-6 text-text-muted" />
             </div>
-            <p className="text-settlers-muted">
+            <p className="text-text-secondary">
               {matches.length === 0 ? 'Ingen kamper ennå.' : 'Ingen kamper matcher søket.'}
             </p>
             {activeFilterCount > 0 && (
               <button
                 onClick={clearFilters}
-                className="mt-3 text-sm text-settlers-gold hover:text-settlers-gold/80"
+                className="mt-3 text-sm text-accent hover:text-accent-light"
               >
                 Fjern filtre
               </button>

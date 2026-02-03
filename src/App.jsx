@@ -36,7 +36,6 @@ function App() {
     formatDuration,
   } = useFirestore()
 
-  // Auto-switch to live view when there's an active match
   useEffect(() => {
     if (activeMatch && currentView !== 'live-match') {
       setCurrentView('live-match')
@@ -83,7 +82,6 @@ function App() {
     URL.revokeObjectURL(url)
   }
 
-  // Live match handlers
   const handleStartLiveMatch = async (mapId, aiColors) => {
     try {
       await startLiveMatch(mapId, aiColors)
@@ -113,25 +111,23 @@ function App() {
     }
   }
 
-  // Loading state
   if (loading) {
     return (
-      <div className="min-h-screen bg-settlers-dark flex items-center justify-center">
+      <div className="min-h-screen bg-bg-primary flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-10 h-10 text-settlers-gold animate-spin mx-auto mb-4" />
-          <p className="text-settlers-muted">Laster inn...</p>
+          <Loader2 className="w-10 h-10 text-accent animate-spin mx-auto mb-4" />
+          <p className="text-text-muted">Laster inn...</p>
         </div>
       </div>
     )
   }
 
-  // Error state
   if (error) {
     return (
-      <div className="min-h-screen bg-settlers-dark flex items-center justify-center p-4">
+      <div className="min-h-screen bg-bg-primary flex items-center justify-center p-4">
         <div className="card p-6 max-w-md text-center">
-          <h2 className="text-lg font-semibold text-red-400 mb-2">Tilkoblingsfeil</h2>
-          <p className="text-settlers-muted mb-4">{error}</p>
+          <h2 className="text-lg font-semibold text-danger mb-2">Tilkoblingsfeil</h2>
+          <p className="text-text-muted mb-4">{error}</p>
           <button
             onClick={() => window.location.reload()}
             className="btn-primary"
@@ -216,14 +212,13 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-settlers-dark pb-24 pb-safe">
+    <div className="min-h-screen bg-bg-primary pb-24 pb-safe">
       <Header currentView={currentView} onViewChange={setCurrentView} hasActiveMatch={!!activeMatch} />
 
       <main className="container mx-auto px-4 py-4 max-w-lg">
         {renderContent()}
       </main>
 
-      {/* Battle Report Modal */}
       {selectedMatch && (
         <BattleReportModal
           match={selectedMatch}

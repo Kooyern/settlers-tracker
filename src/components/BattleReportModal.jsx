@@ -5,7 +5,7 @@ import { nb } from 'date-fns/locale'
 
 const AI_COLORS = {
   white: { name: 'Hvit AI', color: '#e5e5e5' },
-  black: { name: 'Svart AI', color: '#374151' },
+  black: { name: 'Svart AI', color: '#525252' },
   yellow: { name: 'Gul AI', color: '#eab308' },
   red: { name: 'Rød AI', color: '#ef4444' },
 }
@@ -21,7 +21,7 @@ export function BattleReportModal({ match, players, onClose, formatDuration }) {
     switch (type) {
       case 'ai_eliminated': return <Skull className="w-4 h-4 text-purple-400" />
       case 'gold_found': return <Gem className="w-4 h-4 text-yellow-400" />
-      case 'coal_found': return <Mountain className="w-4 h-4 text-gray-400" />
+      case 'coal_found': return <Mountain className="w-4 h-4 text-zinc-400" />
       case 'iron_found': return <Shield className="w-4 h-4 text-blue-400" />
       case 'expansion': return <Trees className="w-4 h-4 text-green-400" />
       case 'ai_attack': return <AlertTriangle className="w-4 h-4 text-red-400" />
@@ -49,47 +49,46 @@ export function BattleReportModal({ match, players, onClose, formatDuration }) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
+    <div className="fixed inset-0 bg-black/85 flex items-center justify-center p-4 z-50">
       <div className="card max-w-2xl w-full max-h-[90vh] overflow-auto">
-        {/* Header */}
-        <div className="sticky top-0 bg-settlers-card p-4 border-b border-settlers-border flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-settlers-text flex items-center gap-2">
-            <FileText className="w-5 h-5 text-settlers-gold" />
+        <div className="sticky top-0 bg-bg-card p-4 border-b border-border flex items-center justify-between z-10">
+          <h2 className="text-lg font-semibold text-text-primary flex items-center gap-2">
+            <FileText className="w-5 h-5 text-accent" />
             Kamprapport
           </h2>
           <button
             onClick={onClose}
-            className="text-settlers-muted hover:text-settlers-text"
+            className="text-text-muted hover:text-text-primary p-1"
           >
             <X className="w-6 h-6" />
           </button>
         </div>
 
-        <div className="p-4 space-y-4">
+        <div className="p-5 space-y-5">
           {/* Match Info */}
-          <div className="bg-settlers-dark rounded-xl p-4">
+          <div className="bg-bg-elevated rounded-xl p-4 border border-border">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
               <div>
-                <Calendar className="w-5 h-5 mx-auto text-settlers-muted mb-1" />
-                <p className="text-xs text-settlers-muted">Dato</p>
-                <p className="font-medium text-settlers-text">
+                <Calendar className="w-5 h-5 mx-auto text-text-muted mb-1.5" />
+                <p className="text-xs text-text-muted">Dato</p>
+                <p className="font-semibold text-text-primary">
                   {format(matchDate, 'dd. MMM yyyy', { locale: nb })}
                 </p>
               </div>
               <div>
-                <Map className="w-5 h-5 mx-auto text-settlers-muted mb-1" />
-                <p className="text-xs text-settlers-muted">Kart</p>
-                <p className="font-medium text-settlers-text">{mapName}</p>
+                <Map className="w-5 h-5 mx-auto text-text-muted mb-1.5" />
+                <p className="text-xs text-text-muted">Kart</p>
+                <p className="font-semibold text-text-primary">{mapName}</p>
               </div>
               <div>
-                <Clock className="w-5 h-5 mx-auto text-settlers-muted mb-1" />
-                <p className="text-xs text-settlers-muted">Varighet</p>
-                <p className="font-medium text-settlers-text">{formatDuration(match.duration)}</p>
+                <Clock className="w-5 h-5 mx-auto text-text-muted mb-1.5" />
+                <p className="text-xs text-text-muted">Varighet</p>
+                <p className="font-semibold text-text-primary number-display">{formatDuration(match.duration)}</p>
               </div>
               <div>
-                <Trophy className="w-5 h-5 mx-auto text-settlers-gold mb-1" />
-                <p className="text-xs text-settlers-muted">Vinner</p>
-                <p className="font-medium text-settlers-text">
+                <Trophy className="w-5 h-5 mx-auto text-accent mb-1.5" />
+                <p className="text-xs text-text-muted">Vinner</p>
+                <p className="font-semibold text-text-primary">
                   {match.result === 'draw' ? 'Uavgjort' : winner?.name || '-'}
                 </p>
               </div>
@@ -102,35 +101,34 @@ export function BattleReportModal({ match, players, onClose, formatDuration }) {
               const playerData = match.players?.[idx]
 
               return (
-                <div key={player.id} className="bg-settlers-dark rounded-xl p-4">
+                <div key={player.id} className="bg-bg-elevated rounded-xl p-4 border border-border">
                   <div className="flex items-center gap-3 mb-4">
                     <div
-                      className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold
-                        ${match.winnerId === player.id ? 'ring-2 ring-settlers-gold ring-offset-2 ring-offset-settlers-dark' : ''}`}
+                      className={`w-11 h-11 rounded-full flex items-center justify-center text-white font-bold shadow-lg
+                        ${match.winnerId === player.id ? 'ring-2 ring-accent ring-offset-2 ring-offset-bg-elevated' : ''}`}
                       style={{ backgroundColor: player.color }}
                     >
                       {match.winnerId === player.id ? <Trophy className="w-5 h-5" /> : player.name.charAt(0)}
                     </div>
                     <div>
-                      <h3 className="font-medium text-settlers-text">{player.name}</h3>
+                      <h3 className="font-semibold text-text-primary">{player.name}</h3>
                       {match.winnerId === player.id && (
-                        <span className="text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded">SEIER</span>
+                        <span className="badge-win px-2 py-0.5 rounded text-xs font-semibold">SEIER</span>
                       )}
                       {match.winnerId && match.winnerId !== player.id && (
-                        <span className="text-xs bg-red-500/20 text-red-400 px-2 py-0.5 rounded">TAP</span>
+                        <span className="badge-loss px-2 py-0.5 rounded text-xs font-semibold">TAP</span>
                       )}
                       {match.result === 'draw' && (
-                        <span className="text-xs bg-gray-500/20 text-gray-400 px-2 py-0.5 rounded">UAVGJORT</span>
+                        <span className="badge-draw px-2 py-0.5 rounded text-xs font-semibold">UAVGJORT</span>
                       )}
                     </div>
                   </div>
 
-                  {/* AI Eliminations */}
                   {playerData?.aiEliminations > 0 && (
-                    <div className="bg-purple-500/20 rounded-lg p-3 mb-3">
+                    <div className="bg-purple-500/10 rounded-xl p-3 mb-3 border border-purple-500/20">
                       <div className="flex items-center gap-2">
                         <Skull className="w-5 h-5 text-purple-400" />
-                        <span className="font-medium text-purple-400">
+                        <span className="font-semibold text-purple-400">
                           {playerData.aiEliminations} AI eliminert
                         </span>
                       </div>
@@ -140,24 +138,23 @@ export function BattleReportModal({ match, players, onClose, formatDuration }) {
                     </div>
                   )}
 
-                  {/* Events */}
                   {match.events?.filter(e => e.playerId === player.id).length > 0 && (
                     <div>
-                      <h4 className="text-xs font-medium text-settlers-muted mb-2">Hendelser</h4>
-                      <div className="space-y-1 max-h-32 overflow-y-auto">
+                      <h4 className="text-xs font-medium text-text-muted mb-2">Hendelser</h4>
+                      <div className="space-y-1.5 max-h-32 overflow-y-auto">
                         {match.events
                           .filter(e => e.playerId === player.id)
                           .sort((a, b) => a.matchTime - b.matchTime)
                           .map((event, eventIdx) => (
                             <div
                               key={eventIdx}
-                              className="flex items-center gap-2 text-sm bg-settlers-card rounded p-2"
+                              className="flex items-center gap-2 text-sm bg-bg-card rounded-lg p-2 border border-border"
                             >
-                              <span className="text-xs text-settlers-muted font-mono w-10">
+                              <span className="text-xs text-text-muted font-mono w-10 number-display">
                                 {formatMatchTime(event.matchTime)}
                               </span>
                               {getEventIcon(event.type)}
-                              <span className="text-settlers-text">
+                              <span className="text-text-secondary">
                                 {event.type === 'ai_eliminated' && AI_COLORS[event.aiId]
                                   ? `Eliminerte ${AI_COLORS[event.aiId].name}`
                                   : getEventLabel(event.type)}
@@ -175,7 +172,7 @@ export function BattleReportModal({ match, players, onClose, formatDuration }) {
                   )}
 
                   {!playerData?.aiEliminations && !match.events?.filter(e => e.playerId === player.id).length && (
-                    <p className="text-sm text-settlers-muted">
+                    <p className="text-sm text-text-muted">
                       Ingen detaljert rapport.
                     </p>
                   )}
@@ -184,17 +181,16 @@ export function BattleReportModal({ match, players, onClose, formatDuration }) {
             })}
           </div>
 
-          {/* Notes */}
           {match.notes && (
-            <div className="bg-settlers-dark rounded-xl p-4">
-              <h3 className="font-medium text-settlers-text mb-2">Notater</h3>
-              <p className="text-settlers-muted whitespace-pre-wrap">{match.notes}</p>
+            <div className="bg-bg-elevated rounded-xl p-4 border border-border">
+              <h3 className="font-semibold text-text-primary mb-2">Notater</h3>
+              <p className="text-text-secondary whitespace-pre-wrap">{match.notes}</p>
             </div>
           )}
 
           {/* Points Summary */}
-          <div className="bg-settlers-gold/10 rounded-xl p-4">
-            <h3 className="font-medium text-settlers-text mb-3 text-center">Poengoppsummering</h3>
+          <div className="bg-accent/10 rounded-xl p-4 border border-accent/20">
+            <h3 className="font-semibold text-text-primary mb-4 text-center">Poengoppsummering</h3>
             <div className="grid grid-cols-2 gap-4">
               {players.map((player, idx) => {
                 const playerData = match.players?.[idx]
@@ -204,12 +200,12 @@ export function BattleReportModal({ match, players, onClose, formatDuration }) {
 
                 return (
                   <div key={player.id} className="text-center">
-                    <p className="font-medium text-settlers-text">{player.name}</p>
-                    <div className="text-sm text-settlers-muted mt-1 space-y-0.5">
+                    <p className="font-semibold text-text-primary">{player.name}</p>
+                    <div className="text-sm text-text-muted mt-1 space-y-0.5">
                       <p>Kamp: +{winPoints.toFixed(1)}</p>
                       <p>AI-bonus: +{aiPoints.toFixed(1)}</p>
                     </div>
-                    <p className="text-2xl font-bold text-settlers-gold mt-2">
+                    <p className="text-3xl font-bold text-accent-gradient mt-2 number-display">
                       +{totalPoints.toFixed(1)}
                     </p>
                   </div>
