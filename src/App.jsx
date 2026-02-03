@@ -216,8 +216,8 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-settlers-dark via-[#1a0f09] to-settlers-dark-brown pb-20 pb-safe">
-      <Header currentView={currentView} onViewChange={setCurrentView} />
+    <div className="min-h-screen bg-gradient-to-br from-settlers-dark via-[#1a0f09] to-settlers-dark-brown pb-24 pb-safe">
+      <Header currentView={currentView} onViewChange={setCurrentView} hasActiveMatch={!!activeMatch} />
 
       <main className="container mx-auto px-3 py-4 max-w-lg">
         {renderContent()}
@@ -234,11 +234,6 @@ function App() {
         />
       )}
 
-      {/* Sync indicator - smaller and less intrusive */}
-      <div className="fixed bottom-2 right-2 bg-green-500/10 text-green-400 text-[10px] px-2 py-0.5 rounded-full">
-        <span className="inline-block w-1.5 h-1.5 bg-green-400 rounded-full mr-1 animate-pulse"></span>
-        Live
-      </div>
     </div>
   )
 }
