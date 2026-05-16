@@ -19,7 +19,7 @@ export function MatchCard({ match, players, formatDuration, onDelete, onViewRepo
   // Compact view for dashboard
   if (compact) {
     return (
-      <div className="card p-3 hover:border-border-light transition-colors">
+      <div className="card p-4 hover:border-border-light transition-colors">
         <div className="grid grid-cols-[auto_minmax(0,1fr)] gap-3 sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:items-center">
           <div className="flex shrink-0 items-center gap-2">
             <div
@@ -75,7 +75,7 @@ export function MatchCard({ match, players, formatDuration, onDelete, onViewRepo
   return (
     <div className="card overflow-hidden">
       {/* Header */}
-      <div className="p-3 sm:p-4">
+      <div className="p-4">
         {/* Date */}
         <div className="text-xs text-text-muted mb-4">
           {format(matchDate, 'dd. MMMM yyyy, HH:mm', { locale: nb })}
@@ -137,7 +137,7 @@ export function MatchCard({ match, players, formatDuration, onDelete, onViewRepo
                 {players.map((player, idx) => {
                   const stats = getPlayerMatchStats(player.id)
                   return (
-                    <div key={idx} className="bg-bg-card rounded-xl p-3 text-center border border-border">
+                    <div key={idx} className="bg-bg-card rounded-xl p-4 text-center border border-border">
                       <p className="text-xs text-text-muted mb-1">{player.name}</p>
                       <p className="text-2xl font-bold text-purple-400 number-display">{stats.aiEliminations || 0}</p>
                     </div>
@@ -153,7 +153,7 @@ export function MatchCard({ match, players, formatDuration, onDelete, onViewRepo
               <h4 className="text-xs font-semibold text-text-muted uppercase tracking-wide mb-2 flex items-center gap-2">
                 <FileText className="w-4 h-4" /> Notater
               </h4>
-              <p className="text-sm text-text-secondary bg-bg-card rounded-xl p-3 border border-border">
+              <p className="text-sm text-text-secondary bg-bg-card rounded-xl p-4 border border-border">
                 {match.notes}
               </p>
             </div>

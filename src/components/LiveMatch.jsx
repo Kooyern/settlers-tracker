@@ -114,7 +114,7 @@ export function LiveMatch({ players, maps, activeMatch, onStartMatch, onEndMatch
 
   if (!activeMatch) {
     return (
-      <div className="card mx-auto w-full max-w-2xl p-3 sm:p-5">
+      <div className="card mx-auto w-full max-w-2xl p-4 sm:p-5">
         <div className="flex items-center gap-3 mb-6">
           <button onClick={onCancel} className="p-2 -ml-2 text-text-muted hover:text-text-primary">
             <ChevronLeft className="w-6 h-6" />
@@ -318,7 +318,7 @@ export function LiveMatch({ players, maps, activeMatch, onStartMatch, onEndMatch
         const eliminations = getPlayerEliminations(player.id)
 
         return (
-          <div key={player.id} className="card p-3 sm:p-4">
+          <div key={player.id} className="card p-4">
             <div className="flex items-center gap-3 mb-4">
               <div className="h-10 w-10 shrink-0 rounded-full shadow-lg" style={{ backgroundColor: player.color }} />
               <h3 className="min-w-0 flex-1 truncate text-lg font-semibold text-text-primary">{player.name}</h3>
@@ -388,7 +388,7 @@ export function LiveMatch({ players, maps, activeMatch, onStartMatch, onEndMatch
       })}
 
       {/* Timeline */}
-      <div className="card p-3 sm:p-4">
+      <div className="card p-4">
         <h3 className="font-medium text-text-primary mb-3 flex items-center gap-2">
           <Clock className="w-4 h-4 text-accent" /> Tidslinje
         </h3>

@@ -222,7 +222,7 @@ function App() {
     <div className="min-h-screen overflow-x-hidden bg-bg-primary pb-24 pb-safe">
       <Header currentView={currentView} onViewChange={setCurrentView} hasActiveMatch={!!activeMatch} />
 
-      <main className="mx-auto w-full max-w-5xl px-3 py-3 sm:px-4 sm:py-5 lg:px-6">
+      <main className="mx-auto w-full max-w-5xl px-5 py-4 sm:px-6 sm:py-5 lg:px-8">
         {renderContent()}
       </main>
 

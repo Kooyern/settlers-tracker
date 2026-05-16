@@ -45,9 +45,9 @@ export function Dashboard({
   const streak = getCurrentStreak(matches, players)
 
   return (
-    <div className="grid gap-3 lg:grid-cols-[minmax(0,1.05fr)_minmax(320px,0.95fr)] lg:items-start">
-      <div className="space-y-3 sm:space-y-4">
-      <section className="app-hero card overflow-hidden p-3 sm:p-5">
+    <div className="grid gap-4 lg:grid-cols-[minmax(0,1.05fr)_minmax(320px,0.95fr)] lg:items-start">
+      <div className="space-y-4">
+      <section className="app-hero card overflow-hidden p-4 sm:p-5">
         <div className="settlers-map-strip" />
         <div className="relative">
           <div className="flex items-start justify-between gap-3">
@@ -60,7 +60,7 @@ export function Dashboard({
                 Oversikt, liveføring og kartrotasjon for neste oppgjør.
               </p>
             </div>
-            <div className="shrink-0 rounded-xl border border-border-light bg-bg-primary/70 px-3 py-2 text-right">
+            <div className="shrink-0 rounded-xl border border-border-light bg-bg-primary/70 px-3.5 py-2.5 text-right">
               <p className="text-[10px] uppercase text-text-muted">Kartbase</p>
               <p className="number-display text-xl font-bold text-accent">{maps.length}</p>
             </div>
@@ -111,7 +111,7 @@ export function Dashboard({
         <StatCard value={playedMapNames.size} label="Kart" icon={<Map className="h-4 w-4" />} />
       </div>
 
-      <section className="card p-3 sm:p-4">
+      <section className="card p-4">
         <div className="mb-3 flex items-center justify-between gap-3">
           <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-text-secondary">
             <Trophy className="h-4 w-4 text-accent" />
@@ -126,7 +126,7 @@ export function Dashboard({
 
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
           {playerRows.map(player => (
-            <div key={player.id} className="rounded-xl border border-border bg-bg-elevated p-3">
+            <div key={player.id} className="rounded-xl border border-border bg-bg-elevated p-4">
               <div className="flex items-center gap-2">
                 <span className="h-3 w-3 rounded-full" style={{ backgroundColor: player.color }} />
                 <span className="truncate text-sm font-semibold text-text-primary">{player.name}</span>
@@ -154,8 +154,8 @@ export function Dashboard({
       </div>
       </div>
 
-      <div className="space-y-3 sm:space-y-4">
-      <section className="card p-3 sm:p-4">
+      <div className="space-y-4">
+      <section className="card p-4">
         <div className="mb-3 flex items-center justify-between gap-2">
           <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-text-secondary">
             <MapPinned className="h-4 w-4 text-accent" />
@@ -166,7 +166,7 @@ export function Dashboard({
 
         <div className="space-y-2">
           {mapRotation.map((map, index) => (
-            <div key={map.id} className={`items-center justify-between gap-3 rounded-xl border border-border bg-bg-elevated px-3 py-2 ${index > 2 ? 'hidden sm:flex' : 'flex'}`}>
+            <div key={map.id} className={`items-center justify-between gap-3 rounded-xl border border-border bg-bg-elevated px-4 py-3 ${index > 2 ? 'hidden sm:flex' : 'flex'}`}>
               <div className="min-w-0">
                 <p className="truncate text-sm font-semibold text-text-primary">{map.name}</p>
                 <p className="truncate text-xs text-text-muted">{map.category || 'Kart'} · {map.source || 'Egendefinert'}</p>
@@ -230,7 +230,7 @@ export function Dashboard({
 
 function StatCard({ value, label, icon }) {
   return (
-    <div className="card p-3 text-center">
+    <div className="card p-4 text-center">
       <div className="mb-2 flex justify-center">
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent/10 text-accent">
           {icon}

@@ -107,7 +107,7 @@ export function NewMatchForm({ players, maps, matches = [], onSubmit, onCancel, 
   }
 
   return (
-    <div className="card mx-auto w-full max-w-2xl p-3 sm:p-5">
+    <div className="card mx-auto w-full max-w-2xl p-4 sm:p-5">
       <div className="flex items-center gap-3 mb-6">
         <button onClick={onCancel} className="p-2 -ml-2 text-text-muted hover:text-text-primary">
           <ChevronLeft className="w-6 h-6" />
@@ -258,7 +258,7 @@ export function NewMatchForm({ players, maps, matches = [], onSubmit, onCancel, 
           </label>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {players.map((player) => (
-              <div key={player.id} className="bg-bg-elevated rounded-xl p-3 border border-border">
+              <div key={player.id} className="bg-bg-elevated rounded-xl p-4 border border-border">
                 <p className="mb-2 flex min-w-0 items-center gap-2 text-sm font-medium text-text-secondary">
                   <span className="h-3 w-3 shrink-0 rounded-full" style={{ backgroundColor: player.color }} />
                   <span className="truncate">{player.name}</span>
@@ -375,7 +375,7 @@ function BattleReportForm({ form, setForm, players }) {
   return (
     <div className="bg-bg-elevated rounded-xl p-4 space-y-3 border border-border">
       {players.map((player) => (
-        <div key={player.id} className="bg-bg-card rounded-xl p-3 border border-border">
+        <div key={player.id} className="bg-bg-card rounded-xl p-4 border border-border">
           <h4 className="font-medium text-text-primary mb-2 text-sm flex items-center gap-2">
             <span className="w-3 h-3 rounded-full" style={{ backgroundColor: player.color }} />
             {player.name}

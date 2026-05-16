@@ -13,7 +13,7 @@ export function Header({ currentView, onViewChange, hasActiveMatch }) {
   return (
     <>
       <header className="bg-gradient-to-b from-bg-secondary to-bg-primary border-b border-border sticky top-0 z-50">
-        <div className="flex items-center justify-center px-3 py-3 sm:py-4">
+        <div className="flex items-center justify-center px-5 py-3 sm:py-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-accent-light to-accent-dark flex items-center justify-center shadow-lg">
               <Shield className="w-5 h-5 text-bg-primary" />
@@ -31,7 +31,7 @@ export function Header({ currentView, onViewChange, hasActiveMatch }) {
       </header>
 
       <nav className="fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-t from-bg-secondary via-bg-secondary to-bg-secondary/95 border-t border-border backdrop-blur-xl pb-safe">
-        <div className="mx-auto flex max-w-lg items-center justify-around gap-1 px-1.5 py-2">
+        <div className="mx-auto flex max-w-lg items-center justify-around gap-1 px-4 py-2">
           {navItems.map(item => {
             const Icon = item.icon
             const isActive = currentView === item.id

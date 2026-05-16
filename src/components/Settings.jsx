@@ -99,7 +99,7 @@ export function Settings({ players, updatePlayer, matches, maps, addMap, addMaps
   return (
     <div className="mx-auto grid w-full max-w-5xl gap-4 lg:grid-cols-[minmax(0,0.85fr)_minmax(340px,1.15fr)] lg:items-start">
       {/* Header */}
-      <div className="card p-3 sm:p-4 lg:col-span-2">
+      <div className="card p-4 lg:col-span-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <SettingsIcon className="w-5 h-5 text-accent" />
@@ -113,17 +113,17 @@ export function Settings({ players, updatePlayer, matches, maps, addMap, addMaps
       </div>
 
       {/* Quick Stats */}
-      <div className="card p-3 sm:p-4">
+      <div className="card p-4">
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 lg:grid-cols-1">
-          <div className="bg-bg-elevated rounded-xl p-3 text-center border border-border">
+          <div className="bg-bg-elevated rounded-xl p-4 text-center border border-border">
             <p className="text-2xl font-bold text-accent number-display">{matches.length}</p>
             <p className="text-[10px] text-text-muted uppercase tracking-wider">Kamper</p>
           </div>
-          <div className="bg-bg-elevated rounded-xl p-3 text-center border border-border">
+          <div className="bg-bg-elevated rounded-xl p-4 text-center border border-border">
             <p className="text-2xl font-bold text-accent number-display">{maps.length}</p>
             <p className="text-[10px] text-text-muted uppercase tracking-wider">Kart</p>
           </div>
-          <div className="bg-bg-elevated rounded-xl p-3 text-center border border-border">
+          <div className="bg-bg-elevated rounded-xl p-4 text-center border border-border">
             <p className="text-2xl font-bold text-accent number-display">
               {hours > 0 ? `${hours}t` : ''}{mins}m
             </p>
