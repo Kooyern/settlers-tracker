@@ -66,14 +66,14 @@ export function Dashboard({
             </div>
           </div>
 
-          <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
-            <button onClick={onStartLive} className="btn-primary flex items-center justify-center gap-2 px-3 py-3">
+          <div className="mt-4 grid grid-cols-2 gap-2">
+            <button onClick={onStartLive} className="btn-primary flex flex-col items-center justify-center gap-1 px-2 py-3 sm:flex-row sm:gap-2 sm:px-3">
               <Play className="h-5 w-5" />
-              Live kamp
+              <span>Live kamp</span>
             </button>
-            <button onClick={onNewMatch} className="btn-secondary flex items-center justify-center gap-2 px-3 py-3">
+            <button onClick={onNewMatch} className="btn-secondary flex flex-col items-center justify-center gap-1 px-2 py-3 sm:flex-row sm:gap-2 sm:px-3">
               <Swords className="h-5 w-5" />
-              Registrer
+              <span>Registrer</span>
             </button>
           </div>
 
@@ -149,7 +149,9 @@ export function Dashboard({
         )}
       </section>
 
-      <Leaderboard players={players} getPlayerStats={getPlayerStats} formatDuration={formatDuration} />
+      <div className="hidden sm:block">
+        <Leaderboard players={players} getPlayerStats={getPlayerStats} formatDuration={formatDuration} />
+      </div>
       </div>
 
       <div className="space-y-3 sm:space-y-4">
@@ -163,8 +165,8 @@ export function Dashboard({
         </div>
 
         <div className="space-y-2">
-          {mapRotation.map(map => (
-            <div key={map.id} className="flex items-center justify-between gap-3 rounded-xl border border-border bg-bg-elevated px-3 py-2">
+          {mapRotation.map((map, index) => (
+            <div key={map.id} className={`items-center justify-between gap-3 rounded-xl border border-border bg-bg-elevated px-3 py-2 ${index > 2 ? 'hidden sm:flex' : 'flex'}`}>
               <div className="min-w-0">
                 <p className="truncate text-sm font-semibold text-text-primary">{map.name}</p>
                 <p className="truncate text-xs text-text-muted">{map.category || 'Kart'} · {map.source || 'Egendefinert'}</p>
@@ -187,16 +189,17 @@ export function Dashboard({
             </h2>
             <span className="number-display text-xs text-text-muted">{matches.length} totalt</span>
           </div>
-          {recentMatches.map(match => (
-            <MatchCard
-              key={match.id}
-              match={match}
-              players={players}
-              formatDuration={formatDuration}
-              onDelete={onDeleteMatch}
-              onViewReport={onViewReport}
-              compact
-            />
+          {recentMatches.map((match, index) => (
+            <div key={match.id} className={index > 1 ? 'hidden sm:block' : ''}>
+              <MatchCard
+                match={match}
+                players={players}
+                formatDuration={formatDuration}
+                onDelete={onDeleteMatch}
+                onViewReport={onViewReport}
+                compact
+              />
+            </div>
           ))}
         </section>
       ) : (
@@ -211,7 +214,7 @@ export function Dashboard({
         </section>
       )}
 
-      <section className="card p-4">
+      <section className="card hidden p-4 sm:block">
         <div className="flex items-center gap-2 text-sm font-semibold text-text-primary">
           <Sparkles className="h-4 w-4 text-accent" />
           Neste gode vane
