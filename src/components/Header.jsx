@@ -12,7 +12,6 @@ export function Header({ currentView, onViewChange, hasActiveMatch }) {
 
   return (
     <>
-      {/* Top Header */}
       <header className="bg-gradient-to-b from-bg-secondary to-bg-primary border-b border-border sticky top-0 z-50">
         <div className="flex items-center justify-center py-4 px-4">
           <div className="flex items-center gap-3">
@@ -31,7 +30,6 @@ export function Header({ currentView, onViewChange, hasActiveMatch }) {
         </div>
       </header>
 
-      {/* Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-t from-bg-secondary via-bg-secondary to-bg-secondary/95 border-t border-border backdrop-blur-xl pb-safe">
         <div className="flex justify-around items-center px-2 py-2 max-w-lg mx-auto">
           {navItems.map(item => {
@@ -51,6 +49,7 @@ export function Header({ currentView, onViewChange, hasActiveMatch }) {
                     transition-all duration-200 active:scale-95
                     ${isActive ? 'ring-2 ring-accent/50 ring-offset-2 ring-offset-bg-secondary' : ''}
                   `}
+                  title={item.label}
                 >
                   <Icon className="w-6 h-6 text-bg-primary" />
                   {hasActiveMatch && (
@@ -71,6 +70,7 @@ export function Header({ currentView, onViewChange, hasActiveMatch }) {
                     : 'text-text-muted hover:text-text-secondary'
                   }
                 `}
+                title={item.label}
               >
                 <Icon className={`w-5 h-5 ${isActive ? 'drop-shadow-[0_0_8px_rgba(201,162,39,0.5)]' : ''}`} />
                 <span className="text-[10px] font-medium">{item.label}</span>

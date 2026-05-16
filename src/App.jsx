@@ -32,6 +32,8 @@ function App() {
     endLiveMatch,
     cancelLiveMatch,
     getPlayerStats,
+    getMapStats,
+    getMapRotation,
     getMapName,
     formatDuration,
   } = useFirestore()
@@ -146,7 +148,10 @@ function App() {
           <Dashboard
             players={players}
             matches={matches}
+            maps={maps}
+            activeMatch={activeMatch}
             getPlayerStats={getPlayerStats}
+            getMapRotation={getMapRotation}
             formatDuration={formatDuration}
             onDeleteMatch={handleDeleteMatch}
             onViewReport={handleViewReport}
@@ -160,6 +165,7 @@ function App() {
           <NewMatchForm
             players={players}
             maps={maps}
+            matches={matches}
             onSubmit={handleNewMatch}
             onCancel={() => setCurrentView('dashboard')}
             onAddMap={addMap}
@@ -172,6 +178,7 @@ function App() {
             matches={matches}
             players={players}
             maps={maps}
+            getMapStats={getMapStats}
             getMapName={getMapName}
             formatDuration={formatDuration}
             onDeleteMatch={handleDeleteMatch}

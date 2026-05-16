@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { Search, Map, X, Check, Plus } from 'lucide-react'
 
-export function MapSelector({ maps, selectedMapId, onSelect, onAddMap }) {
+export function MapSelector({ maps, matches = [], selectedMapId, onSelect, onAddMap }) {
   const [isOpen, setIsOpen] = useState(false)
   const [search, setSearch] = useState('')
   const [showAddNew, setShowAddNew] = useState(false)
@@ -10,10 +10,22 @@ export function MapSelector({ maps, selectedMapId, onSelect, onAddMap }) {
   const containerRef = useRef(null)
 
   const selectedMap = maps.find(m => m.id === selectedMapId)
+  const mapStats = maps.reduce((acc, map) => {
+    const mapMatches = matches.filter(match => match.mapId === map.id || match.mapName === map.name)
+    acc[map.id] = {
+      plays: mapMatches.length,
+      lastPlayed: mapMatches[0]?.date || null,
+    }
+    return acc
+  }, {})
 
-  const filteredMaps = maps.filter(map =>
-    map.name.toLowerCase().includes(search.toLowerCase())
-  )
+  const filteredMaps = maps
+    .filter(map => map.name.toLowerCase().includes(search.toLowerCase()))
+    .sort((a, b) => {
+      const playDiff = (mapStats[a.id]?.plays || 0) - (mapStats[b.id]?.plays || 0)
+      if (playDiff !== 0) return playDiff
+      return (a.sortName || a.name).localeCompare(b.sortName || b.name)
+    })
 
   const groupedMaps = filteredMaps.reduce((acc, map) => {
     const cat = map.category || 'Annet'
@@ -76,9 +88,9 @@ export function MapSelector({ maps, selectedMapId, onSelect, onAddMap }) {
         <span className={`flex-1 ${selectedMap ? 'text-text-primary font-medium' : 'text-text-muted'}`}>
           {selectedMap?.name || 'Velg kart...'}
         </span>
-        {selectedMap?.category && (
-          <span className="text-xs text-text-muted bg-bg-primary px-2 py-0.5 rounded border border-border">
-            {selectedMap.category}
+        {selectedMap && (
+          <span className="rounded border border-border bg-bg-primary px-2 py-0.5 text-xs text-text-muted">
+            {mapStats[selectedMap.id]?.plays || 0} spilt
           </span>
         )}
       </button>
@@ -144,7 +156,15 @@ export function MapSelector({ maps, selectedMapId, onSelect, onAddMap }) {
                           }`}
                       >
                         {selectedMapId === map.id && <Check className="w-4 h-4 text-accent" />}
-                        <span className="flex-1 truncate">{map.name}</span>
+                        <span className="flex-1 min-w-0">
+                          <span className="block truncate">{map.name}</span>
+                          <span className="block truncate text-[10px] text-text-muted">
+                            {map.source || map.category || 'Kart'}
+                          </span>
+                        </span>
+                        <span className="rounded bg-bg-primary px-2 py-0.5 text-[10px] font-bold text-text-muted">
+                          {mapStats[map.id]?.plays || 0}
+                        </span>
                       </button>
                     ))}
                   </div>

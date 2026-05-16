@@ -16,7 +16,7 @@ const getLocalDateTime = () => {
   return local.toISOString().slice(0, 16)
 }
 
-export function NewMatchForm({ players, maps, onSubmit, onCancel, onAddMap }) {
+export function NewMatchForm({ players, maps, matches = [], onSubmit, onCancel, onAddMap }) {
   const [form, setForm] = useState({
     mapId: '',
     mapName: '',
@@ -125,6 +125,7 @@ export function NewMatchForm({ players, maps, onSubmit, onCancel, onAddMap }) {
           </label>
           <MapSelector
             maps={maps}
+            matches={matches}
             selectedMapId={form.mapId}
             onSelect={(mapId) => setForm(prev => ({ ...prev, mapId }))}
             onAddMap={onAddMap}

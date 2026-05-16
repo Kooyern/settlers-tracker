@@ -1,190 +1,130 @@
-import React, { useState, useMemo } from 'react'
-import { ScrollText, Search, X, SlidersHorizontal } from 'lucide-react'
+import React, { useState } from 'react'
+import { ScrollText, Search, X, Map } from 'lucide-react'
 import { MatchCard } from './MatchCard'
 
-export function MatchHistory({ matches, players, formatDuration, onDeleteMatch, onViewReport }) {
+export function MatchHistory({
+  matches,
+  players,
+  maps = [],
+  getMapName,
+  getMapStats,
+  formatDuration,
+  onDeleteMatch,
+  onViewReport,
+}) {
   const [filters, setFilters] = useState({
     mapId: '',
     winnerId: '',
     searchTerm: '',
   })
-  const [showFilters, setShowFilters] = useState(false)
 
-  const usedMaps = useMemo(() => {
-    const mapSet = new Map()
-    matches.forEach(match => {
-      if (match.mapName && !mapSet.has(match.mapId)) {
-        mapSet.set(match.mapId, match.mapName)
-      }
-    })
-    return Array.from(mapSet, ([id, name]) => ({ id, name }))
-  }, [matches])
+  const filteredMatches = matches.filter(match => {
+    if (filters.mapId) {
+      const selectedMap = maps.find(map => map.id === filters.mapId)
+      if (match.mapId !== filters.mapId && match.mapName !== selectedMap?.name) return false
+    }
+    if (filters.winnerId && match.winnerId !== filters.winnerId) return false
+    if (filters.searchTerm) {
+      const term = filters.searchTerm.toLowerCase()
+      const matchNotes = match.notes?.toLowerCase() || ''
+      const mapName = (match.mapName || getMapName?.(match.mapId) || '').toLowerCase()
+      if (!matchNotes.includes(term) && !mapName.includes(term)) return false
+    }
+    return true
+  })
 
-  const filteredMatches = useMemo(() => {
-    return matches.filter(match => {
-      if (filters.mapId && match.mapId !== filters.mapId) return false
-      if (filters.winnerId && match.winnerId !== filters.winnerId) return false
-      if (filters.searchTerm) {
-        const term = filters.searchTerm.toLowerCase()
-        const matchNotes = match.notes?.toLowerCase() || ''
-        const mapName = match.mapName?.toLowerCase() || ''
-        if (!matchNotes.includes(term) && !mapName.includes(term)) return false
-      }
-      return true
-    })
-  }, [matches, filters])
+  const mostPlayedMaps = maps
+    .map(map => ({ ...map, stats: getMapStats?.(map.id) || { matches: 0 } }))
+    .filter(map => map.stats.matches > 0)
+    .sort((a, b) => b.stats.matches - a.stats.matches)
+    .slice(0, 3)
 
-  const activeFilterCount = [filters.mapId, filters.winnerId, filters.searchTerm].filter(Boolean).length
-
-  const clearFilters = () => setFilters({ mapId: '', winnerId: '', searchTerm: '' })
-
-  const player1Wins = matches.filter(m => m.winnerId === 'player1').length
-  const player2Wins = matches.filter(m => m.winnerId === 'player2').length
-  const draws = matches.filter(m => m.result === 'draw').length
+  const hasFilters = filters.mapId || filters.winnerId || filters.searchTerm
 
   return (
     <div className="space-y-4">
-      {/* Header */}
-      <div className="card overflow-hidden">
-        <div className="p-4">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <ScrollText className="w-5 h-5 text-accent" />
-              <h2 className="font-semibold text-text-primary">Kamphistorikk</h2>
-            </div>
-            <span className="text-xs text-text-muted bg-bg-elevated px-3 py-1 rounded-full border border-border number-display">
-              {matches.length} kamper
-            </span>
+      <div className="card p-5">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-11 h-11 rounded-xl bg-accent/10 flex items-center justify-center">
+            <ScrollText className="w-5 h-5 text-accent" />
           </div>
-
-          {/* Quick stats */}
-          <div className="grid grid-cols-3 gap-2 mb-4">
-            <div className="bg-bg-elevated rounded-xl p-3 text-center border border-border">
-              <div className="flex items-center justify-center gap-1.5 mb-1">
-                <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: players[0]?.color }} />
-                <span className="text-xs text-text-muted truncate">{players[0]?.name}</span>
-              </div>
-              <span className="text-xl font-bold text-success number-display">{player1Wins}</span>
-            </div>
-            <div className="bg-bg-elevated rounded-xl p-3 text-center border border-border">
-              <span className="text-xs text-text-muted block mb-1">Uavgjort</span>
-              <span className="text-xl font-bold text-text-muted number-display">{draws}</span>
-            </div>
-            <div className="bg-bg-elevated rounded-xl p-3 text-center border border-border">
-              <div className="flex items-center justify-center gap-1.5 mb-1">
-                <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: players[1]?.color }} />
-                <span className="text-xs text-text-muted truncate">{players[1]?.name}</span>
-              </div>
-              <span className="text-xl font-bold text-success number-display">{player2Wins}</span>
-            </div>
-          </div>
-
-          {/* Search */}
-          <div className="flex gap-2">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
-              <input
-                type="text"
-                placeholder="Søk i notater eller kart..."
-                value={filters.searchTerm}
-                onChange={(e) => setFilters(prev => ({ ...prev, searchTerm: e.target.value }))}
-                className="input pl-10 py-3 text-sm"
-              />
-              {filters.searchTerm && (
-                <button
-                  onClick={() => setFilters(prev => ({ ...prev, searchTerm: '' }))}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              )}
-            </div>
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              className={`px-4 py-3 rounded-xl flex items-center gap-2 transition-all border
-                ${showFilters || activeFilterCount > 0
-                  ? 'bg-accent/10 text-accent border-accent/30'
-                  : 'bg-bg-elevated text-text-muted border-border hover:border-border-light'
-                }`}
-            >
-              <SlidersHorizontal className="w-4 h-4" />
-              {activeFilterCount > 0 && (
-                <span className="w-5 h-5 rounded-full bg-accent text-bg-primary text-xs flex items-center justify-center font-bold">
-                  {activeFilterCount}
-                </span>
-              )}
-            </button>
+          <div>
+            <h2 className="text-xl font-semibold text-text-primary">Historikk</h2>
+            <p className="text-sm text-text-muted">{matches.length} registrerte kamper</p>
           </div>
         </div>
 
-        {/* Filters */}
-        {showFilters && (
-          <div className="px-4 pb-4 pt-2 border-t border-border space-y-3">
-            <div>
-              <label className="text-xs text-text-muted block mb-1.5 font-medium">Kart</label>
-              <select
-                value={filters.mapId}
-                onChange={(e) => setFilters(prev => ({ ...prev, mapId: e.target.value }))}
-                className="select w-full py-3 text-sm"
-              >
-                <option value="">Alle kart</option>
-                {usedMaps.map(map => (
-                  <option key={map.id} value={map.id}>{map.name}</option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="text-xs text-text-muted block mb-1.5 font-medium">Vinner</label>
-              <select
-                value={filters.winnerId}
-                onChange={(e) => setFilters(prev => ({ ...prev, winnerId: e.target.value }))}
-                className="select w-full py-3 text-sm"
-              >
-                <option value="">Alle resultater</option>
-                {players.map(player => (
-                  <option key={player.id} value={player.id}>{player.name} vant</option>
-                ))}
-              </select>
-            </div>
-
-            {activeFilterCount > 0 && (
-              <button
-                onClick={clearFilters}
-                className="text-sm text-accent hover:text-accent-light flex items-center gap-1"
-              >
-                <X className="w-4 h-4" /> Fjern alle filtre
-              </button>
-            )}
+        {mostPlayedMaps.length > 0 && (
+          <div className="mb-4 grid grid-cols-3 gap-2">
+            {mostPlayedMaps.map(map => (
+              <div key={map.id} className="rounded-xl border border-border bg-bg-elevated p-2">
+                <p className="truncate text-xs font-semibold text-text-primary">{map.name}</p>
+                <p className="number-display text-lg font-bold text-accent">{map.stats.matches}</p>
+                <p className="text-[10px] text-text-muted">kamper</p>
+              </div>
+            ))}
           </div>
         )}
+
+        <div className="space-y-3">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+            <input
+              type="text"
+              placeholder="Søk i kart eller notater..."
+              value={filters.searchTerm}
+              onChange={(e) => setFilters(prev => ({ ...prev, searchTerm: e.target.value }))}
+              className="input pl-10 pr-4"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-2">
+            <select
+              value={filters.mapId}
+              onChange={(e) => setFilters(prev => ({ ...prev, mapId: e.target.value }))}
+              className="select text-sm"
+            >
+              <option value="">Alle kart</option>
+              {maps.map(map => (
+                <option key={map.id} value={map.id}>{map.name}</option>
+              ))}
+            </select>
+
+            <select
+              value={filters.winnerId}
+              onChange={(e) => setFilters(prev => ({ ...prev, winnerId: e.target.value }))}
+              className="select text-sm"
+            >
+              <option value="">Alle resultater</option>
+              {players.map(player => (
+                <option key={player.id} value={player.id}>{player.name} vant</option>
+              ))}
+            </select>
+          </div>
+
+          {hasFilters && (
+            <button
+              onClick={() => setFilters({ mapId: '', winnerId: '', searchTerm: '' })}
+              className="flex items-center gap-1 text-sm text-text-muted hover:text-text-primary"
+            >
+              <X className="w-4 h-4" /> Fjern filtre
+            </button>
+          )}
+        </div>
       </div>
 
-      {/* Results count */}
-      {activeFilterCount > 0 && (
-        <p className="text-xs text-text-muted px-1">
-          Viser {filteredMatches.length} av {matches.length} kamper
-        </p>
-      )}
-
-      {/* Match list */}
-      <div className="space-y-3">
+      <div className="space-y-2">
         {filteredMatches.length === 0 ? (
           <div className="card p-10 text-center">
-            <div className="w-14 h-14 mx-auto mb-3 rounded-full bg-bg-elevated flex items-center justify-center border border-border">
-              <Search className="w-6 h-6 text-text-muted" />
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl border border-border bg-bg-elevated">
+              <Map className="h-7 w-7 text-text-muted" />
             </div>
-            <p className="text-text-secondary">
-              {matches.length === 0 ? 'Ingen kamper ennå.' : 'Ingen kamper matcher søket.'}
+            <p className="text-text-primary font-medium">
+              {matches.length === 0 ? 'Ingen kamper registrert ennå' : 'Ingen kamper matcher filtrene'}
             </p>
-            {activeFilterCount > 0 && (
-              <button
-                onClick={clearFilters}
-                className="mt-3 text-sm text-accent hover:text-accent-light"
-              >
-                Fjern filtre
-              </button>
-            )}
+            <p className="text-sm text-text-muted mt-1">
+              {matches.length === 0 ? 'Start med live-kamp eller manuell registrering.' : 'Prøv et bredere søk.'}
+            </p>
           </div>
         ) : (
           filteredMatches.map(match => (

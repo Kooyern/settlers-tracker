@@ -11,6 +11,7 @@ import {
   query,
   orderBy
 } from 'firebase/firestore'
+import { DEFAULT_MAPS, normalizeMapName } from '../data/maps'
 
 // Default players
 const DEFAULT_PLAYERS = [
@@ -24,13 +25,6 @@ const HISTORICAL_POINTS = {
   player1: 36,   // Stian
   player2: 35,   // Espen
 }
-
-// Some starter maps
-const DEFAULT_MAPS = [
-  { id: 'default-1', name: 'Tutorial Island', category: 'Standard' },
-  { id: 'default-2', name: 'Green Valley', category: 'Standard' },
-  { id: 'default-3', name: 'River Delta', category: 'Standard' },
-]
 
 export function useFirestore() {
   const [players, setPlayers] = useState(DEFAULT_PLAYERS)
@@ -74,19 +68,25 @@ export function useFirestore() {
     const unsubscribe = onSnapshot(
       q,
       (snapshot) => {
-        if (snapshot.empty) {
-          // Initialize with default maps
-          DEFAULT_MAPS.forEach(map => {
-            setDoc(doc(db, 'maps', map.id), map)
+        const mapsData = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }))
+
+        const existingNames = new Set(mapsData.map(map => normalizeMapName(map.name)))
+        const missingSeedMaps = DEFAULT_MAPS.filter(map => !existingNames.has(normalizeMapName(map.name)))
+
+        if (missingSeedMaps.length > 0) {
+          missingSeedMaps.forEach(map => {
+            setDoc(doc(db, 'maps', map.id), map, { merge: true })
           })
-          setMaps(DEFAULT_MAPS)
-        } else {
-          const mapsData = snapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-          }))
-          setMaps(mapsData)
         }
+
+        setMaps([...mapsData, ...missingSeedMaps].sort((a, b) => {
+          const categoryCompare = (a.category || '').localeCompare(b.category || '')
+          if (categoryCompare !== 0) return categoryCompare
+          return (a.sortName || a.name || '').localeCompare(b.sortName || b.name || '')
+        }))
       },
       (err) => {
         console.error('Error fetching maps:', err)
@@ -402,6 +402,43 @@ export function useFirestore() {
     }
   }
 
+  const getMapStats = (mapId) => {
+    const mapMatches = matches.filter(match => match.mapId === mapId || match.mapName === getMapName(mapId))
+    const winnerCounts = players.reduce((acc, player) => ({ ...acc, [player.id]: 0 }), {})
+    let draws = 0
+    let totalDuration = 0
+
+    mapMatches.forEach(match => {
+      if (match.result === 'draw') {
+        draws += 1
+      } else if (match.winnerId) {
+        winnerCounts[match.winnerId] = (winnerCounts[match.winnerId] || 0) + 1
+      }
+      totalDuration += match.duration || 0
+    })
+
+    return {
+      matches: mapMatches.length,
+      lastPlayed: mapMatches[0]?.date || null,
+      winnerCounts,
+      draws,
+      totalDuration,
+      averageDuration: mapMatches.length > 0 ? Math.round(totalDuration / mapMatches.length) : 0,
+    }
+  }
+
+  const getMapRotation = (limit = 6) => {
+    return maps
+      .map(map => ({ ...map, stats: getMapStats(map.id) }))
+      .sort((a, b) => {
+        if (a.stats.matches !== b.stats.matches) return a.stats.matches - b.stats.matches
+        if (!a.stats.lastPlayed && b.stats.lastPlayed) return -1
+        if (a.stats.lastPlayed && !b.stats.lastPlayed) return 1
+        return (a.stats.lastPlayed || '').localeCompare(b.stats.lastPlayed || '')
+      })
+      .slice(0, limit)
+  }
+
   // Get map name by ID
   const getMapName = (mapId) => {
     if (!mapId) return 'Ukjent kart'
@@ -439,6 +476,8 @@ export function useFirestore() {
     endLiveMatch,
     cancelLiveMatch,
     getPlayerStats,
+    getMapStats,
+    getMapRotation,
     getMapName,
     formatDuration,
   }
