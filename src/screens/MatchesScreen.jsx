@@ -225,8 +225,8 @@ export function MatchDetailSheet({ match, players, onClose, onDelete, formatDura
         </div>
 
         <div className="space-y-2">
-          {players.map((player, idx) => {
-            const data = match.players?.[idx]
+          {players.map(player => {
+            const data = match.players?.find(p => p.playerId === player.id)
             const won = !isDraw && match.winnerId === player.id
             const winPoints = won ? 1 : isDraw ? 0.5 : 0
             const aiBonus = (data?.aiEliminations || 0) * 0.5

@@ -4,7 +4,7 @@ import { Home, Activity, Plus, ScrollText, Map } from 'lucide-react'
 const TABS = [
   { id: 'home', label: 'Hjem', icon: Home },
   { id: 'live', label: 'Live', icon: Activity },
-  { id: 'new', label: 'Ny', icon: Plus, fab: true },
+  { id: 'new', label: 'Ny', icon: Plus },
   { id: 'matches', label: 'Kamper', icon: ScrollText },
   { id: 'maps', label: 'Kart', icon: Map },
 ]
@@ -16,22 +16,6 @@ export function BottomNav({ current, onChange, hasActiveMatch }) {
         {TABS.map(tab => {
           const Icon = tab.icon
           const isActive = current === tab.id
-
-          if (tab.fab) {
-            return (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => onChange(tab.id)}
-                className="bottomnav-btn-fab"
-                data-active={isActive}
-                aria-label={tab.label}
-                aria-current={isActive ? 'page' : undefined}
-              >
-                <Icon className="w-6 h-6" strokeWidth={2.4} />
-              </button>
-            )
-          }
 
           return (
             <button

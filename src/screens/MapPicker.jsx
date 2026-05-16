@@ -44,7 +44,7 @@ export function MapPickerSheet({
 
   const filtered = useMemo(() => {
     const term = search.trim().toLowerCase()
-    let list = maps
+    let list = [...maps]
     if (term) {
       list = list.filter(m => m.name.toLowerCase().includes(term))
     }

@@ -159,19 +159,39 @@ function PreLive({ players, maps, matches, onStart, onAddMap }) {
 function ActiveLive({ players, maps, activeMatch, onEndMatch, onLogEvent, onCancel }) {
   const [elapsed, setElapsed] = useState(0)
   const [paused, setPaused] = useState(false)
+  const [pauseStartedAt, setPauseStartedAt] = useState(null)
+  const [pausedMs, setPausedMs] = useState(activeMatch.pausedDuration || 0)
   const [showEnd, setShowEnd] = useState(false)
 
   useEffect(() => {
-    if (paused) return
+    setElapsed(0)
+    setPaused(false)
+    setPauseStartedAt(null)
+    setPausedMs(activeMatch.pausedDuration || 0)
+  }, [activeMatch.startedAt])
+
+  useEffect(() => {
     const startTime = new Date(activeMatch.startedAt).getTime()
     const tick = () => {
-      const pausedDur = activeMatch.pausedDuration || 0
-      setElapsed(Math.floor((Date.now() - startTime - pausedDur) / 1000))
+      const currentPauseMs = paused && pauseStartedAt ? Date.now() - pauseStartedAt : 0
+      setElapsed(Math.max(0, Math.floor((Date.now() - startTime - pausedMs - currentPauseMs) / 1000)))
     }
     tick()
+    if (paused) return
     const id = setInterval(tick, 1000)
     return () => clearInterval(id)
-  }, [activeMatch, paused])
+  }, [activeMatch.startedAt, paused, pauseStartedAt, pausedMs])
+
+  const togglePause = () => {
+    if (paused) {
+      setPausedMs(total => total + (pauseStartedAt ? Date.now() - pauseStartedAt : 0))
+      setPauseStartedAt(null)
+      setPaused(false)
+      return
+    }
+    setPauseStartedAt(Date.now())
+    setPaused(true)
+  }
 
   const mapName = maps.find(m => m.id === activeMatch.mapId)?.name || 'Ukjent kart'
   const activeAis = useMemo(() => {
@@ -208,7 +228,7 @@ function ActiveLive({ players, maps, activeMatch, onEndMatch, onLogEvent, onCanc
         <div className="mt-4 grid grid-cols-2 gap-2">
           <button
             type="button"
-            onClick={() => setPaused(p => !p)}
+            onClick={togglePause}
             className={`btn ${paused ? 'btn-success' : 'btn-secondary'}`}
           >
             {paused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
