@@ -16,7 +16,7 @@ export function Leaderboard({ players, getPlayerStats }) {
   return (
     <div className="card overflow-hidden">
       {/* Header */}
-      <div className="px-5 py-4 border-b border-border">
+      <div className="border-b border-border px-3 py-4 sm:px-5">
         <div className="flex items-center justify-between">
           <h2 className="font-semibold text-text-primary flex items-center gap-2">
             <TrendingUp className="w-4 h-4 text-accent" />
@@ -31,7 +31,7 @@ export function Leaderboard({ players, getPlayerStats }) {
 
         {/* Lead indicator - on its own line for clarity */}
         {!isTied && isLeading && (
-          <div className="mt-3 flex items-center justify-center gap-2 bg-accent/10 px-4 py-2 rounded-xl border border-accent/20">
+          <div className="mt-3 flex flex-wrap items-center justify-center gap-1.5 rounded-xl border border-accent/20 bg-accent/10 px-3 py-2 text-center">
             <span className="text-sm text-accent">
               <span className="font-semibold">{leader?.name}</span> leder med
             </span>
@@ -44,16 +44,15 @@ export function Leaderboard({ players, getPlayerStats }) {
       </div>
 
       {/* Players comparison */}
-      <div className="p-5">
-        <div className="flex gap-6">
+      <div className="p-3 sm:p-5">
+        <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] sm:gap-4">
           <PlayerCard
             player={stats.find(s => s.id === 'player1')}
             isLeader={leader?.id === 'player1' && isLeading}
           />
 
-          {/* Divider */}
-          <div className="flex items-center">
-            <div className="w-px h-3/4 bg-gradient-to-b from-transparent via-border to-transparent" />
+          <div className="hidden items-center sm:flex">
+            <div className="h-3/4 w-px bg-gradient-to-b from-transparent via-border to-transparent" />
           </div>
 
           <PlayerCard
@@ -70,7 +69,7 @@ function PlayerCard({ player, isLeader }) {
   if (!player) return null
 
   return (
-    <div className="flex-1 text-center">
+    <div className="min-w-0 rounded-xl border border-border bg-bg-elevated/50 p-3 text-center sm:border-0 sm:bg-transparent sm:p-0">
       {/* Avatar with crown */}
       <div className="relative inline-block mb-4">
         {isLeader && (
@@ -94,30 +93,30 @@ function PlayerCard({ player, isLeader }) {
       </div>
 
       {/* Name */}
-      <h3 className={`font-semibold mb-2 ${isLeader ? 'text-text-primary' : 'text-text-secondary'}`}>
+      <h3 className={`mb-2 truncate font-semibold ${isLeader ? 'text-text-primary' : 'text-text-secondary'}`}>
         {player.name}
       </h3>
 
       {/* Points - larger and more prominent */}
       <div className="mb-5">
-        <span className={`text-4xl font-bold number-display ${isLeader ? 'text-accent' : 'text-text-secondary'}`}>
+        <span className={`number-display text-3xl font-bold sm:text-4xl ${isLeader ? 'text-accent' : 'text-text-secondary'}`}>
           {player.stats.points.toFixed(1)}
         </span>
-        <span className="text-sm text-text-muted ml-1">poeng</span>
+        <span className="ml-1 text-sm text-text-muted">poeng</span>
       </div>
 
       {/* Stats - more spacious */}
-      <div className="grid grid-cols-3 gap-2 mb-4">
-        <div className="bg-bg-elevated rounded-xl py-3 px-2">
-          <p className="text-xl font-bold text-success number-display">{player.stats.wins}</p>
+      <div className="mb-4 grid grid-cols-3 gap-1.5 sm:gap-2">
+        <div className="rounded-xl bg-bg-primary px-1 py-2 sm:bg-bg-elevated sm:px-2 sm:py-3">
+          <p className="number-display text-lg font-bold text-success sm:text-xl">{player.stats.wins}</p>
           <p className="text-[10px] text-text-muted uppercase tracking-wider mt-1">Seire</p>
         </div>
-        <div className="bg-bg-elevated rounded-xl py-3 px-2">
-          <p className="text-xl font-bold text-text-muted number-display">{player.stats.draws}</p>
+        <div className="rounded-xl bg-bg-primary px-1 py-2 sm:bg-bg-elevated sm:px-2 sm:py-3">
+          <p className="number-display text-lg font-bold text-text-muted sm:text-xl">{player.stats.draws}</p>
           <p className="text-[10px] text-text-muted uppercase tracking-wider mt-1">Uavgjort</p>
         </div>
-        <div className="bg-bg-elevated rounded-xl py-3 px-2">
-          <p className="text-xl font-bold text-danger number-display">{player.stats.losses}</p>
+        <div className="rounded-xl bg-bg-primary px-1 py-2 sm:bg-bg-elevated sm:px-2 sm:py-3">
+          <p className="number-display text-lg font-bold text-danger sm:text-xl">{player.stats.losses}</p>
           <p className="text-[10px] text-text-muted uppercase tracking-wider mt-1">Tap</p>
         </div>
       </div>

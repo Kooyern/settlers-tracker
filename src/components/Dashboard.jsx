@@ -45,27 +45,28 @@ export function Dashboard({
   const streak = getCurrentStreak(matches, players)
 
   return (
-    <div className="space-y-4">
-      <section className="app-hero card overflow-hidden p-4">
+    <div className="grid gap-3 lg:grid-cols-[minmax(0,1.05fr)_minmax(320px,0.95fr)] lg:items-start">
+      <div className="space-y-3 sm:space-y-4">
+      <section className="app-hero card overflow-hidden p-3 sm:p-5">
         <div className="settlers-map-strip" />
         <div className="relative">
           <div className="flex items-start justify-between gap-3">
-            <div>
+            <div className="min-w-0">
               <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-accent">
                 Settlers 10th Anniversary
               </p>
-              <h2 className="mt-1 text-2xl font-semibold text-text-primary">Kamprommet</h2>
+              <h2 className="mt-1 text-xl font-semibold text-text-primary sm:text-2xl">Kamprommet</h2>
               <p className="mt-1 text-sm text-text-secondary">
                 Oversikt, liveføring og kartrotasjon for neste oppgjør.
               </p>
             </div>
-            <div className="rounded-xl border border-border-light bg-bg-primary/70 px-3 py-2 text-right">
+            <div className="shrink-0 rounded-xl border border-border-light bg-bg-primary/70 px-3 py-2 text-right">
               <p className="text-[10px] uppercase text-text-muted">Kartbase</p>
               <p className="number-display text-xl font-bold text-accent">{maps.length}</p>
             </div>
           </div>
 
-          <div className="mt-4 grid grid-cols-2 gap-2">
+          <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
             <button onClick={onStartLive} className="btn-primary flex items-center justify-center gap-2 px-3 py-3">
               <Play className="h-5 w-5" />
               Live kamp
@@ -103,27 +104,27 @@ export function Dashboard({
         </div>
       </section>
 
-      <div className="grid grid-cols-4 gap-2">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
         <StatCard value={matches.length} label="Kamper" icon={<Trophy className="h-4 w-4" />} />
         <StatCard value={formatDuration(totalPlayTime)} label="Tid" icon={<Clock className="h-4 w-4" />} />
         <StatCard value={totalAiKills} label="AI" icon={<Skull className="h-4 w-4" />} />
         <StatCard value={playedMapNames.size} label="Kart" icon={<Map className="h-4 w-4" />} />
       </div>
 
-      <section className="card p-4">
+      <section className="card p-3 sm:p-4">
         <div className="mb-3 flex items-center justify-between gap-3">
           <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-text-secondary">
             <Trophy className="h-4 w-4 text-accent" />
             Rivalstatus
           </h2>
           {rankedPlayers.length > 1 && (
-            <span className="rounded-full border border-border bg-bg-elevated px-2 py-1 text-xs text-text-muted">
+            <span className="shrink-0 rounded-full border border-border bg-bg-elevated px-2 py-1 text-xs text-text-muted">
               {pointGap.toFixed(1)} poeng skiller
             </span>
           )}
         </div>
 
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
           {playerRows.map(player => (
             <div key={player.id} className="rounded-xl border border-border bg-bg-elevated p-3">
               <div className="flex items-center gap-2">
@@ -149,8 +150,10 @@ export function Dashboard({
       </section>
 
       <Leaderboard players={players} getPlayerStats={getPlayerStats} formatDuration={formatDuration} />
+      </div>
 
-      <section className="card p-4">
+      <div className="space-y-3 sm:space-y-4">
+      <section className="card p-3 sm:p-4">
         <div className="mb-3 flex items-center justify-between gap-2">
           <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-text-secondary">
             <MapPinned className="h-4 w-4 text-accent" />
@@ -166,7 +169,7 @@ export function Dashboard({
                 <p className="truncate text-sm font-semibold text-text-primary">{map.name}</p>
                 <p className="truncate text-xs text-text-muted">{map.category || 'Kart'} · {map.source || 'Egendefinert'}</p>
               </div>
-              <div className="text-right">
+              <div className="shrink-0 text-right">
                 <p className="number-display text-sm font-bold text-accent">{map.stats.matches}</p>
                 <p className="text-[10px] text-text-muted">spilt</p>
               </div>
@@ -217,6 +220,7 @@ export function Dashboard({
           Bruk live-kamp mens dere spiller. Da blir hendelser, AI-drap og sluttresultat en kamprapport i stedet for et skjema etterpå.
         </p>
       </section>
+      </div>
     </div>
   )
 }

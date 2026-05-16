@@ -42,20 +42,20 @@ export function MatchHistory({
   const hasFilters = filters.mapId || filters.winnerId || filters.searchTerm
 
   return (
-    <div className="space-y-4">
-      <div className="card p-5">
+    <div className="mx-auto w-full max-w-4xl space-y-4">
+      <div className="card p-3 sm:p-5">
         <div className="flex items-center gap-3 mb-4">
           <div className="w-11 h-11 rounded-xl bg-accent/10 flex items-center justify-center">
             <ScrollText className="w-5 h-5 text-accent" />
           </div>
-          <div>
+          <div className="min-w-0">
             <h2 className="text-xl font-semibold text-text-primary">Historikk</h2>
             <p className="text-sm text-text-muted">{matches.length} registrerte kamper</p>
           </div>
         </div>
 
         {mostPlayedMaps.length > 0 && (
-          <div className="mb-4 grid grid-cols-3 gap-2">
+          <div className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-3">
             {mostPlayedMaps.map(map => (
               <div key={map.id} className="rounded-xl border border-border bg-bg-elevated p-2">
                 <p className="truncate text-xs font-semibold text-text-primary">{map.name}</p>
@@ -78,7 +78,7 @@ export function MatchHistory({
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             <select
               value={filters.mapId}
               onChange={(e) => setFilters(prev => ({ ...prev, mapId: e.target.value }))}

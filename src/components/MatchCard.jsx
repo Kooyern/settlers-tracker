@@ -20,9 +20,8 @@ export function MatchCard({ match, players, formatDuration, onDelete, onViewRepo
   if (compact) {
     return (
       <div className="card p-3 hover:border-border-light transition-colors">
-        <div className="flex items-center gap-3">
-          {/* Players */}
-          <div className="flex items-center gap-2">
+        <div className="grid grid-cols-[auto_minmax(0,1fr)] gap-3 sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:items-center">
+          <div className="flex shrink-0 items-center gap-2">
             <div
               className={`w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold
                 shadow-lg transition-all
@@ -51,21 +50,20 @@ export function MatchCard({ match, players, formatDuration, onDelete, onViewRepo
           </div>
 
           {/* Info */}
-          <div className="flex-1 min-w-0">
+          <div className="min-w-0">
             {isDraw ? (
               <span className="text-sm text-text-muted font-medium">Uavgjort</span>
             ) : (
-              <span className="text-sm font-semibold text-text-primary">{winner?.name} vant</span>
+              <span className="block truncate text-sm font-semibold text-text-primary">{winner?.name} vant</span>
             )}
-            <div className="flex items-center gap-2 text-xs text-text-muted mt-0.5">
+            <div className="mt-0.5 flex min-w-0 items-center gap-2 text-xs text-text-muted">
               <span className="truncate">{mapName}</span>
-              <span className="text-border-light">•</span>
-              <span className="number-display">{formatDuration(match.duration)}</span>
+              <span className="shrink-0 text-border-light">•</span>
+              <span className="number-display shrink-0">{formatDuration(match.duration)}</span>
             </div>
           </div>
 
-          {/* Time */}
-          <span className="text-[11px] text-text-muted">
+          <span className="col-span-2 justify-self-end text-[11px] text-text-muted sm:col-span-1">
             {formatDistanceToNow(matchDate, { locale: nb, addSuffix: true })}
           </span>
         </div>
@@ -77,14 +75,14 @@ export function MatchCard({ match, players, formatDuration, onDelete, onViewRepo
   return (
     <div className="card overflow-hidden">
       {/* Header */}
-      <div className="p-4">
+      <div className="p-3 sm:p-4">
         {/* Date */}
         <div className="text-xs text-text-muted mb-4">
           {format(matchDate, 'dd. MMMM yyyy, HH:mm', { locale: nb })}
         </div>
 
         {/* Players */}
-        <div className="flex items-center justify-between gap-4">
+        <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-start gap-2 sm:gap-4">
           <PlayerDisplay
             player={players[0]}
             isWinner={match.winnerId === 'player1'}
@@ -105,12 +103,12 @@ export function MatchCard({ match, players, formatDuration, onDelete, onViewRepo
         </div>
 
         {/* Match info */}
-        <div className="flex items-center justify-center gap-6 mt-4 pt-4 border-t border-border text-sm text-text-secondary">
-          <div className="flex items-center gap-2">
+        <div className="mt-4 grid gap-2 border-t border-border pt-4 text-sm text-text-secondary sm:grid-cols-2">
+          <div className="flex min-w-0 items-center justify-center gap-2">
             <Map className="w-4 h-4 text-text-muted" />
-            <span>{mapName}</span>
+            <span className="truncate">{mapName}</span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-center gap-2">
             <Clock className="w-4 h-4 text-text-muted" />
             <span className="number-display">{formatDuration(match.duration)}</span>
           </div>
@@ -162,7 +160,7 @@ export function MatchCard({ match, players, formatDuration, onDelete, onViewRepo
           )}
 
           {/* Actions */}
-          <div className="flex gap-2 justify-end pt-2">
+          <div className="grid gap-2 pt-2 sm:flex sm:justify-end">
             {(match.battleReport || match.isLiveMatch || match.events?.length > 0) && (
               <button
                 onClick={() => onViewReport(match)}
@@ -186,7 +184,7 @@ export function MatchCard({ match, players, formatDuration, onDelete, onViewRepo
 
 function PlayerDisplay({ player, isWinner, isDraw, stats }) {
   return (
-    <div className={`flex-1 text-center ${isWinner && !isDraw ? '' : 'opacity-60'}`}>
+    <div className={`min-w-0 text-center ${isWinner && !isDraw ? '' : 'opacity-60'}`}>
       <div
         className={`
           w-14 h-14 rounded-full mx-auto mb-2 flex items-center justify-center text-white font-bold text-lg
@@ -202,7 +200,7 @@ function PlayerDisplay({ player, isWinner, isDraw, stats }) {
         )}
       </div>
 
-      <p className="font-semibold text-text-primary text-sm">{player?.name}</p>
+      <p className="truncate text-sm font-semibold text-text-primary">{player?.name}</p>
 
       {!isDraw && (
         <span className={`inline-block mt-1.5 px-3 py-1 rounded-full text-xs font-semibold

@@ -107,7 +107,7 @@ export function NewMatchForm({ players, maps, matches = [], onSubmit, onCancel, 
   }
 
   return (
-    <div className="card p-4">
+    <div className="card mx-auto w-full max-w-2xl p-3 sm:p-5">
       <div className="flex items-center gap-3 mb-6">
         <button onClick={onCancel} className="p-2 -ml-2 text-text-muted hover:text-text-primary">
           <ChevronLeft className="w-6 h-6" />
@@ -148,7 +148,7 @@ export function NewMatchForm({ players, maps, matches = [], onSubmit, onCancel, 
           <label className="block text-sm font-medium text-text-muted mb-2 flex items-center gap-2">
             <Skull className="w-4 h-4" /> AI-motstandere ({form.aiColors.length})
           </label>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
             {AI_COLORS.map(ai => {
               const isSelected = form.aiColors.includes(ai.id)
               return (
@@ -191,7 +191,7 @@ export function NewMatchForm({ players, maps, matches = [], onSubmit, onCancel, 
           <label className="block text-sm font-medium text-text-muted mb-2 flex items-center gap-2">
             <Trophy className="w-4 h-4" /> Resultat
           </label>
-          <div className="flex gap-2">
+          <div className="grid grid-cols-2 gap-2">
             <button
               type="button"
               onClick={() => setForm(prev => ({ ...prev, result: 'win' }))}
@@ -222,7 +222,7 @@ export function NewMatchForm({ players, maps, matches = [], onSubmit, onCancel, 
             <label className="block text-sm font-medium text-text-muted mb-3">
               Hvem vant?
             </label>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               {players.map((player) => (
                 <button
                   key={player.id}
@@ -241,7 +241,7 @@ export function NewMatchForm({ players, maps, matches = [], onSubmit, onCancel, 
                   >
                     {form.winnerId === player.id ? <Trophy className="w-6 h-6" /> : player.name.charAt(0)}
                   </div>
-                  <span className="font-semibold text-text-primary">{player.name}</span>
+                  <span className="max-w-full truncate font-semibold text-text-primary">{player.name}</span>
                   {form.winnerId === player.id && (
                     <span className="text-xs text-success font-semibold">VINNER</span>
                   )}
@@ -256,12 +256,12 @@ export function NewMatchForm({ players, maps, matches = [], onSubmit, onCancel, 
             <Skull className="w-4 h-4" /> AI Elimineringer
             <span className="text-xs font-normal">(+0.5p hver)</span>
           </label>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {players.map((player) => (
               <div key={player.id} className="bg-bg-elevated rounded-xl p-3 border border-border">
-                <p className="text-sm text-text-secondary mb-2 flex items-center gap-2 font-medium">
-                  <span className="w-3 h-3 rounded-full" style={{ backgroundColor: player.color }} />
-                  {player.name}
+                <p className="mb-2 flex min-w-0 items-center gap-2 text-sm font-medium text-text-secondary">
+                  <span className="h-3 w-3 shrink-0 rounded-full" style={{ backgroundColor: player.color }} />
+                  <span className="truncate">{player.name}</span>
                 </p>
                 <div className="flex items-center justify-center gap-3">
                   <button
@@ -292,7 +292,7 @@ export function NewMatchForm({ players, maps, matches = [], onSubmit, onCancel, 
             <AlertTriangle className="w-4 h-4 text-danger" /> Slått av AI
             <span className="text-xs font-normal">(-1p)</span>
           </label>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {players.map((player) => {
               const hasDied = getPlayerAiDeaths(player.id) > 0
               return (
@@ -300,14 +300,14 @@ export function NewMatchForm({ players, maps, matches = [], onSubmit, onCancel, 
                   key={player.id}
                   type="button"
                   onClick={() => updatePlayerAiDeaths(player.id, hasDied ? -1 : 1)}
-                  className={`p-3 rounded-xl border-2 transition-all flex items-center justify-center gap-2
+                  className={`flex min-w-0 items-center justify-center gap-2 rounded-xl border-2 p-3 transition-all
                     ${hasDied
                       ? 'bg-danger/20 border-danger/50 text-danger'
                       : 'bg-bg-elevated border-border text-text-muted'
                     }`}
                 >
-                  <span className="w-3 h-3 rounded-full" style={{ backgroundColor: player.color }} />
-                  <span className="font-medium">{player.name}</span>
+                  <span className="h-3 w-3 shrink-0 rounded-full" style={{ backgroundColor: player.color }} />
+                  <span className="truncate font-medium">{player.name}</span>
                   {hasDied && <Skull className="w-4 h-4" />}
                 </button>
               )

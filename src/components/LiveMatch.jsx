@@ -114,7 +114,7 @@ export function LiveMatch({ players, maps, activeMatch, onStartMatch, onEndMatch
 
   if (!activeMatch) {
     return (
-      <div className="card p-4">
+      <div className="card mx-auto w-full max-w-2xl p-3 sm:p-5">
         <div className="flex items-center gap-3 mb-6">
           <button onClick={onCancel} className="p-2 -ml-2 text-text-muted hover:text-text-primary">
             <ChevronLeft className="w-6 h-6" />
@@ -192,11 +192,11 @@ export function LiveMatch({ players, maps, activeMatch, onStartMatch, onEndMatch
             <h3 className="font-medium text-text-primary mb-3 flex items-center gap-2">
               <Users className="w-4 h-4 text-accent" /> Spillere
             </h3>
-            <div className="flex gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               {players.map(player => (
-                <div key={player.id} className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full shadow-lg" style={{ backgroundColor: player.color }} />
-                  <span className="font-medium text-text-primary">{player.name}</span>
+                <div key={player.id} className="flex min-w-0 items-center gap-2 rounded-xl border border-border bg-bg-card p-2">
+                  <div className="h-8 w-8 shrink-0 rounded-full shadow-lg" style={{ backgroundColor: player.color }} />
+                  <span className="truncate font-medium text-text-primary">{player.name}</span>
                 </div>
               ))}
             </div>
@@ -215,12 +215,12 @@ export function LiveMatch({ players, maps, activeMatch, onStartMatch, onEndMatch
   }
 
   return (
-    <div className="space-y-4">
+    <div className="mx-auto grid w-full max-w-5xl gap-3 lg:grid-cols-[minmax(0,0.9fr)_minmax(320px,1.1fr)] lg:items-start">
       {/* Timer */}
-      <div className="card p-5">
+      <div className="card p-4 sm:p-5 lg:sticky lg:top-24">
         <div className="text-center mb-5">
           <p className="text-xs text-text-muted uppercase tracking-wider mb-1">Spilletid</p>
-          <div className="text-5xl font-bold text-text-primary font-mono number-display tracking-tight">
+          <div className="number-display font-mono text-4xl font-bold tracking-tight text-text-primary sm:text-5xl">
             {formatTime(elapsedTime)}
           </div>
           <p className="text-sm text-text-secondary mt-2">
@@ -228,7 +228,7 @@ export function LiveMatch({ players, maps, activeMatch, onStartMatch, onEndMatch
           </p>
         </div>
 
-        <div className="flex gap-3">
+        <div className="grid grid-cols-2 gap-2 sm:gap-3">
           <button
             onClick={() => setIsPaused(!isPaused)}
             className={`flex-1 py-4 rounded-xl font-semibold text-lg flex items-center justify-center gap-2 border transition-all ${
@@ -249,6 +249,7 @@ export function LiveMatch({ players, maps, activeMatch, onStartMatch, onEndMatch
         </div>
       </div>
 
+      <div className="space-y-3">
       {/* End Match Modal */}
       {showEndModal && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
@@ -317,11 +318,11 @@ export function LiveMatch({ players, maps, activeMatch, onStartMatch, onEndMatch
         const eliminations = getPlayerEliminations(player.id)
 
         return (
-          <div key={player.id} className="card p-4">
+          <div key={player.id} className="card p-3 sm:p-4">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-full shadow-lg" style={{ backgroundColor: player.color }} />
-              <h3 className="font-semibold text-text-primary text-lg">{player.name}</h3>
-              <div className="ml-auto flex items-center gap-1 text-sm text-purple-400">
+              <div className="h-10 w-10 shrink-0 rounded-full shadow-lg" style={{ backgroundColor: player.color }} />
+              <h3 className="min-w-0 flex-1 truncate text-lg font-semibold text-text-primary">{player.name}</h3>
+              <div className="ml-auto flex shrink-0 items-center gap-1 text-sm text-purple-400">
                 <Skull className="w-4 h-4" />
                 <span className="number-display">{eliminations.length}</span> AI
               </div>
@@ -329,7 +330,7 @@ export function LiveMatch({ players, maps, activeMatch, onStartMatch, onEndMatch
 
             <div className="mb-4">
               <p className="text-xs text-text-muted mb-2 font-medium">Eliminer AI:</p>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-2">
                 {getActiveAIs().map(ai => {
                   const isEliminated = activeMatch?.events?.some(
                     e => e.type === 'ai_eliminated' && e.aiId === ai.id
@@ -343,7 +344,7 @@ export function LiveMatch({ players, maps, activeMatch, onStartMatch, onEndMatch
                       key={ai.id}
                       onClick={() => handleAiElimination(player.id, ai.id)}
                       disabled={isEliminated}
-                      className={`p-3 rounded-xl text-sm font-medium flex items-center justify-center gap-2 border-2 transition-all
+                      className={`flex min-w-0 items-center justify-center gap-2 rounded-xl border-2 p-3 text-sm font-medium transition-all
                         ${isEliminated ? 'opacity-30 cursor-not-allowed' : 'active:scale-95'}`}
                       style={{
                         backgroundColor: isEliminated ? '#1c1c1c' : ai.color + '20',
@@ -351,8 +352,8 @@ export function LiveMatch({ players, maps, activeMatch, onStartMatch, onEndMatch
                         color: isEliminated ? '#525252' : (ai.id === 'white' ? '#a3a3a3' : ai.color)
                       }}
                     >
-                      <Skull className="w-4 h-4" />
-                      {ai.name.replace(' AI', '')}
+                      <Skull className="h-4 w-4 shrink-0" />
+                      <span className="truncate">{ai.name.replace(' AI', '')}</span>
                       {isEliminated && eliminatedBy === player.id && ' ✓'}
                     </button>
                   )
@@ -362,15 +363,15 @@ export function LiveMatch({ players, maps, activeMatch, onStartMatch, onEndMatch
 
             <div>
               <p className="text-xs text-text-muted mb-2 font-medium">Hendelser:</p>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                 {EVENT_TYPES.slice(0, 4).map(event => (
                   <button
                     key={event.id}
                     onClick={() => handleEvent(player.id, event.id)}
-                    className={`${event.color} px-4 py-3 rounded-xl text-sm font-medium flex items-center justify-center gap-2 active:scale-95 border`}
+                    className={`${event.color} flex min-w-0 items-center justify-center gap-2 rounded-xl border px-3 py-3 text-sm font-medium active:scale-95`}
                   >
-                    <event.icon className="w-4 h-4" />
-                    {event.label}
+                    <event.icon className="h-4 w-4 shrink-0" />
+                    <span className="truncate">{event.label}</span>
                   </button>
                 ))}
               </div>
@@ -387,7 +388,7 @@ export function LiveMatch({ players, maps, activeMatch, onStartMatch, onEndMatch
       })}
 
       {/* Timeline */}
-      <div className="card p-4">
+      <div className="card p-3 sm:p-4">
         <h3 className="font-medium text-text-primary mb-3 flex items-center gap-2">
           <Clock className="w-4 h-4 text-accent" /> Tidslinje
         </h3>
@@ -404,25 +405,24 @@ export function LiveMatch({ players, maps, activeMatch, onStartMatch, onEndMatch
               const eventType = EVENT_TYPES.find(e => e.id === event.type)
 
               return (
-                <div key={idx} className="flex items-center gap-2 bg-bg-elevated rounded-xl px-3 py-2.5 text-sm border border-border">
-                  <span className="text-text-muted font-mono text-xs w-12 number-display">
+                <div key={idx} className="grid grid-cols-[3.25rem_auto_minmax(0,1fr)_auto] items-center gap-2 rounded-xl border border-border bg-bg-elevated px-3 py-2.5 text-sm">
+                  <span className="number-display font-mono text-xs text-text-muted">
                     {formatTime(event.matchTime)}
                   </span>
-                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: player?.color }} />
-                  <span className="text-text-primary">{player?.name}</span>
-                  <span className="text-text-secondary">
-                    {event.type === 'ai_eliminated'
-                      ? `eliminerte ${ai?.name}`
-                      : eventType?.label.toLowerCase()}
+                  <div className="h-3 w-3 rounded-full" style={{ backgroundColor: player?.color }} />
+                  <span className="min-w-0 truncate text-text-secondary">
+                    <span className="font-medium text-text-primary">{player?.name}</span>{' '}
+                    {event.type === 'ai_eliminated' ? `eliminerte ${ai?.name}` : eventType?.label.toLowerCase()}
                   </span>
                   {ai && (
-                    <div className="w-3 h-3 rounded-full ml-auto" style={{ backgroundColor: ai.color }} />
+                    <div className="h-3 w-3 rounded-full" style={{ backgroundColor: ai.color }} />
                   )}
                 </div>
               )
             })
           )}
         </div>
+      </div>
       </div>
     </div>
   )

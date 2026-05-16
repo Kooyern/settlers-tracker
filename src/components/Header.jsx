@@ -6,14 +6,14 @@ export function Header({ currentView, onViewChange, hasActiveMatch }) {
     { id: 'dashboard', label: 'Hjem', icon: Home },
     { id: 'history', label: 'Historikk', icon: ScrollText },
     { id: 'live-match', label: 'Spill', icon: Play, isMain: true },
-    { id: 'new-match', label: 'Registrer', icon: Swords },
-    { id: 'settings', label: 'Innstillinger', icon: Settings },
+    { id: 'new-match', label: 'Ny', icon: Swords },
+    { id: 'settings', label: 'Oppsett', icon: Settings },
   ]
 
   return (
     <>
       <header className="bg-gradient-to-b from-bg-secondary to-bg-primary border-b border-border sticky top-0 z-50">
-        <div className="flex items-center justify-center py-4 px-4">
+        <div className="flex items-center justify-center px-3 py-3 sm:py-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-accent-light to-accent-dark flex items-center justify-center shadow-lg">
               <Shield className="w-5 h-5 text-bg-primary" />
@@ -31,7 +31,7 @@ export function Header({ currentView, onViewChange, hasActiveMatch }) {
       </header>
 
       <nav className="fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-t from-bg-secondary via-bg-secondary to-bg-secondary/95 border-t border-border backdrop-blur-xl pb-safe">
-        <div className="flex justify-around items-center px-2 py-2 max-w-lg mx-auto">
+        <div className="mx-auto flex max-w-lg items-center justify-around gap-1 px-1.5 py-2">
           {navItems.map(item => {
             const Icon = item.icon
             const isActive = currentView === item.id
@@ -43,7 +43,7 @@ export function Header({ currentView, onViewChange, hasActiveMatch }) {
                   onClick={() => onViewChange(item.id)}
                   className={`
                     relative flex items-center justify-center -mt-6
-                    w-14 h-14 rounded-full
+                    h-14 w-14 shrink-0 rounded-full
                     bg-gradient-to-br from-accent-light via-accent to-accent-dark
                     shadow-lg shadow-accent/20
                     transition-all duration-200 active:scale-95
@@ -64,7 +64,7 @@ export function Header({ currentView, onViewChange, hasActiveMatch }) {
                 key={item.id}
                 onClick={() => onViewChange(item.id)}
                 className={`
-                  flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all duration-200 min-w-[60px]
+                  min-w-0 flex-1 flex-col items-center gap-1 rounded-xl px-1.5 py-2 transition-all duration-200
                   ${isActive
                     ? 'text-accent'
                     : 'text-text-muted hover:text-text-secondary'
@@ -73,7 +73,7 @@ export function Header({ currentView, onViewChange, hasActiveMatch }) {
                 title={item.label}
               >
                 <Icon className={`w-5 h-5 ${isActive ? 'drop-shadow-[0_0_8px_rgba(201,162,39,0.5)]' : ''}`} />
-                <span className="text-[10px] font-medium">{item.label}</span>
+                <span className="max-w-full truncate text-[10px] font-medium leading-none">{item.label}</span>
               </button>
             )
           })}

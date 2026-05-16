@@ -97,9 +97,9 @@ export function Settings({ players, updatePlayer, matches, maps, addMap, addMaps
   const mins = totalMinutes % 60
 
   return (
-    <div className="space-y-4">
+    <div className="mx-auto grid w-full max-w-5xl gap-4 lg:grid-cols-[minmax(0,0.85fr)_minmax(340px,1.15fr)] lg:items-start">
       {/* Header */}
-      <div className="card p-4">
+      <div className="card p-3 sm:p-4 lg:col-span-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <SettingsIcon className="w-5 h-5 text-accent" />
@@ -113,8 +113,8 @@ export function Settings({ players, updatePlayer, matches, maps, addMap, addMaps
       </div>
 
       {/* Quick Stats */}
-      <div className="card p-4">
-        <div className="grid grid-cols-3 gap-3">
+      <div className="card p-3 sm:p-4">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 lg:grid-cols-1">
           <div className="bg-bg-elevated rounded-xl p-3 text-center border border-border">
             <p className="text-2xl font-bold text-accent number-display">{matches.length}</p>
             <p className="text-[10px] text-text-muted uppercase tracking-wider">Kamper</p>
@@ -145,14 +145,14 @@ export function Settings({ players, updatePlayer, matches, maps, addMap, addMaps
             <div key={player.id} className="bg-bg-elevated rounded-xl p-4 border border-border">
               <div className="flex items-center gap-3">
                 <div
-                  className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg"
+                  className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-lg font-bold text-white shadow-lg"
                   style={{ backgroundColor: player.color }}
                 >
                   {player.name?.charAt(0) || '?'}
                 </div>
-                <div className="flex-1">
+                <div className="min-w-0 flex-1">
                   {editingPlayer === player.id ? (
-                    <div className="flex gap-2">
+                    <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-2">
                       <input
                         type="text"
                         value={tempName}
@@ -169,8 +169,8 @@ export function Settings({ players, updatePlayer, matches, maps, addMap, addMaps
                       </button>
                     </div>
                   ) : (
-                    <div className="flex items-center justify-between">
-                      <span className="font-semibold text-text-primary">{player.name}</span>
+                    <div className="flex min-w-0 items-center justify-between gap-2">
+                      <span className="truncate font-semibold text-text-primary">{player.name}</span>
                       <button
                         onClick={() => startEditing(player)}
                         className="text-accent text-xs hover:text-accent-light font-medium"
@@ -202,7 +202,7 @@ export function Settings({ players, updatePlayer, matches, maps, addMap, addMaps
       </div>
 
       {/* Map Management */}
-      <div className="card overflow-hidden">
+      <div className="card overflow-hidden lg:row-span-3">
         <div className="px-4 py-3 border-b border-border bg-bg-elevated/50">
           <h3 className="font-medium text-text-primary flex items-center gap-2">
             <Map className="w-4 h-4 text-accent" /> Kart
@@ -211,7 +211,7 @@ export function Settings({ players, updatePlayer, matches, maps, addMap, addMaps
         </div>
 
         <div className="p-4 space-y-3">
-          <div className="flex gap-2">
+          <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-2">
             <input
               type="text"
               value={newMapName}
@@ -248,7 +248,7 @@ export function Settings({ players, updatePlayer, matches, maps, addMap, addMaps
                 placeholder="Mountain Pass&#10;River Delta&#10;Forest Grove"
                 className="input w-full h-28 text-sm resize-none"
               />
-              <div className="flex gap-2 items-center">
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
                 <input
                   type="text"
                   value={mapCategory}
@@ -276,12 +276,12 @@ export function Settings({ players, updatePlayer, matches, maps, addMap, addMaps
                   {(showAllMaps ? categoryMaps : categoryMaps.slice(0, 5)).map(map => (
                     <div
                       key={map.id}
-                      className="flex items-center justify-between bg-bg-elevated hover:bg-bg-elevated/80 rounded-lg px-3 py-2.5 text-sm group transition-colors border border-border"
+                      className="group flex min-w-0 items-center justify-between gap-2 rounded-lg border border-border bg-bg-elevated px-3 py-2.5 text-sm transition-colors hover:bg-bg-elevated/80"
                     >
                       <span className="text-text-secondary truncate">{map.name}</span>
                       <button
                         onClick={() => handleDeleteMap(map.id, map.name)}
-                        className="text-danger/50 hover:text-danger p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="shrink-0 p-1 text-danger/70 transition-opacity hover:text-danger sm:opacity-0 sm:group-hover:opacity-100"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
