@@ -1,79 +1,86 @@
-import React, { useState, useEffect } from 'react'
-import { Header } from './components/Header'
-import { Dashboard } from './components/Dashboard'
-import { NewMatchForm } from './components/NewMatchForm'
-import { MatchHistory } from './components/MatchHistory'
-import { Settings } from './components/Settings'
-import { BattleReportModal } from './components/BattleReportModal'
-import { LiveMatch } from './components/LiveMatch'
+import React, { useEffect, useState } from 'react'
 import { useFirestore } from './hooks/useFirestore'
-import { Loader2 } from 'lucide-react'
+import { AppShell, ScreenMain } from './components/ui/AppShell'
+import { TopBar } from './components/ui/TopBar'
+import { BottomNav } from './components/ui/BottomNav'
+import { Loader } from './components/ui/Primitives'
+import { HomeScreen } from './screens/HomeScreen'
+import { LiveScreen } from './screens/LiveScreen'
+import { NewMatchScreen } from './screens/NewMatchScreen'
+import { MatchesScreen, MatchDetailSheet } from './screens/MatchesScreen'
+import { MapsScreen } from './screens/MapsScreen'
+import { SettingsSheet } from './screens/SettingsSheet'
 
-function App() {
-  const [currentView, setCurrentView] = useState('dashboard')
-  const [selectedMatch, setSelectedMatch] = useState(null)
+const SCREEN_TITLES = {
+  home: { title: 'Settlers Tracker', subtitle: '10th Anniversary' },
+  live: { title: 'Live kamp' },
+  new: { title: 'Ny kamp' },
+  matches: { title: 'Kamper' },
+  maps: { title: 'Kart' },
+}
 
+export default function App() {
+  const [tab, setTab] = useState('home')
+  const [detailMatch, setDetailMatch] = useState(null)
+  const [showSettings, setShowSettings] = useState(false)
+
+  const store = useFirestore()
   const {
-    players,
-    matches,
-    maps,
-    activeMatch,
-    loading,
-    error,
-    addMatch,
-    updateMatch,
-    deleteMatch,
-    updatePlayer,
-    addMap,
-    addMaps,
-    deleteMap,
-    startLiveMatch,
-    logLiveEvent,
-    endLiveMatch,
-    cancelLiveMatch,
-    getPlayerStats,
-    getMapStats,
-    getMapRotation,
-    getMapName,
-    formatDuration,
-  } = useFirestore()
+    players, matches, maps, activeMatch, loading, error,
+    addMatch, deleteMatch, updatePlayer, addMap,
+    startLiveMatch, logLiveEvent, endLiveMatch, cancelLiveMatch,
+    getPlayerStats, getMapStats, getMapRotation, formatDuration,
+  } = store
 
+  // Auto-jump to live tab when an active match exists
   useEffect(() => {
-    if (activeMatch && currentView !== 'live-match') {
-      setCurrentView('live-match')
+    if (activeMatch && tab === 'home') {
+      setTab('live')
     }
-  }, [activeMatch])
+  }, [activeMatch?.id])
 
   const handleNewMatch = async (matchData) => {
     try {
       await addMatch(matchData)
-      setCurrentView('dashboard')
-    } catch (err) {
+      setTab('home')
+    } catch {
       alert('Kunne ikke lagre kampen. Prøv igjen.')
     }
   }
 
-  const handleDeleteMatch = async (matchId) => {
-    if (window.confirm('Er du sikker på at du vil slette denne kampen?')) {
-      try {
-        await deleteMatch(matchId)
-      } catch (err) {
-        alert('Kunne ikke slette kampen. Prøv igjen.')
-      }
+  const handleStartLive = async (mapId, aiColors) => {
+    try {
+      await startLiveMatch(mapId, aiColors)
+      setTab('live')
+    } catch {
+      alert('Kunne ikke starte kampen. Prøv igjen.')
     }
   }
 
-  const handleViewReport = (match) => {
-    setSelectedMatch(match)
+  const handleEndLive = async (elapsedSeconds, winnerId, result) => {
+    try {
+      await endLiveMatch(elapsedSeconds, winnerId, result)
+      setTab('home')
+    } catch {
+      alert('Kunne ikke avslutte kampen. Prøv igjen.')
+    }
+  }
+
+  const handleCancelLive = async () => {
+    if (!window.confirm('Avbryte kampen uten å lagre?')) return
+    try {
+      await cancelLiveMatch()
+      setTab('home')
+    } catch {
+      alert('Kunne ikke avbryte kampen.')
+    }
   }
 
   const handleExport = () => {
     const data = {
-      version: '1.0',
+      version: '2.0',
       exportDate: new Date().toISOString(),
-      players,
-      matches,
-      maps,
+      players, matches, maps,
     }
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
@@ -84,68 +91,52 @@ function App() {
     URL.revokeObjectURL(url)
   }
 
-  const handleStartLiveMatch = async (mapId, aiColors) => {
-    try {
-      await startLiveMatch(mapId, aiColors)
-      setCurrentView('live-match')
-    } catch (err) {
-      alert('Kunne ikke starte kampen. Prøv igjen.')
-    }
-  }
-
-  const handleEndLiveMatch = async (elapsedSeconds, winnerId, result) => {
-    try {
-      await endLiveMatch(elapsedSeconds, winnerId, result)
-      setCurrentView('dashboard')
-    } catch (err) {
-      alert('Kunne ikke avslutte kampen. Prøv igjen.')
-    }
-  }
-
-  const handleCancelLiveMatch = async () => {
-    if (window.confirm('Avbryte kampen uten å lagre?')) {
-      try {
-        await cancelLiveMatch()
-        setCurrentView('dashboard')
-      } catch (err) {
-        alert('Kunne ikke avbryte kampen.')
-      }
-    }
-  }
-
   if (loading) {
     return (
-      <div className="min-h-screen bg-bg-primary flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="w-10 h-10 text-accent animate-spin mx-auto mb-4" />
-          <p className="text-text-muted">Laster inn...</p>
-        </div>
-      </div>
+      <AppShell>
+        <ScreenMain>
+          <Loader label="Laster inn…" />
+        </ScreenMain>
+      </AppShell>
     )
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-bg-primary flex items-center justify-center p-4">
-        <div className="card p-6 max-w-md text-center">
-          <h2 className="text-lg font-semibold text-danger mb-2">Tilkoblingsfeil</h2>
-          <p className="text-text-muted mb-4">{error}</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="btn-primary"
-          >
-            Prøv igjen
-          </button>
-        </div>
-      </div>
+      <AppShell>
+        <ScreenMain>
+          <div className="card mx-auto mt-12 max-w-sm p-6 text-center">
+            <h2 className="text-lg font-semibold text-danger">Tilkoblingsfeil</h2>
+            <p className="mt-2 text-sm text-text-muted">{error}</p>
+            <button
+              type="button"
+              onClick={() => window.location.reload()}
+              className="btn btn-primary btn-block mt-4"
+            >
+              Prøv igjen
+            </button>
+          </div>
+        </ScreenMain>
+      </AppShell>
     )
   }
 
-  const renderContent = () => {
-    switch (currentView) {
-      case 'dashboard':
-        return (
-          <Dashboard
+  const meta = SCREEN_TITLES[tab] || SCREEN_TITLES.home
+  const showBack = tab === 'new' || (tab === 'live' && !activeMatch)
+
+  return (
+    <AppShell>
+      <TopBar
+        title={meta.title}
+        subtitle={meta.subtitle}
+        hasActiveMatch={!!activeMatch}
+        onBack={showBack ? () => setTab('home') : undefined}
+        onSettings={() => setShowSettings(true)}
+      />
+
+      <ScreenMain>
+        {tab === 'home' && (
+          <HomeScreen
             players={players}
             matches={matches}
             maps={maps}
@@ -153,90 +144,82 @@ function App() {
             getPlayerStats={getPlayerStats}
             getMapRotation={getMapRotation}
             formatDuration={formatDuration}
-            onDeleteMatch={handleDeleteMatch}
-            onViewReport={handleViewReport}
-            onNewMatch={() => setCurrentView('new-match')}
-            onStartLive={() => setCurrentView('live-match')}
+            onStartLive={() => setTab('live')}
+            onResumeLive={() => setTab('live')}
+            onNewMatch={() => setTab('new')}
+            onViewMatch={(m) => setDetailMatch(m)}
+            onOpenMaps={() => setTab('maps')}
+            onOpenMatches={() => setTab('matches')}
           />
-        )
+        )}
 
-      case 'new-match':
-        return (
-          <NewMatchForm
+        {tab === 'live' && (
+          <LiveScreen
+            players={players}
+            maps={maps}
+            matches={matches}
+            activeMatch={activeMatch}
+            onStartMatch={handleStartLive}
+            onEndMatch={handleEndLive}
+            onLogEvent={logLiveEvent}
+            onCancel={handleCancelLive}
+            onAddMap={addMap}
+          />
+        )}
+
+        {tab === 'new' && (
+          <NewMatchScreen
             players={players}
             maps={maps}
             matches={matches}
             onSubmit={handleNewMatch}
-            onCancel={() => setCurrentView('dashboard')}
+            onCancel={() => setTab('home')}
             onAddMap={addMap}
           />
-        )
+        )}
 
-      case 'history':
-        return (
-          <MatchHistory
+        {tab === 'matches' && (
+          <MatchesScreen
             matches={matches}
             players={players}
             maps={maps}
-            getMapStats={getMapStats}
-            getMapName={getMapName}
             formatDuration={formatDuration}
-            onDeleteMatch={handleDeleteMatch}
-            onViewReport={handleViewReport}
+            onDeleteMatch={deleteMatch}
+            onViewMatch={(m) => setDetailMatch(m)}
           />
-        )
+        )}
 
-      case 'settings':
-        return (
-          <Settings
-            players={players}
-            updatePlayer={updatePlayer}
+        {tab === 'maps' && (
+          <MapsScreen
+            maps={maps}
             matches={matches}
-            maps={maps}
-            addMap={addMap}
-            addMaps={addMaps}
-            deleteMap={deleteMap}
-            onExport={handleExport}
+            getMapStats={getMapStats}
+            onAddMap={addMap}
           />
-        )
+        )}
+      </ScreenMain>
 
-      case 'live-match':
-        return (
-          <LiveMatch
-            players={players}
-            maps={maps}
-            activeMatch={activeMatch}
-            onStartMatch={handleStartLiveMatch}
-            onEndMatch={handleEndLiveMatch}
-            onLogEvent={logLiveEvent}
-            onCancel={handleCancelLiveMatch}
-          />
-        )
+      <BottomNav
+        current={tab}
+        onChange={setTab}
+        hasActiveMatch={!!activeMatch}
+      />
 
-      default:
-        return null
-    }
-  }
+      <MatchDetailSheet
+        match={detailMatch}
+        players={players}
+        onClose={() => setDetailMatch(null)}
+        onDelete={deleteMatch}
+        formatDuration={formatDuration}
+      />
 
-  return (
-    <div className="min-h-screen overflow-x-hidden bg-bg-primary pb-24 pb-safe">
-      <Header currentView={currentView} onViewChange={setCurrentView} hasActiveMatch={!!activeMatch} />
-
-      <main className="mx-auto w-full max-w-5xl px-5 py-4 sm:px-6 sm:py-5 lg:px-8">
-        {renderContent()}
-      </main>
-
-      {selectedMatch && (
-        <BattleReportModal
-          match={selectedMatch}
-          players={players}
-          getMapName={getMapName}
-          onClose={() => setSelectedMatch(null)}
-          formatDuration={formatDuration}
-        />
-      )}
-    </div>
+      <SettingsSheet
+        open={showSettings}
+        onClose={() => setShowSettings(false)}
+        players={players}
+        updatePlayer={updatePlayer}
+        onExport={handleExport}
+      />
+    </AppShell>
   )
 }
-
-export default App
